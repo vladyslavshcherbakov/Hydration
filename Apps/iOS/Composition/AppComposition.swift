@@ -23,7 +23,7 @@ struct HydrationApp: App {
             localStorage: observedRepository,
             onWrite: { await widgetRefresh.reload() }
         )
-        let pairedDevice: PairedDeviceChannel = WatchConnectivityChannel(log: log) ?? NoPairedDeviceChannel()
+        let pairedDevice = WatchConnectivityChannel.forThisDevice(log: log)
 
         observedDrinks = observedRepository
         root = CompositionRoot(

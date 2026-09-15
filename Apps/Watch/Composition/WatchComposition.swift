@@ -18,7 +18,7 @@ struct HydrationWatchApp: App {
             arguments: ProcessInfo.processInfo.arguments
         )
         let observedRepository = ObservedDrinkRepository(localStorage: CoreDataDrinkRepository(coreDataStack: coreDataStack, log: log))
-        let pairedDevice: PairedDeviceChannel = WatchConnectivityChannel(log: log) ?? NoPairedDeviceChannel()
+        let pairedDevice = WatchConnectivityChannel.forThisDevice(log: log)
 
         root = CompositionRoot(
             repository: MirroringDrinkRepository(localStorage: observedRepository, pairedDevice: pairedDevice),
