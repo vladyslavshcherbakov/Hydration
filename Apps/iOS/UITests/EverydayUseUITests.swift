@@ -16,6 +16,7 @@ final class EverydayUseUITests: XCTestCase {
     }
 
     // MARK: - Tests
+
     func test_quickAdd_whenTappedTwice_showsHalfALitre() {
         XCTAssertTrue(total.waitForExistence(timeout: 5))
         XCTAssertEqual(total.label, "0 L")
@@ -61,6 +62,7 @@ final class EverydayUseUITests: XCTestCase {
     }
 
     // MARK: - Helpers
+
     private func launch(resettingStore: Bool) {
         var arguments = ["-uiTestStore", "-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
         if resettingStore {
@@ -91,6 +93,7 @@ final class EverydayUseUITests: XCTestCase {
 }
 
 // MARK: - XCUIElement
+
 private extension XCUIElement {
     func waitForLabel(_ expected: String, timeout: TimeInterval) -> Bool {
         let predicate = NSPredicate(format: "label == %@", expected)

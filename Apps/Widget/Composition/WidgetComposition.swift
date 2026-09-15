@@ -26,6 +26,7 @@ public enum WidgetComposition {
     }()
 
     // MARK: - Public
+
     public static func fetchTodayProgress() -> FetchDayProgressUseCase {
         root.makeFetchDay()
     }

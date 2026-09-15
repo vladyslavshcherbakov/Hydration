@@ -24,6 +24,7 @@ final class ReviewingHistoryTests: XCTestCase {
     }
 
     // MARK: - Tests
+
     func test_historyScreen_whenOpened_showsTheLastTwoWeeks() async throws {
         try await seedThreeDays()
 
@@ -99,6 +100,7 @@ final class ReviewingHistoryTests: XCTestCase {
     }
 
     // MARK: - Helpers
+
     private func seedThreeDays() async throws {
         try await environment.log(2600, at: environment.date(hour: 11))
         try await environment.log(1200, at: environment.date(hour: 11, dayOffset: -1))

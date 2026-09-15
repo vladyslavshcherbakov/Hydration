@@ -4,6 +4,7 @@ import HydrationDomain
 
 public struct DayViewState: Equatable, Sendable {
     // MARK: - Situation
+
     public enum Situation: Equatable, Sendable {
         case loading(Loading)
         case content(Content)
@@ -11,6 +12,7 @@ public struct DayViewState: Equatable, Sendable {
     }
 
     // MARK: - Loading
+
     public struct Loading: Equatable, Sendable {
         public let message: String
         public let accessibilityLabel: String
@@ -22,6 +24,7 @@ public struct DayViewState: Equatable, Sendable {
     }
 
     // MARK: - Content
+
     public struct Content: Equatable, Sendable {
         public let totalText: String
         public let goalText: String
@@ -60,6 +63,7 @@ public struct DayViewState: Equatable, Sendable {
     }
 
     // MARK: - Failure
+
     public struct Failure: Equatable, Sendable {
         public let message: String
         public let retryTitle: String
@@ -75,6 +79,7 @@ public struct DayViewState: Equatable, Sendable {
     }
 
     // MARK: - Entry
+
     public struct Entry: Equatable, Sendable, Identifiable, Hashable {
         public let id: UUID
         public let amountText: String

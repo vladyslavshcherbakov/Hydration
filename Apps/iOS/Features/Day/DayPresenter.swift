@@ -7,6 +7,7 @@ public struct DayPresenter: Sendable {
     private let locale: Locale
 
     // MARK: - Public
+
     public init(calendar: Calendar, locale: Locale) {
         self.calendar = calendar
         self.locale = locale
@@ -49,6 +50,7 @@ public struct DayPresenter: Sendable {
     }
 
     // MARK: - Private
+
     private var historyTitle: String {
         "History"
     }

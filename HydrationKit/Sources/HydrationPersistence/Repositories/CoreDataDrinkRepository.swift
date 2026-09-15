@@ -6,6 +6,7 @@ public final class CoreDataDrinkRepository: DrinkRepository, LocalDrinkWriter, @
     private let log: HydrationLog
 
     // MARK: - Public
+
     public init(coreDataStack: CoreDataStack, log: HydrationLog) {
         self.coreDataStack = coreDataStack
         self.log = log
@@ -47,6 +48,7 @@ public final class CoreDataDrinkRepository: DrinkRepository, LocalDrinkWriter, @
     }
 
     // MARK: - Private
+
     private var container: NSPersistentContainer {
         coreDataStack.container
     }

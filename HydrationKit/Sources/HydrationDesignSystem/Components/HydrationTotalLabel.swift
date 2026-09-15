@@ -3,6 +3,7 @@ import SwiftUI
 public struct HydrationTotalLabel: View {
 
     // MARK: - Layout
+
     public enum Layout: Equatable, Sendable {
         case stacked
         case inline
@@ -15,6 +16,7 @@ public struct HydrationTotalLabel: View {
     private let totalIdentifier: String?
 
     // MARK: - Public
+
     public init(
         total: String,
         goal: String,
@@ -38,6 +40,7 @@ public struct HydrationTotalLabel: View {
     }
 
     // MARK: - Private
+
     private var stacked: some View {
         VStack(spacing: 4) {
             identifiedTotal

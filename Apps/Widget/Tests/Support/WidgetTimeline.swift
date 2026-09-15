@@ -13,6 +13,7 @@ enum WidgetStateMismatch: Error {
 
 #if canImport(WidgetKit)
 // MARK: - HydrationEntry
+
 extension HydrationEntry {
     var content: WidgetTodayViewState.Content {
         get throws {
@@ -31,6 +32,7 @@ extension HydrationEntry {
 #endif
 
 // MARK: - PersistenceEnvironment
+
 extension PersistenceEnvironment {
     var widgetPresenter: WidgetTodayPresenter { WidgetTodayPresenter(calendar: calendar, locale: locale) }
 

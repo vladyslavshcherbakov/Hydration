@@ -8,6 +8,7 @@ struct HydrationEntry: TimelineEntry {
 }
 
 // MARK: - HydrationTimelineProvider
+
 struct HydrationTimelineProvider: TimelineProvider {
     static let refreshInterval: TimeInterval = 15 * 60
 

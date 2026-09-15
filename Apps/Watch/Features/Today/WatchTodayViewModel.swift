@@ -14,6 +14,7 @@ public final class WatchTodayViewModel: ObservableObject {
     private let log: HydrationLog
 
     // MARK: - Public
+
     public init(
         fetchProgress: FetchDayProgressUseCase,
         addDrink: AddDrinkUseCase,
@@ -55,6 +56,7 @@ public final class WatchTodayViewModel: ObservableObject {
     }
 
     // MARK: - Private
+
     private func show(_ attemptDescription: String, _ loadProgress: () async throws -> DailyProgress) async {
         do {
             let progress = try await loadProgress()

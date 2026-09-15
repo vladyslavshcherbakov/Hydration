@@ -24,6 +24,7 @@ struct WatchTodayScreen: View {
     }
 
     // MARK: - Private
+
     private func waiting(_ loading: WatchTodayViewState.Loading) -> some View {
         ProgressView()
             .accessibilityLabel(loading.accessibilityLabel)

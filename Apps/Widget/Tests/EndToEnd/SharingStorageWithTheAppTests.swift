@@ -35,6 +35,7 @@ final class SharingStorageWithTheAppTests: XCTestCase {
     }
 
     // MARK: - Tests
+
     func test_widgetTimeline_whenTheAppLogsADrink_showsTheNewTotal() async throws {
         let beforeTheDrink = await widgetTimeline().makeEntry()
         XCTAssertEqual(try beforeTheDrink.content.totalText, "0 L")
@@ -56,6 +57,7 @@ final class SharingStorageWithTheAppTests: XCTestCase {
     }
 
     // MARK: - Helpers
+
     private var today: Date {
         calendar.dayInterval(for: dateProvider.now()).start
     }

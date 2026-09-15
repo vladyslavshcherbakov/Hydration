@@ -9,6 +9,7 @@ enum WatchScreenStateMismatch: Error {
 }
 
 // MARK: - WatchTodayViewModel
+
 @MainActor
 extension WatchTodayViewModel {
     var content: WatchTodayViewState.Content {
@@ -27,13 +28,14 @@ extension WatchTodayViewModel {
 }
 
 // MARK: - PersistenceEnvironment
+
 extension PersistenceEnvironment {
     var watchPresenter: WatchTodayPresenter { WatchTodayPresenter(calendar: calendar, locale: locale) }
 }
 
-@MainActor
-
 // MARK: - PersistenceEnvironment
+
+@MainActor
 extension PersistenceEnvironment {
     func todayScreen(repository override: DrinkRepository? = nil) -> WatchTodayViewModel {
         WatchTodayViewModel(

@@ -8,6 +8,7 @@ public final class IncomingDrinkChanges: Sendable {
     private let log: HydrationLog
 
     // MARK: - Public
+
     public init(localStorage: LocalDrinkWriter, pairedDevice: PairedDeviceChannel, calendar: Calendar, log: HydrationLog) {
         self.localStorage = localStorage
         self.pairedDevice = pairedDevice
@@ -22,6 +23,7 @@ public final class IncomingDrinkChanges: Sendable {
     }
 
     // MARK: - Private
+
     private func apply(_ payload: Data) async {
         let message: PairedDeviceMessage
         do {

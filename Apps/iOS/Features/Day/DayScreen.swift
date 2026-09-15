@@ -36,6 +36,7 @@ struct DayScreen: View {
     }
 
     // MARK: - Private
+
     @ViewBuilder
     private func waiting(_ loading: DayViewState.Loading) -> some View {
         Section {

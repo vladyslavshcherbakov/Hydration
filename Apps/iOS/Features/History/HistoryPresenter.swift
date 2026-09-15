@@ -8,6 +8,7 @@ public struct HistoryPresenter: Sendable {
     private let today: Date
 
     // MARK: - Public
+
     public init(calendar: Calendar, locale: Locale, today: Date) {
         self.calendar = calendar
         self.locale = locale
@@ -35,6 +36,7 @@ public struct HistoryPresenter: Sendable {
     }
 
     // MARK: - Private
+
     private func row(for summary: DailySummary, selected: Date) -> HistoryViewState.Row {
         HistoryViewState.Row(
             id: summary.day,

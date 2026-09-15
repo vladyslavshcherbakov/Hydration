@@ -27,6 +27,7 @@ final class ReadingDrinksFromStorageTests: XCTestCase {
     }
 
     // MARK: - Tests
+
     func test_day_whenARecordCannotBeRead_leavesItOut() async throws {
         let day = calendar.dayInterval(for: reference).start
         let morning = day.addingTimeInterval(9 * 3600)
@@ -55,6 +56,7 @@ final class ReadingDrinksFromStorageTests: XCTestCase {
     }
 
     // MARK: - Helpers
+
     private func insertRow(
         id: UUID?,
         amountML: Int64,

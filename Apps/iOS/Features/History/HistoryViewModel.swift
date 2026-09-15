@@ -20,6 +20,7 @@ public final class HistoryViewModel: ObservableObject {
     private var didLoad = false
 
     // MARK: - Public
+
     public init(
         fetchHistory: FetchHistoryUseCase,
         presenter: HistoryPresenter,
@@ -72,6 +73,7 @@ public final class HistoryViewModel: ObservableObject {
     }
 
     // MARK: - Private
+
     private var daysWithDrinks: Int {
         summaries.filter { $0.total > .zero }.count
     }

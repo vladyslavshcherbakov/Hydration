@@ -23,6 +23,7 @@ final class OpeningTheAppFromTheWidgetTests: XCTestCase {
     }
 
     // MARK: - Tests
+
     func test_widgetLink_whenTapped_opensHistory() async throws {
         try await environment.log(2600, at: environment.date(hour: 11))
 
@@ -105,6 +106,7 @@ final class OpeningTheAppFromTheWidgetTests: XCTestCase {
     }
 
     // MARK: - Helpers
+
     private func makeOpener() -> DeepLinkOpener {
         environment.deepLinkOpener(coordinator: coordinator)
     }

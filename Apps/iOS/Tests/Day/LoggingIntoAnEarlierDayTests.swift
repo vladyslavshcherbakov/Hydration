@@ -18,6 +18,7 @@ final class LoggingIntoAnEarlierDayTests: XCTestCase {
     }
 
     // MARK: - Tests
+
     func test_quickAdd_whenAnEarlierDayIsOpen_addsToThatDayOnly() async throws {
         let earlier = environment.dayScreen(day: yesterday)
         await earlier.load()
@@ -70,6 +71,7 @@ final class LoggingIntoAnEarlierDayTests: XCTestCase {
     }
 
     // MARK: - Helpers
+
     private var yesterday: Date {
         environment.date(hour: 0, dayOffset: -1)
     }

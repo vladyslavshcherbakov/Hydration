@@ -6,6 +6,7 @@ public enum DrinkMappingError: Error, Equatable {
 }
 
 // MARK: - DrinkChangeMapper
+
 public enum DrinkChangeMapper {
     public static func message(forLogging entry: DrinkEntry) -> PairedDeviceMessage {
         PairedDeviceMessage(content: .drinkLogged(drinkMessage(for: entry)))

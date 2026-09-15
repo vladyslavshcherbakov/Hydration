@@ -8,6 +8,7 @@ public enum DeepLink: Equatable, Hashable, Sendable {
 }
 
 // MARK: - DeepLinkOutcome
+
 public enum DeepLinkOutcome: Equatable, Sendable {
     case handled
     case rejected(HydrationError)

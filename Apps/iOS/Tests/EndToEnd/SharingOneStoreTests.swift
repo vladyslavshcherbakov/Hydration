@@ -20,6 +20,7 @@ final class SharingOneStoreTests: XCTestCase {
     }
 
     // MARK: - Tests
+
     func test_todayScreen_whenASecondCopyOfTheAppLogsADrink_showsItAndSoDoesHistory() async throws {
         let secondCopy = environment.makeCompositionRoot()
         let app = environment.makeCompositionRoot()
@@ -74,6 +75,7 @@ final class SharingOneStoreTests: XCTestCase {
     }
 
     // MARK: - Helpers
+
     private func todayScreen(_ root: CompositionRoot) -> DayViewModel {
         DayViewModel(
             day: root.makeCurrentDay().start(),

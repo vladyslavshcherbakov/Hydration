@@ -11,6 +11,7 @@ enum ScreenStateMismatch: Error {
 }
 
 // MARK: - DayViewModel
+
 @MainActor
 extension DayViewModel {
     var content: DayViewState.Content {
@@ -29,14 +30,15 @@ extension DayViewModel {
 }
 
 // MARK: - PersistenceEnvironment
+
 extension PersistenceEnvironment {
     var dayPresenter: DayPresenter { DayPresenter(calendar: calendar, locale: locale) }
     var historyPresenter: HistoryPresenter { HistoryPresenter(calendar: calendar, locale: locale, today: today) }
 }
 
-@MainActor
-
 // MARK: - PersistenceEnvironment
+
+@MainActor
 extension PersistenceEnvironment {
     func dayScreen(
         day: Date? = nil,

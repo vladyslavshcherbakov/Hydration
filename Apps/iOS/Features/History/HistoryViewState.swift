@@ -5,6 +5,7 @@ import HydrationDomain
 public struct HistoryViewState: Equatable, Sendable {
 
     // MARK: - Row
+
     public struct Row: Equatable, Sendable, Identifiable, Hashable {
         public let id: Date
         public let identifier: String

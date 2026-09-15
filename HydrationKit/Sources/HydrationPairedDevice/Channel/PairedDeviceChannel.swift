@@ -10,6 +10,7 @@ public protocol PairedDeviceChannel: Sendable {
 }
 
 // MARK: - NoPairedDeviceChannel
+
 public struct NoPairedDeviceChannel: PairedDeviceChannel {
     public init() {}
 

@@ -17,6 +17,7 @@ final class UsingTheAppOnAWideScreenUITests: XCTestCase {
     }
 
     // MARK: - Tests
+
     func test_usersDays_whenTheScreenIsWide_areOnScreenWithoutBeingAskedFor() throws {
         try skipUnlessTheScreenIsWide()
 
@@ -35,6 +36,7 @@ final class UsingTheAppOnAWideScreenUITests: XCTestCase {
     }
 
     // MARK: - Helpers
+
     private var historyList: XCUIElement { element("history.list") }
 
     private func element(_ identifier: String) -> XCUIElement {
@@ -63,6 +65,7 @@ final class UsingTheAppOnAWideScreenUITests: XCTestCase {
 }
 
 // MARK: - XCUIElement
+
 private extension XCUIElement {
     func waitForLabel(_ expected: String, timeout: TimeInterval) -> Bool {
         let matched = XCTNSPredicateExpectation(

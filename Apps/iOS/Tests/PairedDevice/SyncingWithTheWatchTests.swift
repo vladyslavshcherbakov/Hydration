@@ -19,6 +19,7 @@ final class SyncingWithTheWatchTests: XCTestCase {
     }
 
     // MARK: - Tests
+
     func test_todayScreen_whenWaterIsLogged_sendsItToTheWatch() async throws {
         await environment.dayScreen().quickAdd(milliliters: 250)
 
@@ -130,6 +131,7 @@ final class SyncingWithTheWatchTests: XCTestCase {
     }
 
     // MARK: - Helpers
+
     private func drinkFromTheWatch(
         _ milliliters: Int,
         at hour: Int = 11,

@@ -4,12 +4,14 @@ import HydrationDomain
 
 public struct WidgetTodayViewState: Equatable, Sendable {
     // MARK: - Situation
+
     public enum Situation: Equatable, Sendable {
         case content(Content)
         case failed(Failure)
     }
 
     // MARK: - Content
+
     public struct Content: Equatable, Sendable {
         public let totalText: String
         public let goalText: String
@@ -45,6 +47,7 @@ public struct WidgetTodayViewState: Equatable, Sendable {
     }
 
     // MARK: - Failure
+
     public struct Failure: Equatable, Sendable {
         public let message: String
         public let accent: SemanticColor
@@ -67,6 +70,7 @@ public struct WidgetTodayViewState: Equatable, Sendable {
 }
 
 // MARK: - WidgetTodayViewState + CustomStringConvertible
+
 extension WidgetTodayViewState: CustomStringConvertible {
     public var description: String {
         switch situation {

@@ -19,6 +19,7 @@ final class SyncingWithThePhoneTests: XCTestCase {
     }
 
     // MARK: - Tests
+
     func test_watchFace_whenThePhoneLogsADrink_showsTheNewTotal() async throws {
         try await environment.receiveFromPairedDevice(
             PairedDeviceMessage(content: .drinkLogged(drinkFromThePhone(600)))
@@ -81,6 +82,7 @@ final class SyncingWithThePhoneTests: XCTestCase {
     }
 
     // MARK: - Helpers
+
     private func drinkFromThePhone(_ milliliters: Int, at hour: Int = 11, id: UUID = UUID()) -> DrinkMessage {
         DrinkMessage(
             id: id,

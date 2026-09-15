@@ -4,6 +4,7 @@ import HydrationDomain
 
 public struct WatchTodayViewState: Equatable, Sendable {
     // MARK: - Situation
+
     public enum Situation: Equatable, Sendable {
         case loading(Loading)
         case content(Content)
@@ -11,6 +12,7 @@ public struct WatchTodayViewState: Equatable, Sendable {
     }
 
     // MARK: - Loading
+
     public struct Loading: Equatable, Sendable {
         public let accessibilityLabel: String
 
@@ -20,6 +22,7 @@ public struct WatchTodayViewState: Equatable, Sendable {
     }
 
     // MARK: - Content
+
     public struct Content: Equatable, Sendable {
         public let totalText: String
         public let goalText: String
@@ -55,6 +58,7 @@ public struct WatchTodayViewState: Equatable, Sendable {
     }
 
     // MARK: - Failure
+
     public struct Failure: Equatable, Sendable {
         public let message: String
         public let accent: SemanticColor
@@ -68,6 +72,7 @@ public struct WatchTodayViewState: Equatable, Sendable {
     }
 
     // MARK: - Preset
+
     public struct Preset: Equatable, Sendable, Identifiable, Hashable {
         public let id: Int
         public let title: String

@@ -3,6 +3,7 @@ import SwiftUI
 public struct HydrationActionButton: View {
 
     // MARK: - Prominence
+
     public enum Prominence: Equatable, Sendable {
         case filled
         case bordered
@@ -16,6 +17,7 @@ public struct HydrationActionButton: View {
     private let action: () -> Void
 
     // MARK: - Public
+
     public init(
         title: String,
         accent: SemanticColor,
@@ -41,6 +43,7 @@ public struct HydrationActionButton: View {
     }
 
     // MARK: - Private
+
     private var color: Color {
         HydrationAccent.color(accent)
     }

@@ -7,6 +7,7 @@ public final class ObservedDrinkRepository: DrinkRepository, LocalDrinkWriter, D
     private var listeners: [UUID: AsyncStream<Void>.Continuation] = [:]
 
     // MARK: - Public
+
     public init(localStorage: DrinkRepository & LocalDrinkWriter) {
         self.localStorage = localStorage
     }
@@ -47,6 +48,7 @@ public final class ObservedDrinkRepository: DrinkRepository, LocalDrinkWriter, D
     }
 
     // MARK: - Private
+
     private func announce() {
         lock.lock()
         let listening = Array(listeners.values)

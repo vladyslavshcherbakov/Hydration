@@ -5,12 +5,13 @@ public enum AppRoute: Hashable, Sendable {
     case history
 }
 
-@MainActor
-
 // MARK: - AppCoordinator
+
+@MainActor
 public final class AppCoordinator: ObservableObject {
 
     // MARK: - Layout
+
     public enum Layout: Equatable, Sendable {
         case stack
         case split

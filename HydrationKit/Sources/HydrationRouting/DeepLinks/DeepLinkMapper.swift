@@ -5,6 +5,7 @@ public enum DeepLinkMapper {
     public static let scheme = "hydration"
 
     // MARK: - Host
+
     private enum Host: String {
         case today
         case history
