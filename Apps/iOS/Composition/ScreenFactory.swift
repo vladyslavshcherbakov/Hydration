@@ -18,6 +18,7 @@ public final class ScreenFactory {
             addDrink: root.makeAddDrink(),
             removeDrink: root.makeRemoveDrink(),
             mapper: DayViewDataMapper(calendar: root.calendar, locale: root.locale),
+            calendar: root.calendar,
             changes: root.changes,
             log: root.log,
             onHistoryRequested: { [coordinator] in coordinator.show(.history) }

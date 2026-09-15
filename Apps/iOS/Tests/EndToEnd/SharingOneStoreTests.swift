@@ -83,6 +83,7 @@ final class SharingOneStoreTests: XCTestCase {
             addDrink: root.makeAddDrink(),
             removeDrink: root.makeRemoveDrink(),
             mapper: DayViewDataMapper(calendar: environment.calendar, locale: environment.locale),
+            calendar: environment.calendar,
             changes: root.changes,
             log: environment.log,
             onHistoryRequested: {}

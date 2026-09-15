@@ -20,6 +20,7 @@ extension PersistenceEnvironment {
             removeLastDrink: makeRemoveLast(repository: override),
             mapper: watchMapper,
             currentDay: makeCurrentDay(),
+            calendar: calendar,
             changes: observedRepository,
             log: silentLog
         )

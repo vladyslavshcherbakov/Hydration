@@ -4,7 +4,7 @@ import HydrationDomain
 public final class ObservedDrinkRepository: DrinkRepository, LocalDrinkWriter, DrinkChanges, @unchecked Sendable {
     private let localStorage: DrinkRepository & LocalDrinkWriter
     private let lock = NSLock()
-    private var listeners: [UUID: AsyncStream<Void>.Continuation] = [:]
+    private var listeners: [UUID: AsyncStream<DrinkChange>.Continuation] = [:]
 
     // MARK: - Public
 
@@ -18,24 +18,24 @@ public final class ObservedDrinkRepository: DrinkRepository, LocalDrinkWriter, D
 
     public func save(_ entry: DrinkEntry) async throws {
         try await localStorage.save(entry)
-        announce()
+        announce(.onDay(entry.day))
     }
 
     public func delete(id: UUID) async throws {
         try await localStorage.delete(id: id)
-        announce()
+        announce(.onAnUnknownDay)
     }
 
     public func replaceEntries(in range: DateInterval, with entries: [DrinkEntry]) async throws {
         try await localStorage.replaceEntries(in: range, with: entries)
-        announce()
+        announce(.onDay(range.start))
     }
 
     public func noteWrittenElsewhere() {
-        announce()
+        announce(.onAnUnknownDay)
     }
 
-    public func whenDrinksChange() -> AsyncStream<Void> {
+    public func whenDrinksChange() -> AsyncStream<DrinkChange> {
         AsyncStream { continuation in
             let listener = UUID()
             lock.lock()
@@ -49,12 +49,12 @@ public final class ObservedDrinkRepository: DrinkRepository, LocalDrinkWriter, D
 
     // MARK: - Private
 
-    private func announce() {
+    private func announce(_ change: DrinkChange) {
         lock.lock()
         let listening = Array(listeners.values)
         lock.unlock()
         for continuation in listening {
-            continuation.yield(())
+            continuation.yield(change)
         }
     }
 

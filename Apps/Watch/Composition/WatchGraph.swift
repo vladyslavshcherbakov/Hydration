@@ -44,6 +44,7 @@ public struct WatchGraph {
             removeLastDrink: root.makeRemoveLastDrink(),
             mapper: WatchTodayViewDataMapper(calendar: root.calendar, locale: root.locale),
             currentDay: root.makeCurrentDay(),
+            calendar: root.calendar,
             changes: root.changes,
             log: root.log
         )

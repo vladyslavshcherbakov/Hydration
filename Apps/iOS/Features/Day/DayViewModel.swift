@@ -10,6 +10,7 @@ public final class DayViewModel: ObservableObject {
     private let addDrink: AddDrinkUseCase
     private let removeDrink: RemoveDrinkUseCase
     private let mapper: DayViewDataMapper
+    private let calendar: Calendar
     private let changes: DrinkChanges
     private let log: HydrationLog
     private let onHistoryRequested: () -> Void
@@ -22,6 +23,7 @@ public final class DayViewModel: ObservableObject {
         addDrink: AddDrinkUseCase,
         removeDrink: RemoveDrinkUseCase,
         mapper: DayViewDataMapper,
+        calendar: Calendar,
         changes: DrinkChanges,
         log: HydrationLog,
         onHistoryRequested: @escaping () -> Void
@@ -31,6 +33,7 @@ public final class DayViewModel: ObservableObject {
         self.addDrink = addDrink
         self.removeDrink = removeDrink
         self.mapper = mapper
+        self.calendar = calendar
         self.changes = changes
         self.log = log
         self.onHistoryRequested = onHistoryRequested
@@ -40,7 +43,11 @@ public final class DayViewModel: ObservableObject {
     public func observe() async {
         let changeSignals = changes.whenDrinksChange()
         await load()
-        for await _ in changeSignals {
+        for await change in changeSignals {
+            guard change.touches(calendar.dayInterval(for: day)) else {
+                log.write(.info, "the day screen is staying on \(day), the change was on another day")
+                continue
+            }
             log.write(.info, "the day screen is reloading, the drinks changed somewhere")
             await load()
         }

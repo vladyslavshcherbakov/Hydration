@@ -10,6 +10,7 @@ public final class WatchTodayViewModel: ObservableObject {
     private let removeLastDrink: RemoveLastDrinkUseCase
     private let mapper: WatchTodayViewDataMapper
     private let currentDay: CurrentDay
+    private let calendar: Calendar
     private let changes: DrinkChanges
     private let log: HydrationLog
 
@@ -21,6 +22,7 @@ public final class WatchTodayViewModel: ObservableObject {
         removeLastDrink: RemoveLastDrinkUseCase,
         mapper: WatchTodayViewDataMapper,
         currentDay: CurrentDay,
+        calendar: Calendar,
         changes: DrinkChanges,
         log: HydrationLog
     ) {
@@ -29,6 +31,7 @@ public final class WatchTodayViewModel: ObservableObject {
         self.removeLastDrink = removeLastDrink
         self.mapper = mapper
         self.currentDay = currentDay
+        self.calendar = calendar
         self.changes = changes
         self.log = log
         self.viewData = mapper.loading()
@@ -37,7 +40,12 @@ public final class WatchTodayViewModel: ObservableObject {
     public func observe() async {
         let changeSignals = changes.whenDrinksChange()
         await load()
-        for await _ in changeSignals {
+        for await change in changeSignals {
+            let today = currentDay.start()
+            guard change.touches(calendar.dayInterval(for: today)) else {
+                log.write(.info, "the watch face is staying on \(today), the change was on another day")
+                continue
+            }
             log.write(.info, "the watch face is reloading, the drinks changed somewhere")
             await load()
         }

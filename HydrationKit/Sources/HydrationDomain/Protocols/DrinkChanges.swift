@@ -1,3 +1,3 @@
 public protocol DrinkChanges: Sendable {
-    func whenDrinksChange() -> AsyncStream<Void>
+    func whenDrinksChange() -> AsyncStream<DrinkChange>
 }

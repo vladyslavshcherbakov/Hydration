@@ -26,6 +26,7 @@ extension PersistenceEnvironment {
             addDrink: makeAddDrink(repository: override),
             removeDrink: makeRemoveDrink(repository: override),
             mapper: dayMapper,
+            calendar: calendar,
             changes: observedRepository,
             log: silentLog,
             onHistoryRequested: { coordinator?.show(.history) }

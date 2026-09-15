@@ -112,6 +112,7 @@ final class WatchTodayViewModelTests: XCTestCase {
             ),
             mapper: WatchTodayViewDataMapper(calendar: DayFixture.calendar, locale: DayFixture.calendar.locale!),
             currentDay: CurrentDay(dateProvider: dateProvider, calendar: DayFixture.calendar),
+            calendar: DayFixture.calendar,
             changes: observed,
             log: SilentLog()
         )
