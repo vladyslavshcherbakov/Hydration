@@ -1,0 +1,39 @@
+#if os(watchOS)
+import Foundation
+import HydrationDomain
+import HydrationPairedDevice
+import HydrationPersistence
+
+public struct WatchGraph {
+    public let root: CompositionRoot
+    public let observedDrinks: ObservedDrinkRepository
+    public let incomingChanges: IncomingDrinkChanges
+
+    // MARK: - Public
+
+    public init(
+        storage: DrinkRepository & LocalDrinkWriter,
+        pairedDevice: PairedDeviceChannel,
+        dateProvider: DateProvider,
+        log: HydrationLog
+    ) {
+        let observedRepository = ObservedDrinkRepository(localStorage: storage)
+
+        observedDrinks = observedRepository
+        root = CompositionRoot(
+            repository: MirroringDrinkRepository(localStorage: observedRepository, pairedDevice: pairedDevice),
+            changes: observedRepository,
+            log: log,
+            dateProvider: dateProvider
+        )
+        incomingChanges = IncomingDrinkChanges(
+            localStorage: observedRepository,
+            pairedDevice: pairedDevice,
+            calendar: root.calendar,
+            log: log
+        )
+
+        incomingChanges.start()
+    }
+}
+#endif

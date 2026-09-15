@@ -6,8 +6,7 @@ import SwiftUI
 
 @main
 struct HydrationWatchApp: App {
-    private let root: CompositionRoot
-    private let incomingChanges: IncomingDrinkChanges
+    private let graph: WatchGraph
 
     // MARK: - Public
 
@@ -17,26 +16,17 @@ struct HydrationWatchApp: App {
             appGroup: AppGroup.identifier,
             arguments: ProcessInfo.processInfo.arguments
         )
-        let observedRepository = ObservedDrinkRepository(localStorage: CoreDataDrinkRepository(coreDataStack: coreDataStack, log: log))
-        let pairedDevice = WatchConnectivityChannel.forThisDevice(log: log)
 
-        root = CompositionRoot(
-            repository: MirroringDrinkRepository(localStorage: observedRepository, pairedDevice: pairedDevice),
-            changes: observedRepository,
-            log: log,
-            dateProvider: SystemDateProvider()
-        )
-        incomingChanges = IncomingDrinkChanges(
-            localStorage: observedRepository,
-            pairedDevice: pairedDevice,
-            calendar: root.calendar,
+        graph = WatchGraph(
+            storage: CoreDataDrinkRepository(coreDataStack: coreDataStack, log: log),
+            pairedDevice: WatchConnectivityChannel.forThisDevice(log: log),
+            dateProvider: SystemDateProvider(),
             log: log
         )
-        incomingChanges.start()
 
         log.write(
             .info,
-            "the watch app started, store at \(coreDataStack.storeURL?.path ?? "an unknown path"), paired device link is \(type(of: pairedDevice))"
+            "the watch app started, store at \(coreDataStack.storeURL?.path ?? "an unknown path")"
         )
     }
 
@@ -53,13 +43,13 @@ struct HydrationWatchApp: App {
     @MainActor
     private func makeTodayViewModel() -> WatchTodayViewModel {
         WatchTodayViewModel(
-            fetchProgress: root.makeFetchDay(),
-            addDrink: root.makeAddDrink(),
-            removeLastDrink: root.makeRemoveLastDrink(),
-            mapper: WatchTodayViewDataMapper(calendar: root.calendar, locale: root.locale),
-            currentDay: root.makeCurrentDay(),
-            changes: root.changes,
-            log: root.log
+            fetchProgress: graph.root.makeFetchDay(),
+            addDrink: graph.root.makeAddDrink(),
+            removeLastDrink: graph.root.makeRemoveLastDrink(),
+            mapper: WatchTodayViewDataMapper(calendar: graph.root.calendar, locale: graph.root.locale),
+            currentDay: graph.root.makeCurrentDay(),
+            changes: graph.root.changes,
+            log: graph.root.log
         )
     }
 }
