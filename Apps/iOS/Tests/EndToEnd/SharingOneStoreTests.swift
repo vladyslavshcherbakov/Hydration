@@ -33,7 +33,7 @@ final class SharingOneStoreTests: XCTestCase {
 
         let history = HistoryViewModel(
             fetchHistory: app.makeFetchHistory(),
-            presenter: HistoryViewDataMapper(calendar: environment.calendar, locale: environment.locale, today: app.makeCurrentDay().start()),
+            mapper: HistoryViewDataMapper(calendar: environment.calendar, locale: environment.locale, today: app.makeCurrentDay().start()),
             changes: app.changes,
             log: environment.log,
             selectedDay: app.makeCurrentDay().start(),
