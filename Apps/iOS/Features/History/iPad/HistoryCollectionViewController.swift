@@ -34,7 +34,7 @@ final class HistoryCollectionViewController: UIViewController {
         viewModel.onViewDataChange = { [weak self] viewData in self?.apply(viewData) }
         apply(viewModel.viewData)
 
-        watching = Task { await viewModel.observe() }
+        watching = Task { [viewModel] in await viewModel.observe() }
     }
 
     deinit {
