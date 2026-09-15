@@ -21,8 +21,8 @@ final class LoggingOnTheWatchTests: XCTestCase {
         let screen = environment.todayScreen()
         await screen.load()
 
-        XCTAssertEqual(screen.state.presets.map(\.title), ["+200", "+350", "+500"])
-        XCTAssertEqual(screen.state.presets.map(\.isEnabled), [true, true, true])
+        XCTAssertEqual(try screen.content.presets.map(\.title), ["+200", "+350", "+500"])
+        XCTAssertEqual(try screen.content.presets.map(\.isEnabled), [true, true, true])
     }
 
     func test_amountButton_whenTapped_addsItToTheDay() async throws {
@@ -32,8 +32,8 @@ final class LoggingOnTheWatchTests: XCTestCase {
         environment.dateProvider.advance(by: 60)
         await screen.add(milliliters: 500)
 
-        XCTAssertEqual(screen.state.totalText, "0.7")
-        XCTAssertEqual(screen.state.goalText, "/ 2.5")
+        XCTAssertEqual(try screen.content.totalText, "0.7")
+        XCTAssertEqual(try screen.content.goalText, "/ 2.5")
     }
 
     func test_total_whenShownOnTheWatch_keepsTwoDecimals() async throws {
@@ -42,7 +42,7 @@ final class LoggingOnTheWatchTests: XCTestCase {
         let screen = environment.todayScreen()
         await screen.load()
 
-        XCTAssertEqual(screen.state.totalText, "1.23")
+        XCTAssertEqual(try screen.content.totalText, "1.23")
     }
 
     func test_undo_whenTappedAfterADrink_removesIt() async throws {
@@ -53,26 +53,26 @@ final class LoggingOnTheWatchTests: XCTestCase {
 
         await screen.undoLast()
 
-        XCTAssertEqual(screen.state.totalText, "0.2")
-        XCTAssertEqual(screen.state.undoTitle, "Undo 200 ml")
+        XCTAssertEqual(try screen.content.totalText, "0.2")
+        XCTAssertEqual(try screen.content.undoTitle, "Undo 200 ml")
     }
 
     func test_undoButton_whenADrinkExists_namesTheAmountItWillRemove() async throws {
         let screen = environment.todayScreen()
         await screen.add(milliliters: 500)
 
-        XCTAssertEqual(screen.state.undoTitle, "Undo 500 ml")
-        XCTAssertTrue(screen.state.isUndoEnabled)
+        XCTAssertEqual(try screen.content.undoTitle, "Undo 500 ml")
+        XCTAssertTrue(try screen.content.isUndoEnabled)
     }
 
     func test_undoButton_whenNothingIsLogged_isDisabled() async throws {
         let screen = environment.todayScreen()
         await screen.load()
-        XCTAssertFalse(screen.state.isUndoEnabled)
+        XCTAssertFalse(try screen.content.isUndoEnabled)
 
         await screen.undoLast()
 
-        XCTAssertEqual(screen.state.statusText, "Nothing to undo")
+        XCTAssertEqual(try screen.failure.message, "Nothing to undo")
     }
 
     func test_amountButtons_whenTheyWouldBreachTheDailyLimit_areDisabled() async throws {
@@ -86,6 +86,6 @@ final class LoggingOnTheWatchTests: XCTestCase {
         let screen = environment.todayScreen()
         await screen.load()
 
-        XCTAssertEqual(screen.state.presets.map(\.isEnabled), [true, false, false])
+        XCTAssertEqual(try screen.content.presets.map(\.isEnabled), [true, false, false])
     }
 }

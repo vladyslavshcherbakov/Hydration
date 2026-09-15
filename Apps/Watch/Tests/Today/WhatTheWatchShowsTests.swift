@@ -25,8 +25,8 @@ final class WhatTheWatchShowsTests: XCTestCase {
         let screen = environment.todayScreen()
         await screen.load()
 
-        XCTAssertEqual(screen.state.statusText, "On track")
-        XCTAssertEqual(screen.state.accent, .neutral)
+        XCTAssertEqual(try screen.content.statusText, "On track")
+        XCTAssertEqual(try screen.content.accent, .neutral)
     }
 
     func test_watchStatus_whenALitreIsLoggedByMidday_saysBehind() async throws {
@@ -36,8 +36,8 @@ final class WhatTheWatchShowsTests: XCTestCase {
         let screen = environment.todayScreen()
         await screen.load()
 
-        XCTAssertEqual(screen.state.statusText, "250 ml behind")
-        XCTAssertEqual(screen.state.accent, .warning)
+        XCTAssertEqual(try screen.content.statusText, "250 ml behind")
+        XCTAssertEqual(try screen.content.accent, .warning)
     }
 
     func test_status_whenTheGoalAmountIsLogged_saysTheGoalIsReached() async throws {
@@ -46,9 +46,9 @@ final class WhatTheWatchShowsTests: XCTestCase {
         let screen = environment.todayScreen()
         await screen.load()
 
-        XCTAssertEqual(screen.state.totalText, "2.5")
-        XCTAssertEqual(screen.state.statusText, "Goal reached")
-        XCTAssertEqual(screen.state.accent, .positive)
+        XCTAssertEqual(try screen.content.totalText, "2.5")
+        XCTAssertEqual(try screen.content.statusText, "Goal reached")
+        XCTAssertEqual(try screen.content.accent, .positive)
     }
 
     func test_status_whenWellOverTheGoal_warnsTheUser() async throws {
@@ -57,8 +57,8 @@ final class WhatTheWatchShowsTests: XCTestCase {
         let screen = environment.todayScreen()
         await screen.load()
 
-        XCTAssertEqual(screen.state.statusText, "Above your goal")
-        XCTAssertEqual(screen.state.accent, .critical)
+        XCTAssertEqual(try screen.content.statusText, "Above your goal")
+        XCTAssertEqual(try screen.content.accent, .critical)
     }
 
     func test_watchFace_whenTheDataCannotBeRead_offersARetry() async throws {
@@ -66,7 +66,7 @@ final class WhatTheWatchShowsTests: XCTestCase {
 
         await screen.load()
 
-        XCTAssertEqual(screen.state.statusText, "Retry")
-        XCTAssertEqual(screen.state.accent, .critical)
+        XCTAssertEqual(try screen.failure.message, "Retry")
+        XCTAssertEqual(try screen.failure.accent, .critical)
     }
 }

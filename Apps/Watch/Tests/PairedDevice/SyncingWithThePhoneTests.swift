@@ -27,7 +27,7 @@ final class SyncingWithThePhoneTests: XCTestCase {
         let screen = environment.todayScreen()
         await screen.load()
 
-        XCTAssertEqual(screen.state.totalText, "0.6")
+        XCTAssertEqual(try screen.content.totalText, "0.6")
     }
 
     func test_watchFace_whenWaterIsLogged_sendsItToThePhone() async throws {
@@ -56,7 +56,7 @@ final class SyncingWithThePhoneTests: XCTestCase {
         try await environment.receiveFromPairedDevice(pictureOfToday([]))
 
         await screen.load()
-        XCTAssertEqual(screen.state.totalText, "0")
+        XCTAssertEqual(try screen.content.totalText, "0")
     }
 
     func test_watchFace_whenThePhonesPictureOfTodayArrives_showsTheDrinksItHolds() async throws {
@@ -65,7 +65,7 @@ final class SyncingWithThePhoneTests: XCTestCase {
         let screen = environment.todayScreen()
         await screen.load()
 
-        XCTAssertEqual(screen.state.totalText, "0.5")
+        XCTAssertEqual(try screen.content.totalText, "0.5")
     }
 
     func test_watchFace_whenAPictureFromANewerAppVersionArrives_keepsWhatItHas() async throws {
@@ -77,7 +77,7 @@ final class SyncingWithThePhoneTests: XCTestCase {
         )
 
         await screen.load()
-        XCTAssertEqual(screen.state.totalText, "0.35")
+        XCTAssertEqual(try screen.content.totalText, "0.35")
     }
 
     // MARK: - Helpers

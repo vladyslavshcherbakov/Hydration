@@ -18,52 +18,47 @@ public struct WatchTodayPresenter: Sendable {
 
     public func presentLoading() -> WatchTodayViewState {
         WatchTodayViewState(
-            title: "Water",
-            totalText: "—",
-            goalText: "",
-            statusText: "",
-            fraction: 0,
-            accent: .neutral,
-            presets: disabledPresets,
-            undoTitle: "Undo",
-            isUndoEnabled: false,
-            accessibilityLabel: "Loading"
+            title: title,
+            situation: .loading(WatchTodayViewState.Loading(accessibilityLabel: "Loading"))
         )
     }
 
     public func present(progress: DailyProgress) -> WatchTodayViewState {
+        WatchTodayViewState(title: title, situation: .content(content(of: progress)))
+    }
+
+    public func present(error: Error) -> WatchTodayViewState {
         WatchTodayViewState(
-            title: "Water",
+            title: title,
+            situation: .failed(
+                WatchTodayViewState.Failure(
+                    message: message(for: error),
+                    accent: .critical,
+                    accessibilityLabel: "Hydration data unavailable"
+                )
+            )
+        )
+    }
+
+    // MARK: - Private
+    private var title: String {
+        "Water"
+    }
+
+    private func content(of progress: DailyProgress) -> WatchTodayViewState.Content {
+        let status = statusText(for: progress)
+
+        return WatchTodayViewState.Content(
             totalText: liters(progress.total),
             goalText: "/ \(liters(progress.goal.target))",
-            statusText: statusText(for: progress),
+            statusText: status,
             fraction: progress.fraction,
             accent: SemanticColor(status: progress.status),
             presets: presets.map { preset(for: $0, within: progress) },
             undoTitle: undoTitle(for: progress),
             isUndoEnabled: progress.lastEntry != nil,
-            accessibilityLabel: "\(liters(progress.total)) of \(liters(progress.goal.target)), \(statusText(for: progress))"
+            accessibilityLabel: "\(liters(progress.total)) of \(liters(progress.goal.target)), \(status)"
         )
-    }
-
-    public func present(error: Error) -> WatchTodayViewState {
-        WatchTodayViewState(
-            title: "Water",
-            totalText: "—",
-            goalText: "",
-            statusText: message(for: error),
-            fraction: 0,
-            accent: .critical,
-            presets: disabledPresets,
-            undoTitle: "Undo",
-            isUndoEnabled: false,
-            accessibilityLabel: "Hydration data unavailable"
-        )
-    }
-
-    // MARK: - Private
-    private var disabledPresets: [WatchTodayViewState.Preset] {
-        presets.map { WatchTodayViewState.Preset(milliliters: $0, title: "+\($0)", isEnabled: false) }
     }
 
     private func preset(for amount: Int, within progress: DailyProgress) -> WatchTodayViewState.Preset {
