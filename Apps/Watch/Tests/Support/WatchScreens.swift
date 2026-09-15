@@ -3,30 +3,6 @@ import HydrationDomain
 import HydrationTestSupport
 @testable import HydrationWatch
 
-enum WatchScreenStateMismatch: Error {
-    case notContent
-    case notFailed
-}
-
-// MARK: - WatchTodayViewModel
-
-@MainActor
-extension WatchTodayViewModel {
-    var content: WatchTodayViewData.Content {
-        get throws {
-            guard case .content(let content) = viewData.state else { throw WatchScreenStateMismatch.notContent }
-            return content
-        }
-    }
-
-    var failure: WatchTodayViewData.Failure {
-        get throws {
-            guard case .failed(let failure) = viewData.state else { throw WatchScreenStateMismatch.notFailed }
-            return failure
-        }
-    }
-}
-
 // MARK: - PersistenceEnvironment
 
 extension PersistenceEnvironment {
