@@ -19,6 +19,8 @@ final class KeepingDataSafeTests: XCTestCase {
         super.tearDown()
     }
 
+    // MARK: - Tests
+
     func test_todayScreen_whenAnOddAmountIsLogged_showsItExactlyAfterReload() async throws {
         try await environment.log(333, at: environment.date(hour: 9))
 

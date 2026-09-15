@@ -18,6 +18,8 @@ final class WhatTheWatchShowsTests: XCTestCase {
         super.tearDown()
     }
 
+    // MARK: - Tests
+
     func test_status_whenALitreIsLoggedByMidMorning_saysOnTrack() async throws {
         try await environment.log(1000, at: environment.date(hour: 9))
         environment.dateProvider.set(environment.date(hour: 10))

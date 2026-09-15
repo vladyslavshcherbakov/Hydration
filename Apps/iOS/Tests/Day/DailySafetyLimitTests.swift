@@ -19,6 +19,8 @@ final class DailySafetyLimitTests: XCTestCase {
         super.tearDown()
     }
 
+    // MARK: - Tests
+
     func test_dailyTotal_whenTheSafetyLimitIsReached_stopsGrowing() async throws {
         try await environment.fillToDailyLimit()
 

@@ -19,6 +19,8 @@ final class ReachingTheGoalTests: XCTestCase {
         super.tearDown()
     }
 
+    // MARK: - Tests
+
     func test_status_whenTheGoalAmountIsLogged_saysTheGoalIsReached() async throws {
         try await environment.log(2500, at: environment.date(hour: 11))
 

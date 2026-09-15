@@ -17,6 +17,8 @@ final class LoggingOnTheWatchTests: XCTestCase {
         super.tearDown()
     }
 
+    // MARK: - Tests
+
     func test_watchFace_whenOpened_offersThreeFixedAmounts() async throws {
         let screen = environment.todayScreen()
         await screen.load()

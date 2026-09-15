@@ -21,6 +21,8 @@ final class MovingBetweenScreensTests: XCTestCase {
         super.tearDown()
     }
 
+    // MARK: - Tests
+
     func test_historyButton_whenTapped_opensTheHistoryScreen() async throws {
         try await environment.log(2600, at: environment.date(hour: 11))
         let today = environment.dayScreen(coordinator: coordinator)

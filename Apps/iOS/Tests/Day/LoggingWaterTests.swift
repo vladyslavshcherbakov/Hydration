@@ -18,6 +18,8 @@ final class LoggingWaterTests: XCTestCase {
         super.tearDown()
     }
 
+    // MARK: - Tests
+
     func test_todayScreen_whenTheDayIsEmpty_saysNoDrinksLoggedYet() async throws {
         let screen = environment.dayScreen()
         await screen.load()

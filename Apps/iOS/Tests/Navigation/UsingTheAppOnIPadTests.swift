@@ -18,6 +18,8 @@ final class UsingTheAppOnIPadTests: XCTestCase {
         super.tearDown()
     }
 
+    // MARK: - Tests
+
     func test_iPadWindow_whenOpened_showsHistoryBesideToday() async throws {
         try await environment.log(2600, at: environment.date(hour: 11))
         let coordinator = AppCoordinator(layout: .split, selectedDay: environment.today)

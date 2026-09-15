@@ -22,6 +22,8 @@ final class CheckingTheWidgetTests: XCTestCase {
     }
 
     #if canImport(WidgetKit)
+    // MARK: - Tests
+
     func test_widget_whenDrinksAreLogged_showsTheTotalAgainstTheGoal() async throws {
         try await environment.log(1500, at: environment.date(hour: 11))
 

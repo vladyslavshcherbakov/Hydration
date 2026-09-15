@@ -1,6 +1,8 @@
 import XCTest
 
 final class SharedStorageConfigurationTests: XCTestCase {
+    // MARK: - Tests
+
     func test_sharedContainer_whenTheAppAndTheWidgetAreBuilt_isTheSameForBoth() throws {
         let appGroup = try XCTUnwrap(Bundle.main.object(forInfoDictionaryKey: "AppGroupIdentifier") as? String)
         let widgetURL = Bundle.main.bundleURL.appendingPathComponent("PlugIns/HydrationWidget.appex")

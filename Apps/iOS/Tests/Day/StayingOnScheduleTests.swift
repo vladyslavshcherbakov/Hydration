@@ -19,6 +19,8 @@ final class StayingOnScheduleTests: XCTestCase {
         super.tearDown()
     }
 
+    // MARK: - Tests
+
     func test_todayStatus_whenItIsBeforeEightInTheMorning_expectsNothingYet() async throws {
         environment.dateProvider.set(environment.date(hour: 7))
 
