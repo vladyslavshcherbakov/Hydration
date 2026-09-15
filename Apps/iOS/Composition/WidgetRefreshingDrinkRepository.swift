@@ -3,10 +3,10 @@ import Foundation
 import HydrationDomain
 
 public final class WidgetRefreshingDrinkRepository: DrinkRepository, LocalDrinkWriter {
-    private let localStorage: DrinkRepository
+    private let localStorage: DrinkRepository & LocalDrinkWriter
     private let onWrite: @Sendable () async -> Void
 
-    public init(localStorage: DrinkRepository, onWrite: @escaping @Sendable () async -> Void) {
+    public init(localStorage: DrinkRepository & LocalDrinkWriter, onWrite: @escaping @Sendable () async -> Void) {
         self.localStorage = localStorage
         self.onWrite = onWrite
     }
@@ -22,6 +22,11 @@ public final class WidgetRefreshingDrinkRepository: DrinkRepository, LocalDrinkW
 
     public func delete(id: UUID) async throws {
         try await localStorage.delete(id: id)
+        await onWrite()
+    }
+
+    public func replaceEntries(in range: DateInterval, with entries: [DrinkEntry]) async throws {
+        try await localStorage.replaceEntries(in: range, with: entries)
         await onWrite()
     }
 }

@@ -7,8 +7,8 @@ public final class WatchConnectivityChannel: NSObject, PairedDeviceChannel, @unc
     private let session: WCSession
     private let log: HydrationLog
     private let lock = NSLock()
-    private var receive: ReceiveDrinkChange?
-    private var resend: SendCurrentDrinks?
+    private var receive: ReceivePairedDeviceMessage?
+    private var sendOnReachable: OnPairedDeviceReachable?
 
     public init?(session: WCSession = .default, log: HydrationLog) {
         guard WCSession.isSupported() else {
@@ -22,55 +22,55 @@ public final class WatchConnectivityChannel: NSObject, PairedDeviceChannel, @unc
         session.activate()
     }
 
-    public func send(_ message: DrinkChangeMessage) {
+    public func send(_ message: PairedDeviceMessage) {
         guard session.isReachable else {
-            log.write(.info, "queueing a change for the paired device, it is not reachable, session is \(describe(session)): \(message.dictionary)")
+            log.write(.info, "queueing \(message) for the paired device, it is not reachable, session is \(describe(session))")
             session.transferUserInfo(message.dictionary)
             return
         }
 
-        log.write(.info, "sending a change to the paired device by message, session is \(describe(session)): \(message.dictionary)")
+        log.write(.info, "sending \(message) to the paired device by message, session is \(describe(session))")
         session.sendMessage(
             message.dictionary,
             replyHandler: nil,
             errorHandler: { [log, session] error in
-                log.write(.warning, "the paired device did not take the change now, queueing it: \(error)")
+                log.write(.warning, "the paired device did not take \(message) now, queueing it: \(error)")
                 session.transferUserInfo(message.dictionary)
             }
         )
     }
 
-    public func startReceiving(_ receive: @escaping ReceiveDrinkChange) {
+    public func startReceiving(_ receive: @escaping ReceivePairedDeviceMessage) {
         lock.lock()
         self.receive = receive
         lock.unlock()
     }
 
-    public func whenPairedDeviceBecomesReachable(_ resend: @escaping SendCurrentDrinks) {
+    public func whenPairedDeviceBecomesReachable(_ send: @escaping OnPairedDeviceReachable) {
         lock.lock()
-        self.resend = resend
+        self.sendOnReachable = send
         lock.unlock()
     }
 
     private func pairedDeviceBecameReachable() {
         lock.lock()
-        let resend = self.resend
+        let send = self.sendOnReachable
         lock.unlock()
-        guard let resend else {
-            log.write(.warning, "the paired device became reachable before anything was listening for it, today's drinks were not resent")
+        guard let send else {
+            log.write(.info, "the paired device became reachable and this app has nothing to send on reachability")
             return
         }
-        Task { await resend() }
+        Task { await send() }
     }
 }
 
 extension WatchConnectivityChannel: WCSessionDelegate {
     public func sessionReachabilityDidChange(_ session: WCSession) {
         guard session.isReachable else {
-            log.write(.info, "the paired device is no longer reachable, nothing is being resent, session is \(describe(session))")
+            log.write(.info, "the paired device is no longer reachable, nothing is being sent to it, session is \(describe(session))")
             return
         }
-        log.write(.info, "the paired device became reachable, resending today's drinks, session is \(describe(session))")
+        log.write(.info, "the paired device became reachable, session is \(describe(session))")
         pairedDeviceBecameReachable()
     }
 
@@ -104,11 +104,17 @@ extension WatchConnectivityChannel: WCSessionDelegate {
         let receive = self.receive
         lock.unlock()
         guard let receive else {
-            log.write(.warning, "a change arrived from the paired device before anything was listening")
+            log.write(.warning, "a message arrived from the paired device before anything was listening: \(userInfo)")
             return
         }
-        log.write(.info, "a change arrived from the paired device by \(delivery): \(userInfo)")
-        Task { await receive(DrinkChangeMessage(dictionary: userInfo)) }
+
+        do {
+            let message = try PairedDeviceMessage(dictionary: userInfo)
+            log.write(.info, "\(message) arrived from the paired device by \(delivery)")
+            Task { await receive(message) }
+        } catch {
+            log.write(.warning, "a message from the paired device could not be read: \(error), message was \(userInfo)")
+        }
     }
 
     public func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
@@ -131,10 +137,10 @@ extension WatchConnectivityChannel: WCSessionDelegate {
     #if os(iOS)
     public func sessionWatchStateDidChange(_ session: WCSession) {
         guard session.isReachable else {
-            log.write(.info, "the watch state changed and it is not reachable, nothing is being resent, session is \(describe(session))")
+            log.write(.info, "the watch state changed and it is not reachable, nothing is being sent to it, session is \(describe(session))")
             return
         }
-        log.write(.info, "the watch state changed and it is reachable, resending today's drinks, session is \(describe(session))")
+        log.write(.info, "the watch state changed and it is reachable, session is \(describe(session))")
         pairedDeviceBecameReachable()
     }
 

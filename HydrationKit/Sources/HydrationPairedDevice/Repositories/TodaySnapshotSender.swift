@@ -1,7 +1,7 @@
 import Foundation
 import HydrationDomain
 
-public final class TodaysDrinksSender: Sendable {
+public final class TodaySnapshotSender: Sendable {
     private let repository: DrinkRepository
     private let pairedDevice: PairedDeviceChannel
     private let currentDay: CurrentDay
@@ -26,12 +26,10 @@ public final class TodaysDrinksSender: Sendable {
         let day = currentDay.start()
         do {
             let drinksOfThatDay = try await repository.entries(of: day, in: calendar)
-            log.write(.info, "sending \(drinksOfThatDay.count) drinks of \(day) to the paired device")
-            for drink in drinksOfThatDay {
-                pairedDevice.send(DrinkChangeMessageMapper.message(forLogging: drink))
-            }
+            log.write(.info, "sending the picture of \(day) to the paired device: \(drinksOfThatDay.count) drinks")
+            pairedDevice.send(.daySnapshot(DaySnapshotMessageMapper.message(forDay: day, drinks: drinksOfThatDay)))
         } catch {
-            log.write(.error, "today's drinks could not be read for the paired device: \(error)")
+            log.write(.error, "the picture of \(day) could not be read for the paired device: \(error)")
         }
     }
 }

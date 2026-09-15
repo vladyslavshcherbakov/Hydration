@@ -12,7 +12,7 @@ public final class PersistenceEnvironment {
     public let repository: DrinkRepository
     public let pairedDevice: RecordingPairedDeviceChannel
     public let incomingChanges: IncomingDrinkChanges
-    public let todaysDrinksSender: TodaysDrinksSender
+    public let todaySnapshotSender: TodaySnapshotSender
     public let dateProvider: MutableDateProvider
     public let calendar: Calendar
     public let locale: Locale
@@ -45,17 +45,22 @@ public final class PersistenceEnvironment {
         self.observedRepository = observedRepository
         self.pairedDevice = pairedDevice
         self.repository = MirroringDrinkRepository(localStorage: observedRepository, pairedDevice: pairedDevice)
-        self.incomingChanges = IncomingDrinkChanges(localStorage: observedRepository, pairedDevice: pairedDevice, log: log)
-        self.todaysDrinksSender = TodaysDrinksSender(
+        self.incomingChanges = IncomingDrinkChanges(
+            localStorage: observedRepository,
+            pairedDevice: pairedDevice,
+            calendar: calendar,
+            log: log
+        )
+        self.todaySnapshotSender = TodaySnapshotSender(
             repository: observedRepository,
             pairedDevice: pairedDevice,
             currentDay: CurrentDay(dateProvider: self.dateProvider, calendar: calendar),
             calendar: calendar,
             log: log
         )
-        let todaysDrinksSender = self.todaysDrinksSender
+        let todaySnapshotSender = self.todaySnapshotSender
         pairedDevice.whenPairedDeviceBecomesReachable {
-            await todaysDrinksSender.sendToPairedDevice()
+            await todaySnapshotSender.sendToPairedDevice()
         }
     }
 
@@ -93,7 +98,12 @@ public final class PersistenceEnvironment {
 
     public func receiveFromPairedDevice(_ message: DrinkChangeMessage) async {
         incomingChanges.start()
-        await pairedDevice.deliver(message)
+        await pairedDevice.deliver(.change(message))
+    }
+
+    public func receiveFromPairedDevice(_ message: DaySnapshotMessage) async {
+        incomingChanges.start()
+        await pairedDevice.deliver(.daySnapshot(message))
     }
 
     public func makeCurrentDay() -> CurrentDay {

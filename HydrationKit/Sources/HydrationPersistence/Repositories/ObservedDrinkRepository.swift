@@ -2,11 +2,11 @@ import Foundation
 import HydrationDomain
 
 public final class ObservedDrinkRepository: DrinkRepository, LocalDrinkWriter, DrinkChanges, @unchecked Sendable {
-    private let localStorage: DrinkRepository
+    private let localStorage: DrinkRepository & LocalDrinkWriter
     private let lock = NSLock()
     private var listeners: [UUID: AsyncStream<Void>.Continuation] = [:]
 
-    public init(localStorage: DrinkRepository) {
+    public init(localStorage: DrinkRepository & LocalDrinkWriter) {
         self.localStorage = localStorage
     }
 
@@ -21,6 +21,11 @@ public final class ObservedDrinkRepository: DrinkRepository, LocalDrinkWriter, D
 
     public func delete(id: UUID) async throws {
         try await localStorage.delete(id: id)
+        announce()
+    }
+
+    public func replaceEntries(in range: DateInterval, with entries: [DrinkEntry]) async throws {
+        try await localStorage.replaceEntries(in: range, with: entries)
         announce()
     }
 

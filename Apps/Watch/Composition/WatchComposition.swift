@@ -8,7 +8,6 @@ import SwiftUI
 struct HydrationWatchApp: App {
     private let root: CompositionRoot
     private let incomingChanges: IncomingDrinkChanges
-    private let todaysDrinksSender: TodaysDrinksSender
 
     init() {
         let log = ConsoleLog(category: "hydration-watch")
@@ -25,20 +24,13 @@ struct HydrationWatchApp: App {
             log: log,
             dateProvider: SystemDateProvider()
         )
-        incomingChanges = IncomingDrinkChanges(localStorage: observedRepository, pairedDevice: pairedDevice, log: log)
-        incomingChanges.start()
-
-        let todaysDrinksSender = TodaysDrinksSender(
-            repository: observedRepository,
+        incomingChanges = IncomingDrinkChanges(
+            localStorage: observedRepository,
             pairedDevice: pairedDevice,
-            currentDay: root.makeCurrentDay(),
             calendar: root.calendar,
             log: log
         )
-        self.todaysDrinksSender = todaysDrinksSender
-        pairedDevice.whenPairedDeviceBecomesReachable {
-            await todaysDrinksSender.sendToPairedDevice()
-        }
+        incomingChanges.start()
 
         log.write(
             .info,

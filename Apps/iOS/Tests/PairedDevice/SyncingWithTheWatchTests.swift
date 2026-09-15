@@ -32,9 +32,9 @@ final class SyncingWithTheWatchTests: XCTestCase {
     func test_todayScreen_whenWaterIsLogged_sendsItToTheWatch() async throws {
         await environment.dayScreen().quickAdd(milliliters: 250)
 
-        XCTAssertEqual(environment.pairedDevice.sent.count, 1)
-        XCTAssertEqual(environment.pairedDevice.sent.first?.amountML, 250)
-        XCTAssertEqual(environment.pairedDevice.sent.first?.deleted, false)
+        XCTAssertEqual(environment.pairedDevice.sentChanges.count, 1)
+        XCTAssertEqual(environment.pairedDevice.sentChanges.first?.amountML, 250)
+        XCTAssertEqual(environment.pairedDevice.sentChanges.first?.deleted, false)
     }
 
     func test_todayScreen_whenTheWatchLogsADrink_showsIt() async throws {
@@ -113,18 +113,31 @@ final class SyncingWithTheWatchTests: XCTestCase {
     func test_pairedDevice_whenTheAppBecomesActive_receivesDrinksTheWidgetLogged() async throws {
         try await environment.log(400, at: environment.date(hour: 9))
 
-        await environment.todaysDrinksSender.sendToPairedDevice()
+        await environment.todaySnapshotSender.sendToPairedDevice()
 
-        XCTAssertEqual(environment.pairedDevice.sent.count, 1)
-        XCTAssertEqual(environment.pairedDevice.sent.first?.amountML, 400)
+        XCTAssertEqual(environment.pairedDevice.sentSnapshots.count, 1)
+        XCTAssertEqual(environment.pairedDevice.sentSnapshots.first?.drinks.count, 1)
+        XCTAssertEqual(environment.pairedDevice.sentSnapshots.first?.drinks.first?.amountML, 400)
     }
 
     func test_pairedDevice_whenTheAppBecomesActive_receivesNothingFromEarlierDays() async throws {
         try await environment.log(400, at: environment.date(hour: 9, dayOffset: -1))
 
-        await environment.todaysDrinksSender.sendToPairedDevice()
+        await environment.todaySnapshotSender.sendToPairedDevice()
 
-        XCTAssertTrue(environment.pairedDevice.sent.isEmpty)
+        XCTAssertEqual(environment.pairedDevice.sentSnapshots.count, 1)
+        XCTAssertTrue(environment.pairedDevice.sentSnapshots.first?.drinks.isEmpty == true)
+    }
+
+    func test_pairedDevice_whenADrinkIsDeleted_receivesAPictureWithoutIt() async throws {
+        let screen = environment.dayScreen()
+        await screen.quickAdd(milliliters: 250)
+        let logged = try XCTUnwrap(screen.state.entries.first)
+
+        await screen.remove(entryID: logged.id)
+        await environment.todaySnapshotSender.sendToPairedDevice()
+
+        XCTAssertTrue(environment.pairedDevice.sentSnapshots.last?.drinks.isEmpty == true)
     }
 
     func test_pairedDevice_whenItBecomesReachableLater_receivesTodaysDrinks() async throws {
@@ -132,7 +145,7 @@ final class SyncingWithTheWatchTests: XCTestCase {
 
         await environment.pairedDevice.becomeReachable()
 
-        XCTAssertEqual(environment.pairedDevice.sent.count, 1)
-        XCTAssertEqual(environment.pairedDevice.sent.first?.amountML, 400)
+        XCTAssertEqual(environment.pairedDevice.sentSnapshots.count, 1)
+        XCTAssertEqual(environment.pairedDevice.sentSnapshots.first?.drinks.first?.amountML, 400)
     }
 }

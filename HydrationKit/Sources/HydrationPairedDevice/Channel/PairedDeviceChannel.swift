@@ -1,20 +1,20 @@
 import Foundation
 
-public typealias ReceiveDrinkChange = @Sendable (DrinkChangeMessage) async -> Void
-public typealias SendCurrentDrinks = @Sendable () async -> Void
+public typealias ReceivePairedDeviceMessage = @Sendable (PairedDeviceMessage) async -> Void
+public typealias OnPairedDeviceReachable = @Sendable () async -> Void
 
 public protocol PairedDeviceChannel: Sendable {
-    func send(_ message: DrinkChangeMessage)
-    func startReceiving(_ receive: @escaping ReceiveDrinkChange)
-    func whenPairedDeviceBecomesReachable(_ resend: @escaping SendCurrentDrinks)
+    func send(_ message: PairedDeviceMessage)
+    func startReceiving(_ receive: @escaping ReceivePairedDeviceMessage)
+    func whenPairedDeviceBecomesReachable(_ send: @escaping OnPairedDeviceReachable)
 }
 
 public struct NoPairedDeviceChannel: PairedDeviceChannel {
     public init() {}
 
-    public func send(_ message: DrinkChangeMessage) {}
+    public func send(_ message: PairedDeviceMessage) {}
 
-    public func startReceiving(_ receive: @escaping ReceiveDrinkChange) {}
+    public func startReceiving(_ receive: @escaping ReceivePairedDeviceMessage) {}
 
-    public func whenPairedDeviceBecomesReachable(_ resend: @escaping SendCurrentDrinks) {}
+    public func whenPairedDeviceBecomesReachable(_ send: @escaping OnPairedDeviceReachable) {}
 }

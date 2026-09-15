@@ -65,7 +65,7 @@ Every surface shows the day's drinks, and four things write them: the phone scre
 - The phone and watch screens subscribe. `ObservedDrinkRepository` announces every write that goes through it, and each view model reloads on the announcement.
 - The widget is reloaded by `WidgetRefreshingDrinkRepository`, which wraps the same storage, so a write from any source in the app's process reloads it, including one that arrived from the watch.
 - A change is sent to the paired device as a message when it is reachable, and queued for later delivery when it is not. A queued transfer is what carries a change to a device that is not running, and its arrival is logged on the sending side.
-- Either app can start after the other. Each side watches the link and, the moment the counterpart becomes reachable, sends the whole of today's drinks. Writes are idempotent, so a drink that already arrived is stored once.
+- The phone is where today comes from. When it becomes active, and when the watch becomes reachable, it sends its picture of today: the day and every drink in it. The watch replaces its own day with that picture, so a drink the phone no longer holds disappears from the watch. The watch never sends a picture back; it sends the drinks it logs and the ones it undoes, one change at a time.
 - A write another process made while the app was away is announced once, when the scene becomes active.
 - The watch receives every write the app makes, and receives the widget's writes when the app next becomes active.
 
@@ -77,10 +77,18 @@ Not guaranteed by this project: iOS decides whether to wake the app in the backg
 
 `AddDrinkUseCase` reads the day, checks the six-litre limit, and writes, with a gap in between. Two devices adding at the same moment can both pass a check only one of them should pass. Accepted: one person with two devices, and the limit is a guard rail rather than a medical threshold.
 
+A drink logged on the watch reaches the phone as a change, live or queued. If that change never arrives, the phone's next picture of today deletes it from the watch. Accepted: the phone is the one place today is decided, and a drink that never left the watch is lost rather than resurrected on both devices.
+
+The picture covers today only. A drink logged into an earlier day travels as a single change and nothing repairs it if that change is lost.
+
+While the phone app is not running, the watch keeps showing its own day. It gets the phone's picture when the phone app next runs.
+
 ## Open questions
 
 None open.
 
 ## Decided
 
-The widget has no WatchConnectivity session, so a drink logged there does not reach the watch when it is written. The iOS app sends the whole of today's drinks to the watch every time it becomes active. Writes are idempotent, so a drink that already arrived is stored once, and no "not yet sent" state is kept anywhere.
+The widget has no WatchConnectivity session, so a drink logged there does not reach the watch when it is written. The iOS app sends its picture of today to the watch every time it becomes active, and the widget's writes travel with it.
+
+Deletions are not kept anywhere. A day is made to agree by replacing it, not by merging it, so no record of what was deleted is needed. Only one side may replace, otherwise two devices swap days forever instead of agreeing, and that side is the phone.

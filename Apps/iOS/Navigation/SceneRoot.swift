@@ -10,12 +10,12 @@ struct SceneRoot: View {
     @Environment(\.scenePhase) private var scenePhase
 
     let root: CompositionRoot
-    let todaysDrinksSender: TodaysDrinksSender
+    let todaySnapshotSender: TodaySnapshotSender
     let observedDrinks: ObservedDrinkRepository
 
-    init(root: CompositionRoot, todaysDrinksSender: TodaysDrinksSender, observedDrinks: ObservedDrinkRepository) {
+    init(root: CompositionRoot, todaySnapshotSender: TodaySnapshotSender, observedDrinks: ObservedDrinkRepository) {
         self.root = root
-        self.todaysDrinksSender = todaysDrinksSender
+        self.todaySnapshotSender = todaySnapshotSender
         self.observedDrinks = observedDrinks
         _coordinator = StateObject(wrappedValue: AppCoordinator(selectedDay: root.makeCurrentDay().start()))
     }
@@ -28,7 +28,7 @@ struct SceneRoot: View {
             .onChange(of: scenePhase) { phase in
                 guard phase == .active else { return }
                 observedDrinks.noteWrittenElsewhere()
-                Task { await todaysDrinksSender.sendToPairedDevice() }
+                Task { await todaySnapshotSender.sendToPairedDevice() }
             }
     }
 
