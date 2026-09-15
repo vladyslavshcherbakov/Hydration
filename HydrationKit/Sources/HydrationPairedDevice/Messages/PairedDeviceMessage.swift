@@ -1,61 +1,61 @@
 import Foundation
 
-public enum PairedDeviceMessageError: Error, Equatable {
-    case unsupportedKind(String)
+public struct DrinkMessage: Codable, Equatable, Sendable {
+    public let id: UUID
+    public let amountML: Int
+    public let day: Date
+    public let recordedAt: Date
+
+    public init(id: UUID, amountML: Int, day: Date, recordedAt: Date) {
+        self.id = id
+        self.amountML = amountML
+        self.day = day
+        self.recordedAt = recordedAt
+    }
 }
 
-public enum PairedDeviceMessage: Equatable, Sendable {
-    case change(DrinkChangeMessage)
-    case daySnapshot(DaySnapshotMessage)
+public struct DrinkRemovalMessage: Codable, Equatable, Sendable {
+    public let id: UUID
 
-    private enum Kind: String {
-        case change
-        case daySnapshot
+    public init(id: UUID) {
+        self.id = id
+    }
+}
+
+public struct DayOfDrinksMessage: Codable, Equatable, Sendable {
+    public let day: Date
+    public let drinks: [DrinkMessage]
+
+    public init(day: Date, drinks: [DrinkMessage]) {
+        self.day = day
+        self.drinks = drinks
+    }
+}
+
+public struct PairedDeviceMessage: Codable, Equatable, Sendable {
+    public static let currentVersion = 1
+
+    public enum Content: Codable, Equatable, Sendable {
+        case drinkLogged(DrinkMessage)
+        case drinkRemoved(DrinkRemovalMessage)
+        case daySnapshot(DayOfDrinksMessage)
     }
 
-    private static let kindKey = "kind"
+    public let version: Int
+    public let content: Content
 
-    public init(dictionary: [String: Any]) throws {
-        guard let raw = dictionary[Self.kindKey] as? String else {
-            self = .change(DrinkChangeMessage(dictionary: dictionary))
-            return
-        }
-        guard let kind = Kind(rawValue: raw) else {
-            throw PairedDeviceMessageError.unsupportedKind(raw)
-        }
-
-        switch kind {
-        case .change: self = .change(DrinkChangeMessage(dictionary: dictionary))
-        case .daySnapshot: self = .daySnapshot(DaySnapshotMessage(dictionary: dictionary))
-        }
-    }
-
-    public var dictionary: [String: Any] {
-        var values = payload
-        values[Self.kindKey] = kind.rawValue
-        return values
-    }
-
-    private var kind: Kind {
-        switch self {
-        case .change: return .change
-        case .daySnapshot: return .daySnapshot
-        }
-    }
-
-    private var payload: [String: Any] {
-        switch self {
-        case .change(let message): return message.dictionary
-        case .daySnapshot(let message): return message.dictionary
-        }
+    public init(version: Int = PairedDeviceMessage.currentVersion, content: Content) {
+        self.version = version
+        self.content = content
     }
 }
 
 extension PairedDeviceMessage: CustomStringConvertible {
     public var description: String {
-        switch self {
-        case .change(let message): return "a change \(message.dictionary)"
-        case .daySnapshot(let message): return "the picture of a day holding \(message.drinks.count) drinks"
+        switch content {
+        case .drinkLogged(let drink): return "a drink of \(drink.amountML) ml, \(drink.id)"
+        case .drinkRemoved(let removal): return "a removal of the drink \(removal.id)"
+        case .daySnapshot(let day): return "the picture of \(day.day) holding \(day.drinks.count) drinks"
         }
     }
 }

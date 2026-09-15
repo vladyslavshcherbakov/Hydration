@@ -18,27 +18,34 @@ final class SyncingWithTheWatchTests: XCTestCase {
         super.tearDown()
     }
 
-    private func changeFromTheWatch(_ milliliters: Int, at hour: Int = 11, id: UUID = UUID()) -> DrinkChangeMessage {
-        DrinkChangeMessage(
-            id: id.uuidString,
-            amountML: milliliters,
-            day: environment.today.timeIntervalSince1970,
-            recordedAt: environment.date(hour: hour).timeIntervalSince1970,
-            deleted: false,
-            version: DrinkChangeMessage.currentVersion
+    private func drinkFromTheWatch(
+        _ milliliters: Int,
+        at hour: Int = 11,
+        id: UUID = UUID(),
+        version: Int = PairedDeviceMessage.currentVersion
+    ) -> PairedDeviceMessage {
+        PairedDeviceMessage(
+            version: version,
+            content: .drinkLogged(
+                DrinkMessage(
+                    id: id,
+                    amountML: milliliters,
+                    day: environment.today,
+                    recordedAt: environment.date(hour: hour)
+                )
+            )
         )
     }
 
     func test_todayScreen_whenWaterIsLogged_sendsItToTheWatch() async throws {
         await environment.dayScreen().quickAdd(milliliters: 250)
 
-        XCTAssertEqual(environment.pairedDevice.sentChanges.count, 1)
-        XCTAssertEqual(environment.pairedDevice.sentChanges.first?.amountML, 250)
-        XCTAssertEqual(environment.pairedDevice.sentChanges.first?.deleted, false)
+        XCTAssertEqual(environment.pairedDevice.sentDrinks.count, 1)
+        XCTAssertEqual(environment.pairedDevice.sentDrinks.first?.amountML, 250)
     }
 
     func test_todayScreen_whenTheWatchLogsADrink_showsIt() async throws {
-        await environment.receiveFromPairedDevice(changeFromTheWatch(450))
+        try await environment.receiveFromPairedDevice(drinkFromTheWatch(450))
 
         let screen = environment.dayScreen()
         await screen.load()
@@ -49,10 +56,10 @@ final class SyncingWithTheWatchTests: XCTestCase {
 
     func test_todayScreen_whenTheWatchUndoesADrink_removesIt() async throws {
         let id = UUID()
-        await environment.receiveFromPairedDevice(changeFromTheWatch(450, id: id))
+        try await environment.receiveFromPairedDevice(drinkFromTheWatch(450, id: id))
 
-        await environment.receiveFromPairedDevice(
-            DrinkChangeMessage(id: id.uuidString, amountML: nil, day: nil, recordedAt: nil, deleted: true, version: 1)
+        try await environment.receiveFromPairedDevice(
+            PairedDeviceMessage(content: .drinkRemoved(DrinkRemovalMessage(id: id)))
         )
 
         let screen = environment.dayScreen()
@@ -61,10 +68,10 @@ final class SyncingWithTheWatchTests: XCTestCase {
     }
 
     func test_todayScreen_whenTheSameDrinkArrivesTwice_countsItOnce() async throws {
-        let change = changeFromTheWatch(500)
+        let drink = drinkFromTheWatch(500)
 
-        await environment.receiveFromPairedDevice(change)
-        await environment.receiveFromPairedDevice(change)
+        try await environment.receiveFromPairedDevice(drink)
+        try await environment.receiveFromPairedDevice(drink)
 
         let screen = environment.dayScreen()
         await screen.load()
@@ -73,19 +80,17 @@ final class SyncingWithTheWatchTests: XCTestCase {
         XCTAssertEqual(screen.state.entries.count, 1)
     }
 
-    func test_todayScreen_whenTheOtherDeviceSendsGarbage_ignoresIt() async throws {
-        let broken = [
-            DrinkChangeMessage(id: nil, amountML: 250, day: 1, recordedAt: 1, deleted: false, version: 1),
-            DrinkChangeMessage(id: "not-a-uuid", amountML: 250, day: 1, recordedAt: 1, deleted: false, version: 1),
-            DrinkChangeMessage(id: UUID().uuidString, amountML: nil, day: 1, recordedAt: 1, deleted: false, version: 1),
-            DrinkChangeMessage(id: UUID().uuidString, amountML: 0, day: 1, recordedAt: 1, deleted: false, version: 1),
-            DrinkChangeMessage(id: UUID().uuidString, amountML: -250, day: 1, recordedAt: 1, deleted: false, version: 1),
-            DrinkChangeMessage(id: UUID().uuidString, amountML: 999_999, day: 1, recordedAt: 1, deleted: false, version: 1),
-            DrinkChangeMessage(id: UUID().uuidString, amountML: 250, day: 1, recordedAt: nil, deleted: false, version: 1)
-        ]
+    func test_todayScreen_whenTheOtherDeviceSendsSomethingUnreadable_ignoresIt() async throws {
+        await environment.receiveFromPairedDevice(encoded: Data("not a message at all".utf8))
 
-        for change in broken {
-            await environment.receiveFromPairedDevice(change)
+        let screen = environment.dayScreen()
+        await screen.load()
+        XCTAssertEqual(screen.state.totalText, "0 L")
+    }
+
+    func test_todayScreen_whenTheOtherDeviceSendsAnImpossibleAmount_ignoresIt() async throws {
+        for amount in [0, -250, 999_999] {
+            try await environment.receiveFromPairedDevice(drinkFromTheWatch(amount))
         }
 
         let screen = environment.dayScreen()
@@ -94,15 +99,8 @@ final class SyncingWithTheWatchTests: XCTestCase {
     }
 
     func test_todayScreen_whenADrinkComesFromANewerAppVersion_ignoresIt() async throws {
-        await environment.receiveFromPairedDevice(
-            DrinkChangeMessage(
-                id: UUID().uuidString,
-                amountML: 250,
-                day: environment.today.timeIntervalSince1970,
-                recordedAt: environment.date(hour: 11).timeIntervalSince1970,
-                deleted: false,
-                version: DrinkChangeMessage.currentVersion + 1
-            )
+        try await environment.receiveFromPairedDevice(
+            drinkFromTheWatch(250, version: PairedDeviceMessage.currentVersion + 1)
         )
 
         let screen = environment.dayScreen()

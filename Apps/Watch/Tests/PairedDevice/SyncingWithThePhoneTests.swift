@@ -18,16 +18,28 @@ final class SyncingWithThePhoneTests: XCTestCase {
         super.tearDown()
     }
 
+    private func drinkFromThePhone(_ milliliters: Int, at hour: Int = 11, id: UUID = UUID()) -> DrinkMessage {
+        DrinkMessage(
+            id: id,
+            amountML: milliliters,
+            day: environment.today,
+            recordedAt: environment.date(hour: hour)
+        )
+    }
+
+    private func pictureOfToday(
+        _ drinks: [DrinkMessage],
+        version: Int = PairedDeviceMessage.currentVersion
+    ) -> PairedDeviceMessage {
+        PairedDeviceMessage(
+            version: version,
+            content: .daySnapshot(DayOfDrinksMessage(day: environment.today, drinks: drinks))
+        )
+    }
+
     func test_watchFace_whenThePhoneLogsADrink_showsTheNewTotal() async throws {
-        await environment.receiveFromPairedDevice(
-            DrinkChangeMessage(
-                id: UUID().uuidString,
-                amountML: 600,
-                day: environment.today.timeIntervalSince1970,
-                recordedAt: environment.date(hour: 11).timeIntervalSince1970,
-                deleted: false,
-                version: DrinkChangeMessage.currentVersion
-            )
+        try await environment.receiveFromPairedDevice(
+            PairedDeviceMessage(content: .drinkLogged(drinkFromThePhone(600)))
         )
 
         let screen = environment.todayScreen()
@@ -41,8 +53,8 @@ final class SyncingWithThePhoneTests: XCTestCase {
 
         await screen.add(milliliters: 350)
 
-        XCTAssertEqual(environment.pairedDevice.sentChanges.count, 1)
-        XCTAssertEqual(environment.pairedDevice.sentChanges.first?.amountML, 350)
+        XCTAssertEqual(environment.pairedDevice.sentDrinks.count, 1)
+        XCTAssertEqual(environment.pairedDevice.sentDrinks.first?.amountML, 350)
     }
 
     func test_undo_whenTapped_sendsARemovalToThePhone() async throws {
@@ -51,44 +63,22 @@ final class SyncingWithThePhoneTests: XCTestCase {
 
         await screen.undoLast()
 
-        XCTAssertEqual(environment.pairedDevice.sentChanges.count, 2)
-        XCTAssertEqual(environment.pairedDevice.sentChanges.last?.deleted, true)
-        XCTAssertEqual(environment.pairedDevice.sentChanges.last?.id, environment.pairedDevice.sentChanges.first?.id)
+        XCTAssertEqual(environment.pairedDevice.sentRemovals.count, 1)
+        XCTAssertEqual(environment.pairedDevice.sentRemovals.first?.id, environment.pairedDevice.sentDrinks.first?.id)
     }
 
     func test_watchFace_whenThePhonesPictureOfTodayArrives_dropsDrinksItNoLongerHolds() async throws {
         let screen = environment.todayScreen()
         await screen.add(milliliters: 350)
 
-        await environment.receiveFromPairedDevice(
-            DaySnapshotMessage(
-                day: environment.today.timeIntervalSince1970,
-                drinks: [],
-                version: DaySnapshotMessage.currentVersion
-            )
-        )
+        try await environment.receiveFromPairedDevice(pictureOfToday([]))
 
         await screen.load()
         XCTAssertEqual(screen.state.totalText, "0")
     }
 
     func test_watchFace_whenThePhonesPictureOfTodayArrives_showsTheDrinksItHolds() async throws {
-        await environment.receiveFromPairedDevice(
-            DaySnapshotMessage(
-                day: environment.today.timeIntervalSince1970,
-                drinks: [
-                    DrinkChangeMessage(
-                        id: UUID().uuidString,
-                        amountML: 500,
-                        day: environment.today.timeIntervalSince1970,
-                        recordedAt: environment.date(hour: 10).timeIntervalSince1970,
-                        deleted: false,
-                        version: DrinkChangeMessage.currentVersion
-                    )
-                ],
-                version: DaySnapshotMessage.currentVersion
-            )
-        )
+        try await environment.receiveFromPairedDevice(pictureOfToday([drinkFromThePhone(500, at: 10)]))
 
         let screen = environment.todayScreen()
         await screen.load()
@@ -100,12 +90,8 @@ final class SyncingWithThePhoneTests: XCTestCase {
         let screen = environment.todayScreen()
         await screen.add(milliliters: 350)
 
-        await environment.receiveFromPairedDevice(
-            DaySnapshotMessage(
-                day: environment.today.timeIntervalSince1970,
-                drinks: [],
-                version: DaySnapshotMessage.currentVersion + 1
-            )
+        try await environment.receiveFromPairedDevice(
+            pictureOfToday([], version: PairedDeviceMessage.currentVersion + 1)
         )
 
         await screen.load()

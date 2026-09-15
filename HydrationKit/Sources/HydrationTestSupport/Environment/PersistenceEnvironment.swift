@@ -96,14 +96,14 @@ public final class PersistenceEnvironment {
         FetchHistoryUseCase(repository: override ?? repository, dateProvider: dateProvider, calendar: calendar, goal: goal)
     }
 
-    public func receiveFromPairedDevice(_ message: DrinkChangeMessage) async {
+    public func receiveFromPairedDevice(_ message: PairedDeviceMessage) async throws {
         incomingChanges.start()
-        await pairedDevice.deliver(.change(message))
+        try await pairedDevice.deliver(message)
     }
 
-    public func receiveFromPairedDevice(_ message: DaySnapshotMessage) async {
+    public func receiveFromPairedDevice(encoded payload: Data) async {
         incomingChanges.start()
-        await pairedDevice.deliver(.daySnapshot(message))
+        await pairedDevice.deliver(payload)
     }
 
     public func makeCurrentDay() -> CurrentDay {

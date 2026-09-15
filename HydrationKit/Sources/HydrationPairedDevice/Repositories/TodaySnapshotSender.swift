@@ -27,7 +27,7 @@ public final class TodaySnapshotSender: Sendable {
         do {
             let drinksOfThatDay = try await repository.entries(of: day, in: calendar)
             log.write(.info, "sending the picture of \(day) to the paired device: \(drinksOfThatDay.count) drinks")
-            pairedDevice.send(.daySnapshot(DaySnapshotMessageMapper.message(forDay: day, drinks: drinksOfThatDay)))
+            pairedDevice.send(DrinkChangeMapper.message(forDay: day, drinks: drinksOfThatDay))
         } catch {
             log.write(.error, "the picture of \(day) could not be read for the paired device: \(error)")
         }

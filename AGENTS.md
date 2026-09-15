@@ -93,3 +93,5 @@ None open.
 The widget has no WatchConnectivity session, so a drink logged there does not reach the watch when it is written. The iOS app sends its picture of today to the watch every time it becomes active, and the widget's writes travel with it.
 
 Deletions are not kept anywhere. A day is made to agree by replacing it, not by merging it, so no record of what was deleted is needed. Only one side may replace, otherwise two devices swap days forever instead of agreeing, and that side is the phone.
+
+A message on the link is one encoded value carrying a version and one of three contents: a drink, a removal, or a picture of a day. Its fields are not optional, because a drink always has an amount and a removal always has an identifier. What can be absent is the whole message, and reading it either yields a value or throws with the field it could not read.

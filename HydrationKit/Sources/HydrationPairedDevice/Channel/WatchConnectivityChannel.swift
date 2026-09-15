@@ -4,10 +4,12 @@ import HydrationDomain
 import WatchConnectivity
 
 public final class WatchConnectivityChannel: NSObject, PairedDeviceChannel, @unchecked Sendable {
+    private static let payloadKey = "payload"
+
     private let session: WCSession
     private let log: HydrationLog
     private let lock = NSLock()
-    private var receive: ReceivePairedDeviceMessage?
+    private var receive: ReceiveEncodedMessage?
     private var sendOnReachable: OnPairedDeviceReachable?
 
     public init?(session: WCSession = .default, log: HydrationLog) {
@@ -23,24 +25,32 @@ public final class WatchConnectivityChannel: NSObject, PairedDeviceChannel, @unc
     }
 
     public func send(_ message: PairedDeviceMessage) {
+        let payload: Data
+        do {
+            payload = try PairedDeviceMessageCoder.encode(message)
+        } catch {
+            log.write(.error, "\(message) could not be encoded for the paired device: \(error)")
+            return
+        }
+
         guard session.isReachable else {
             log.write(.info, "queueing \(message) for the paired device, it is not reachable, session is \(describe(session))")
-            session.transferUserInfo(message.dictionary)
+            session.transferUserInfo(Self.userInfo(for: payload))
             return
         }
 
         log.write(.info, "sending \(message) to the paired device by message, session is \(describe(session))")
         session.sendMessage(
-            message.dictionary,
+            Self.userInfo(for: payload),
             replyHandler: nil,
             errorHandler: { [log, session] error in
                 log.write(.warning, "the paired device did not take \(message) now, queueing it: \(error)")
-                session.transferUserInfo(message.dictionary)
+                session.transferUserInfo(Self.userInfo(for: payload))
             }
         )
     }
 
-    public func startReceiving(_ receive: @escaping ReceivePairedDeviceMessage) {
+    public func startReceiving(_ receive: @escaping ReceiveEncodedMessage) {
         lock.lock()
         self.receive = receive
         lock.unlock()
@@ -61,6 +71,10 @@ public final class WatchConnectivityChannel: NSObject, PairedDeviceChannel, @unc
             return
         }
         Task { await send() }
+    }
+
+    private static func userInfo(for payload: Data) -> [String: Any] {
+        [payloadKey: payload]
     }
 }
 
@@ -107,14 +121,13 @@ extension WatchConnectivityChannel: WCSessionDelegate {
             log.write(.warning, "a message arrived from the paired device before anything was listening: \(userInfo)")
             return
         }
-
-        do {
-            let message = try PairedDeviceMessage(dictionary: userInfo)
-            log.write(.info, "\(message) arrived from the paired device by \(delivery)")
-            Task { await receive(message) }
-        } catch {
-            log.write(.warning, "a message from the paired device could not be read: \(error), message was \(userInfo)")
+        guard let payload = userInfo[Self.payloadKey] as? Data else {
+            log.write(.warning, "a message arrived from the paired device with nothing in it: \(userInfo)")
+            return
         }
+
+        log.write(.info, "a message of \(payload.count) bytes arrived from the paired device by \(delivery)")
+        Task { await receive(payload) }
     }
 
     public func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {

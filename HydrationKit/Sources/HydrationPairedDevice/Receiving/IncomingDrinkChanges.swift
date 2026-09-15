@@ -15,59 +15,67 @@ public final class IncomingDrinkChanges: Sendable {
     }
 
     public func start() {
-        pairedDevice.startReceiving { [self] message in
-            await apply(message)
+        pairedDevice.startReceiving { [self] payload in
+            await apply(payload)
         }
     }
 
-    private func apply(_ message: PairedDeviceMessage) async {
-        switch message {
-        case .change(let change): await applyChange(change)
-        case .daySnapshot(let snapshot): await applySnapshot(snapshot)
-        }
-    }
-
-    private func applyChange(_ message: DrinkChangeMessage) async {
-        let change: DrinkChange
+    private func apply(_ payload: Data) async {
+        let message: PairedDeviceMessage
         do {
-            change = try DrinkChangeMessageMapper.change(from: message)
+            message = try PairedDeviceMessageCoder.decode(payload)
         } catch {
-            log.write(.warning, "change from the paired device dropped, it could not be read: \(error), message was \(message.dictionary)")
+            log.write(.warning, "a message from the paired device was dropped, it could not be read: \(error)")
+            return
+        }
+
+        switch message.content {
+        case .drinkLogged(let drink): await store(drink)
+        case .drinkRemoved(let removal): await remove(removal)
+        case .daySnapshot(let day): await replace(day)
+        }
+    }
+
+    private func store(_ message: DrinkMessage) async {
+        let entry: DrinkEntry
+        do {
+            entry = try DrinkChangeMapper.entry(from: message)
+        } catch {
+            log.write(.warning, "the drink \(message.id) from the paired device was dropped, it could not be read: \(error)")
             return
         }
 
         do {
-            try await store(change)
-        } catch {
-            log.write(.error, "change \(change) from the paired device could not be stored: \(error)")
-        }
-    }
-
-    private func applySnapshot(_ message: DaySnapshotMessage) async {
-        let snapshot: DaySnapshot
-        do {
-            snapshot = try DaySnapshotMessageMapper.snapshot(from: message)
-        } catch {
-            log.write(.warning, "the paired device's picture of a day was dropped, it could not be read: \(error), message was \(message.dictionary)")
-            return
-        }
-
-        do {
-            try await localStorage.replaceEntries(in: calendar.dayInterval(for: snapshot.day), with: snapshot.drinks)
-            log.write(.info, "\(snapshot.day) now holds the paired device's picture of it: \(snapshot.drinks.count) drinks")
-        } catch {
-            log.write(.error, "\(snapshot.day) could not be replaced by the paired device's picture of it: \(error)")
-        }
-    }
-
-    private func store(_ change: DrinkChange) async throws {
-        switch change {
-        case .logged(let entry):
             try await localStorage.save(entry)
             log.write(.info, "stored \(entry.volume.milliliters) ml from the paired device, drink \(entry.id) of \(entry.day)")
-        case .removed(let id):
-            try await localStorage.delete(id: id)
-            log.write(.info, "removed the drink \(id) the paired device deleted")
+        } catch {
+            log.write(.error, "the drink \(entry.id) from the paired device could not be stored: \(error)")
+        }
+    }
+
+    private func remove(_ message: DrinkRemovalMessage) async {
+        do {
+            try await localStorage.delete(id: message.id)
+            log.write(.info, "removed the drink \(message.id) the paired device deleted")
+        } catch {
+            log.write(.error, "the drink \(message.id) the paired device deleted could not be removed: \(error)")
+        }
+    }
+
+    private func replace(_ message: DayOfDrinksMessage) async {
+        let drinks: [DrinkEntry]
+        do {
+            drinks = try message.drinks.map(DrinkChangeMapper.entry(from:))
+        } catch {
+            log.write(.warning, "the paired device's picture of \(message.day) was dropped, it could not be read: \(error)")
+            return
+        }
+
+        do {
+            try await localStorage.replaceEntries(in: calendar.dayInterval(for: message.day), with: drinks)
+            log.write(.info, "\(message.day) now holds the paired device's picture of it: \(drinks.count) drinks")
+        } catch {
+            log.write(.error, "\(message.day) could not be replaced by the paired device's picture of it: \(error)")
         }
     }
 }

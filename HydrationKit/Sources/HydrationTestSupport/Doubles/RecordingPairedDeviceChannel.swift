@@ -3,7 +3,7 @@ import HydrationPairedDevice
 
 public final class RecordingPairedDeviceChannel: PairedDeviceChannel, @unchecked Sendable {
     private var messages: [PairedDeviceMessage] = []
-    private var receive: ReceivePairedDeviceMessage?
+    private var receive: ReceiveEncodedMessage?
     private var sendOnReachable: OnPairedDeviceReachable?
     private let lock = NSLock()
 
@@ -15,17 +15,24 @@ public final class RecordingPairedDeviceChannel: PairedDeviceChannel, @unchecked
         return messages
     }
 
-    public var sentChanges: [DrinkChangeMessage] {
+    public var sentDrinks: [DrinkMessage] {
         sent.compactMap { message in
-            guard case .change(let change) = message else { return nil }
-            return change
+            guard case .drinkLogged(let drink) = message.content else { return nil }
+            return drink
         }
     }
 
-    public var sentSnapshots: [DaySnapshotMessage] {
+    public var sentRemovals: [DrinkRemovalMessage] {
         sent.compactMap { message in
-            guard case .daySnapshot(let snapshot) = message else { return nil }
-            return snapshot
+            guard case .drinkRemoved(let removal) = message.content else { return nil }
+            return removal
+        }
+    }
+
+    public var sentSnapshots: [DayOfDrinksMessage] {
+        sent.compactMap { message in
+            guard case .daySnapshot(let day) = message.content else { return nil }
+            return day
         }
     }
 
@@ -35,7 +42,7 @@ public final class RecordingPairedDeviceChannel: PairedDeviceChannel, @unchecked
         lock.unlock()
     }
 
-    public func startReceiving(_ receive: @escaping ReceivePairedDeviceMessage) {
+    public func startReceiving(_ receive: @escaping ReceiveEncodedMessage) {
         lock.lock()
         self.receive = receive
         lock.unlock()
@@ -54,10 +61,15 @@ public final class RecordingPairedDeviceChannel: PairedDeviceChannel, @unchecked
         await send?()
     }
 
-    public func deliver(_ message: PairedDeviceMessage) async {
+    public func deliver(_ message: PairedDeviceMessage) async throws {
+        let payload = try PairedDeviceMessageCoder.encode(message)
+        await deliver(payload)
+    }
+
+    public func deliver(_ payload: Data) async {
         lock.lock()
         let receive = self.receive
         lock.unlock()
-        await receive?(message)
+        await receive?(payload)
     }
 }

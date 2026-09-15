@@ -16,11 +16,11 @@ public final class MirroringDrinkRepository: DrinkRepository {
 
     public func save(_ entry: DrinkEntry) async throws {
         try await localStorage.save(entry)
-        pairedDevice.send(.change(DrinkChangeMessageMapper.message(forLogging: entry)))
+        pairedDevice.send(DrinkChangeMapper.message(forLogging: entry))
     }
 
     public func delete(id: UUID) async throws {
         try await localStorage.delete(id: id)
-        pairedDevice.send(.change(DrinkChangeMessageMapper.message(forRemoving: id)))
+        pairedDevice.send(DrinkChangeMapper.message(forRemoving: id))
     }
 }
