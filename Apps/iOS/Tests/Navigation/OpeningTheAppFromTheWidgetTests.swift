@@ -34,7 +34,7 @@ final class OpeningTheAppFromTheWidgetTests: XCTestCase {
 
         let history = environment.historyScreen(coordinator: coordinator)
         await history.load()
-        XCTAssertEqual(history.state.rows.first?.totalText, "2.6 L")
+        XCTAssertEqual(try history.content.rows.first?.totalText, "2.6 L")
     }
 
     func test_todayScreen_whenTheWidgetLogsADrink_showsIt() async throws {

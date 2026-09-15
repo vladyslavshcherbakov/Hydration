@@ -27,7 +27,7 @@ public final class ScreenFactory {
     func makeHistoryViewModel() -> HistoryViewModel {
         HistoryViewModel(
             fetchHistory: root.makeFetchHistory(),
-            presenter: HistoryPresenter(calendar: root.calendar, locale: root.locale, today: root.makeCurrentDay().start()),
+            presenter: HistoryViewDataMapper(calendar: root.calendar, locale: root.locale, today: root.makeCurrentDay().start()),
             changes: root.changes,
             log: root.log,
             selectedDay: coordinator.selectedDay,

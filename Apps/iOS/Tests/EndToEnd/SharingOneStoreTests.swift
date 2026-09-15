@@ -33,14 +33,14 @@ final class SharingOneStoreTests: XCTestCase {
 
         let history = HistoryViewModel(
             fetchHistory: app.makeFetchHistory(),
-            presenter: HistoryPresenter(calendar: environment.calendar, locale: environment.locale, today: app.makeCurrentDay().start()),
+            presenter: HistoryViewDataMapper(calendar: environment.calendar, locale: environment.locale, today: app.makeCurrentDay().start()),
             changes: app.changes,
             log: environment.log,
             selectedDay: app.makeCurrentDay().start(),
             onDaySelected: { _ in }
         )
         await history.load()
-        XCTAssertEqual(history.state.rows.first?.totalText, "1.5 L")
+        XCTAssertEqual(try history.content.rows.first?.totalText, "1.5 L")
     }
 
     func test_todayScreen_whenTheAppIsReopened_stillShowsTheWater() async throws {

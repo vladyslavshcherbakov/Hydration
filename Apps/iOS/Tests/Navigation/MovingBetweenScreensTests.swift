@@ -30,7 +30,7 @@ final class MovingBetweenScreensTests: XCTestCase {
         XCTAssertEqual(coordinator.path, [.history])
         let history = environment.historyScreen(coordinator: coordinator)
         await history.load()
-        XCTAssertEqual(history.state.rows.first?.totalText, "2.6 L")
+        XCTAssertEqual(try history.content.rows.first?.totalText, "2.6 L")
     }
 
     func test_backButton_whenHistoryWasOpenedTwice_returnsToTodayInOneTap() async throws {
@@ -51,14 +51,14 @@ final class MovingBetweenScreensTests: XCTestCase {
         let history = environment.historyScreen(coordinator: coordinator)
         await history.load()
         coordinator.show(.history)
-        let yesterday = try XCTUnwrap(history.state.rows[1].id)
+        let yesterday = try XCTUnwrap(try history.content.rows[1].id)
         history.select(rowID: yesterday)
 
         let reopened = environment.historyScreen(coordinator: coordinator)
         await reopened.load()
 
         XCTAssertTrue(coordinator.path.isEmpty)
-        XCTAssertEqual(reopened.state.rows[1].isSelected, true)
+        XCTAssertEqual(try reopened.content.rows[1].isSelected, true)
     }
 
     func test_historyScreen_whenNoDayWasEverTapped_ticksToday() async throws {
@@ -67,7 +67,7 @@ final class MovingBetweenScreensTests: XCTestCase {
         let history = environment.historyScreen(coordinator: coordinator)
         await history.load()
 
-        XCTAssertEqual(history.state.rows[0].isSelected, true)
+        XCTAssertEqual(try history.content.rows[0].isSelected, true)
     }
 
     func test_dayScreen_whenADayIsPickedInHistory_showsThatDay() async throws {
@@ -75,7 +75,7 @@ final class MovingBetweenScreensTests: XCTestCase {
         let history = environment.historyScreen(coordinator: coordinator)
         await history.load()
 
-        history.select(rowID: try XCTUnwrap(history.state.rows[1].id))
+        history.select(rowID: try XCTUnwrap(try history.content.rows[1].id))
 
         let day = environment.dayScreen(day: coordinator.selectedDay)
         await day.load()

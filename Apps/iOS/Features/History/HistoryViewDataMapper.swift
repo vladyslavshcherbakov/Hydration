@@ -2,7 +2,7 @@ import Foundation
 import HydrationDesignSystem
 import HydrationDomain
 
-public struct HistoryPresenter: Sendable {
+public struct HistoryViewDataMapper: Sendable {
     private let calendar: Calendar
     private let locale: Locale
     private let today: Date
@@ -15,30 +15,35 @@ public struct HistoryPresenter: Sendable {
         self.today = today
     }
 
-    public func present(summaries: [DailySummary], selected: Date) -> HistoryViewState {
-        let reached = summaries.filter(\.isGoalReached).count
-
-        return HistoryViewState(
-            title: "History",
-            summaryText: "\(reached) of \(summaries.count) days on target",
-            rows: summaries.map { row(for: $0, selected: selected) },
-            emptyText: summaries.isEmpty ? "Nothing logged yet" : nil
-        )
+    public func loading() -> HistoryViewData {
+        HistoryViewData(title: title, state: .loading)
     }
 
-    public func viewData(for error: Error) -> HistoryViewState {
-        HistoryViewState(
-            title: "History",
-            summaryText: "",
-            rows: [],
-            emptyText: "Could not load history"
-        )
+    public func viewData(for summaries: [DailySummary], selected: Date) -> HistoryViewData {
+        HistoryViewData(title: title, state: .content(content(of: summaries, selected: selected)))
+    }
+
+    public func viewData(for error: Error) -> HistoryViewData {
+        HistoryViewData(title: title, state: .failed("Could not load history"))
     }
 
     // MARK: - Private
 
-    private func row(for summary: DailySummary, selected: Date) -> HistoryViewState.Row {
-        HistoryViewState.Row(
+    private var title: String {
+        "History"
+    }
+
+    private func content(of summaries: [DailySummary], selected: Date) -> HistoryViewData.Content {
+        let reached = summaries.filter(\.isGoalReached).count
+
+        return HistoryViewData.Content(
+            summaryText: "\(reached) of \(summaries.count) days on target",
+            rows: summaries.map { row(for: $0, selected: selected) }
+        )
+    }
+
+    private func row(for summary: DailySummary, selected: Date) -> HistoryViewData.Row {
+        HistoryViewData.Row(
             id: summary.day,
             identifier: "history.row.\(identifierDate(summary.day))",
             dayText: dayText(summary.day),

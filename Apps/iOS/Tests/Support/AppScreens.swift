@@ -8,7 +8,7 @@ import HydrationTestSupport
 
 extension PersistenceEnvironment {
     var dayMapper: DayViewDataMapper { DayViewDataMapper(calendar: calendar, locale: locale) }
-    var historyPresenter: HistoryPresenter { HistoryPresenter(calendar: calendar, locale: locale, today: today) }
+    var historyMapper: HistoryViewDataMapper { HistoryViewDataMapper(calendar: calendar, locale: locale, today: today) }
 }
 
 // MARK: - PersistenceEnvironment
@@ -35,7 +35,7 @@ extension PersistenceEnvironment {
     func historyScreen(coordinator: AppCoordinator) -> HistoryViewModel {
         HistoryViewModel(
             fetchHistory: makeFetchHistory(),
-            presenter: historyPresenter,
+            mapper: historyMapper,
             changes: observedRepository,
             log: silentLog,
             selectedDay: coordinator.selectedDay,

@@ -13,7 +13,7 @@ final class HistoryCollectionViewController: UIViewController {
     private let viewModel: HistoryViewModel
     private var watching: Task<Void, Never>?
     private(set) var collectionView: UICollectionView!
-    private var dataSource: UICollectionViewDiffableDataSource<Section, HistoryViewState.Row>!
+    private var dataSource: UICollectionViewDiffableDataSource<Section, HistoryViewData.Row>!
 
     // MARK: - Public
 
@@ -31,8 +31,8 @@ final class HistoryCollectionViewController: UIViewController {
         configureCollectionView()
         configureDataSource()
 
-        viewModel.onStateChange = { [weak self] state in self?.apply(state) }
-        apply(viewModel.state)
+        viewModel.onViewDataChange = { [weak self] viewData in self?.apply(viewData) }
+        apply(viewModel.viewData)
 
         watching = Task { await viewModel.observe() }
     }
@@ -41,17 +41,30 @@ final class HistoryCollectionViewController: UIViewController {
         watching?.cancel()
     }
 
-    func apply(_ state: HistoryViewState) {
-        title = state.title
-        navigationItem.prompt = state.emptyText ?? state.summaryText
+    func apply(_ viewData: HistoryViewData) {
+        title = viewData.title
 
-        var snapshot = NSDiffableDataSourceSnapshot<Section, HistoryViewState.Row>()
-        snapshot.appendSections([.main])
-        snapshot.appendItems(state.rows, toSection: .main)
-        dataSource.apply(snapshot, animatingDifferences: true)
+        switch viewData.state {
+        case .loading:
+            navigationItem.prompt = nil
+            show([])
+        case .content(let content):
+            navigationItem.prompt = content.summaryText
+            show(content.rows)
+        case .failed(let message):
+            navigationItem.prompt = message
+            show([])
+        }
     }
 
     // MARK: - Private
+
+    private func show(_ rows: [HistoryViewData.Row]) {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, HistoryViewData.Row>()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(rows, toSection: .main)
+        dataSource.apply(snapshot, animatingDifferences: true)
+    }
 
     private func configureCollectionView() {
         var configuration = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
@@ -68,7 +81,7 @@ final class HistoryCollectionViewController: UIViewController {
     }
 
     private func configureDataSource() {
-        let registration = UICollectionView.CellRegistration<UICollectionViewListCell, HistoryViewState.Row> { cell, _, row in
+        let registration = UICollectionView.CellRegistration<UICollectionViewListCell, HistoryViewData.Row> { cell, _, row in
             var content = cell.defaultContentConfiguration()
             content.text = row.dayText
             content.secondaryText = [row.badgeText, row.totalText].compactMap { $0 }.joined(separator: " · ")

@@ -5,12 +5,12 @@ import HydrationDomain
 public final class HistoryViewModel: ObservableObject {
     public static let visibleDays = 14
 
-    @Published public private(set) var state: HistoryViewState = .placeholder
+    @Published public private(set) var viewData: HistoryViewData
 
-    public var onStateChange: ((HistoryViewState) -> Void)?
+    public var onViewDataChange: ((HistoryViewData) -> Void)?
 
     private let fetchHistory: FetchHistoryUseCase
-    private let presenter: HistoryPresenter
+    private let mapper: HistoryViewDataMapper
     private let changes: DrinkChanges
     private let log: HydrationLog
     private let onDaySelected: (Date) -> Void
@@ -23,18 +23,19 @@ public final class HistoryViewModel: ObservableObject {
 
     public init(
         fetchHistory: FetchHistoryUseCase,
-        presenter: HistoryPresenter,
+        mapper: HistoryViewDataMapper,
         changes: DrinkChanges,
         log: HydrationLog,
         selectedDay: Date,
         onDaySelected: @escaping (Date) -> Void
     ) {
         self.fetchHistory = fetchHistory
-        self.presenter = presenter
+        self.mapper = mapper
         self.changes = changes
         self.log = log
         self.selectedDay = selectedDay
         self.onDaySelected = onDaySelected
+        self.viewData = mapper.loading()
     }
 
     public func observe() async {
@@ -56,7 +57,7 @@ public final class HistoryViewModel: ObservableObject {
             log.write(.error, "loading the last \(HistoryViewModel.visibleDays) days failed: \(error)")
             summaries = []
             didLoad = false
-            publish(presenter.viewData(for: error))
+            publish(mapper.viewData(for: error))
         }
     }
 
@@ -79,11 +80,11 @@ public final class HistoryViewModel: ObservableObject {
     }
 
     private func render() {
-        publish(presenter.present(summaries: summaries, selected: selectedDay))
+        publish(mapper.viewData(for: summaries, selected: selectedDay))
     }
 
-    private func publish(_ newState: HistoryViewState) {
-        state = newState
-        onStateChange?(newState)
+    private func publish(_ newViewData: HistoryViewData) {
+        viewData = newViewData
+        onViewDataChange?(newViewData)
     }
 }

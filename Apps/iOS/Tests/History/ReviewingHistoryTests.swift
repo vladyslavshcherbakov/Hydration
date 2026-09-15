@@ -31,8 +31,8 @@ final class ReviewingHistoryTests: XCTestCase {
         let screen = environment.historyScreen(coordinator: coordinator)
         await screen.load()
 
-        XCTAssertEqual(screen.state.rows.count, 14)
-        XCTAssertEqual(screen.state.rows.first?.totalText, "2.6 L")
+        XCTAssertEqual(try screen.content.rows.count, 14)
+        XCTAssertEqual(try screen.content.rows.first?.totalText, "2.6 L")
     }
 
     func test_historyScreen_whenAGoalWasMet_marksThatDay() async throws {
@@ -41,10 +41,10 @@ final class ReviewingHistoryTests: XCTestCase {
         let screen = environment.historyScreen(coordinator: coordinator)
         await screen.load()
 
-        XCTAssertEqual(screen.state.summaryText, "2 of 14 days on target")
-        XCTAssertEqual(screen.state.rows[0].badgeText, "Goal")
-        XCTAssertNil(screen.state.rows[1].badgeText)
-        XCTAssertEqual(screen.state.rows[1].accent, .warning)
+        XCTAssertEqual(try screen.content.summaryText, "2 of 14 days on target")
+        XCTAssertEqual(try screen.content.rows[0].badgeText, "Goal")
+        XCTAssertNil(try screen.content.rows[1].badgeText)
+        XCTAssertEqual(try screen.content.rows[1].accent, .warning)
     }
 
     func test_historyRow_whenTapped_isHighlighted() async throws {
@@ -52,12 +52,12 @@ final class ReviewingHistoryTests: XCTestCase {
 
         let screen = environment.historyScreen(coordinator: coordinator)
         await screen.load()
-        let day = try XCTUnwrap(screen.state.rows[1].id)
+        let day = try XCTUnwrap(try screen.content.rows[1].id)
 
         screen.select(rowID: day)
 
-        XCTAssertEqual(screen.state.rows[1].isSelected, true)
-        XCTAssertEqual(screen.state.rows.filter(\.isSelected).count, 1)
+        XCTAssertEqual(try screen.content.rows[1].isSelected, true)
+        XCTAssertEqual(try screen.content.rows.filter(\.isSelected).count, 1)
     }
 
     func test_selectedDay_whenTheHistoryScreenIsReopened_isStillTicked() async throws {
@@ -65,12 +65,12 @@ final class ReviewingHistoryTests: XCTestCase {
 
         let firstVisit = environment.historyScreen(coordinator: coordinator)
         await firstVisit.load()
-        firstVisit.select(rowID: try XCTUnwrap(firstVisit.state.rows[2].id))
+        firstVisit.select(rowID: try XCTUnwrap(try firstVisit.content.rows[2].id))
 
         let secondVisit = environment.historyScreen(coordinator: coordinator)
         await secondVisit.load()
 
-        XCTAssertEqual(secondVisit.state.rows[2].isSelected, true)
+        XCTAssertEqual(try secondVisit.content.rows[2].isSelected, true)
     }
 
     func test_historyRow_whenShown_isLabelledWithItsWeekdayAndDate() async throws {
@@ -79,16 +79,16 @@ final class ReviewingHistoryTests: XCTestCase {
         let screen = environment.historyScreen(coordinator: coordinator)
         await screen.load()
 
-        XCTAssertEqual(screen.state.rows[1].dayText, "Mon, 13 Nov")
-        XCTAssertEqual(screen.state.rows[2].dayText, "Sun, 12 Nov")
+        XCTAssertEqual(try screen.content.rows[1].dayText, "Mon, 13 Nov")
+        XCTAssertEqual(try screen.content.rows[2].dayText, "Sun, 12 Nov")
     }
 
     func test_historyScreen_whenNothingWasEverLogged_showsFourteenEmptyDays() async throws {
         let screen = environment.historyScreen(coordinator: coordinator)
         await screen.load()
 
-        XCTAssertEqual(screen.state.summaryText, "0 of 14 days on target")
-        XCTAssertTrue(screen.state.rows.allSatisfy { $0.totalText == "0 L" })
+        XCTAssertEqual(try screen.content.summaryText, "0 of 14 days on target")
+        XCTAssertTrue(try screen.content.rows.allSatisfy { $0.totalText == "0 L" })
     }
 
     func test_historyRow_whenItIsTheCurrentDay_saysTodayInsteadOfTheDate() async throws {
@@ -96,7 +96,7 @@ final class ReviewingHistoryTests: XCTestCase {
 
         await screen.load()
 
-        XCTAssertEqual(screen.state.rows[0].dayText, "Today")
+        XCTAssertEqual(try screen.content.rows[0].dayText, "Today")
     }
 
     // MARK: - Helpers

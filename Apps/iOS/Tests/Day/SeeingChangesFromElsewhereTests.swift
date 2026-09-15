@@ -34,24 +34,24 @@ final class SeeingChangesFromElsewhereTests: XCTestCase {
         let coordinator = AppCoordinator(selectedDay: environment.today)
         let screen = environment.historyScreen(coordinator: coordinator)
         let watching = Task { await screen.observe() }
-        try await waitFor { screen.state.rows.count == HistoryViewModel.visibleDays }
+        try await waitFor { try screen.content.rows.count == HistoryViewModel.visibleDays }
 
         try await environment.log(2600, at: environment.date(hour: 9))
 
-        try await waitFor { screen.state.rows.first?.totalText == "2.6 L" }
+        try await waitFor { try screen.content.rows.first?.totalText == "2.6 L" }
         watching.cancel()
     }
 
     // MARK: - Helpers
 
     private func waitFor(
-        _ condition: () -> Bool,
+        _ condition: () throws -> Bool,
         within attempts: Int = 200,
         file: StaticString = #filePath,
         line: UInt = #line
     ) async throws {
         for _ in 0..<attempts {
-            if condition() { return }
+            if (try? condition()) == true { return }
             try await Task.sleep(nanoseconds: 10_000_000)
         }
         XCTFail("the screen never reached the expected state", file: file, line: line)

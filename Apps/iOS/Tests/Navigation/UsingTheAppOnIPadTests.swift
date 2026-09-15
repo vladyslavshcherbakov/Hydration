@@ -27,7 +27,7 @@ final class UsingTheAppOnIPadTests: XCTestCase {
 
         let detail = environment.historyScreen(coordinator: coordinator)
         await detail.load()
-        XCTAssertEqual(detail.state.summaryText, "1 of 14 days on target")
+        XCTAssertEqual(try detail.content.summaryText, "1 of 14 days on target")
     }
 
     func test_historyButton_whenTappedOnIPad_leavesTodayVisible() async throws {
@@ -51,15 +51,15 @@ final class UsingTheAppOnIPadTests: XCTestCase {
         coordinator.show(.history)
         let narrowScreen = environment.historyScreen(coordinator: coordinator)
         await narrowScreen.load()
-        XCTAssertEqual(narrowScreen.state.summaryText, "1 of 14 days on target")
+        XCTAssertEqual(try narrowScreen.content.summaryText, "1 of 14 days on target")
 
         coordinator.apply(layout: .split)
 
         XCTAssertEqual(coordinator.visibleRoute, .history)
         let wideScreen = environment.historyScreen(coordinator: coordinator)
         await wideScreen.load()
-        XCTAssertEqual(wideScreen.state.summaryText, "1 of 14 days on target")
-        XCTAssertEqual(wideScreen.state.rows.first?.totalText, "2.6 L")
+        XCTAssertEqual(try wideScreen.content.summaryText, "1 of 14 days on target")
+        XCTAssertEqual(try wideScreen.content.rows.first?.totalText, "2.6 L")
     }
 
     func test_selectedDay_whenTheWindowWidens_staysSelected() async throws {
@@ -67,15 +67,15 @@ final class UsingTheAppOnIPadTests: XCTestCase {
         let coordinator = AppCoordinator(layout: .stack, selectedDay: environment.today)
         let narrowScreen = environment.historyScreen(coordinator: coordinator)
         await narrowScreen.load()
-        narrowScreen.select(rowID: try XCTUnwrap(narrowScreen.state.rows[1].id))
+        narrowScreen.select(rowID: try XCTUnwrap(try narrowScreen.content.rows[1].id))
 
         coordinator.apply(layout: .split)
         let wideScreen = environment.historyScreen(coordinator: coordinator)
         await wideScreen.load()
 
-        XCTAssertEqual(wideScreen.state.rows[1].isSelected, true)
-        XCTAssertEqual(wideScreen.state.rows.filter(\.isSelected).count, 1)
-        XCTAssertEqual(wideScreen.state.rows.first?.totalText, "2.6 L")
+        XCTAssertEqual(try wideScreen.content.rows[1].isSelected, true)
+        XCTAssertEqual(try wideScreen.content.rows.filter(\.isSelected).count, 1)
+        XCTAssertEqual(try wideScreen.content.rows.first?.totalText, "2.6 L")
     }
 
     func test_historyScreen_whenTheWindowNarrows_staysOpen() async throws {
@@ -91,7 +91,7 @@ final class UsingTheAppOnIPadTests: XCTestCase {
 
         let narrowScreen = environment.historyScreen(coordinator: coordinator)
         await narrowScreen.load()
-        XCTAssertEqual(narrowScreen.state.rows.first?.totalText, "2.6 L")
+        XCTAssertEqual(try narrowScreen.content.rows.first?.totalText, "2.6 L")
     }
 
     func test_todayScreen_whenAnotherWindowLogsWater_showsIt() async throws {
@@ -147,6 +147,6 @@ final class UsingTheAppOnIPadTests: XCTestCase {
 
         let detail = environment.historyScreen(coordinator: coordinator)
         await detail.load()
-        XCTAssertEqual(detail.state.rows.first?.totalText, "2.6 L")
+        XCTAssertEqual(try detail.content.rows.first?.totalText, "2.6 L")
     }
 }

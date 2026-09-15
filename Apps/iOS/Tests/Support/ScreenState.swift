@@ -24,3 +24,22 @@ extension DayViewModel {
         }
     }
 }
+
+// MARK: - HistoryViewModel
+
+@MainActor
+extension HistoryViewModel {
+    var content: HistoryViewData.Content {
+        get throws {
+            guard case .content(let content) = viewData.state else { throw ScreenStateMismatch.notContent }
+            return content
+        }
+    }
+
+    var failure: String {
+        get throws {
+            guard case .failed(let message) = viewData.state else { throw ScreenStateMismatch.notFailed }
+            return message
+        }
+    }
+}

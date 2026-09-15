@@ -2,7 +2,27 @@ import Foundation
 import HydrationDesignSystem
 import HydrationDomain
 
-public struct HistoryViewState: Equatable, Sendable {
+public struct HistoryViewData: Equatable, Sendable {
+
+    // MARK: - State
+
+    public enum State: Equatable, Sendable {
+        case loading
+        case content(Content)
+        case failed(String)
+    }
+
+    // MARK: - Content
+
+    public struct Content: Equatable, Sendable {
+        public let summaryText: String
+        public let rows: [Row]
+
+        public init(summaryText: String, rows: [Row]) {
+            self.summaryText = summaryText
+            self.rows = rows
+        }
+    }
 
     // MARK: - Row
 
@@ -38,16 +58,10 @@ public struct HistoryViewState: Equatable, Sendable {
     }
 
     public let title: String
-    public let summaryText: String
-    public let rows: [Row]
-    public let emptyText: String?
+    public let state: State
 
-    public init(title: String, summaryText: String, rows: [Row], emptyText: String?) {
+    public init(title: String, state: State) {
         self.title = title
-        self.summaryText = summaryText
-        self.rows = rows
-        self.emptyText = emptyText
+        self.state = state
     }
-
-    public static let placeholder = HistoryViewState(title: "History", summaryText: "", rows: [], emptyText: nil)
 }
