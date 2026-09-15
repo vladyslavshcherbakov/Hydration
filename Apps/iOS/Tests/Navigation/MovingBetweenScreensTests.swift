@@ -23,6 +23,14 @@ final class MovingBetweenScreensTests: XCTestCase {
 
     // MARK: - Tests
 
+    func test_historyButton_whenTheDayIsOpen_isLabelledHistory() async throws {
+        let today = environment.dayScreen(coordinator: coordinator)
+
+        await today.load()
+
+        XCTAssertEqual(today.viewData.historyTitle, "History")
+    }
+
     func test_historyButton_whenTapped_opensTheHistoryScreen() async throws {
         try await environment.log(2600, at: environment.date(hour: 11))
         let today = environment.dayScreen(coordinator: coordinator)

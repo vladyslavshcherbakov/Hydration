@@ -35,6 +35,14 @@ final class ReviewingHistoryTests: XCTestCase {
         XCTAssertEqual(try screen.content.rows.first?.totalText, "2.6 L")
     }
 
+    func test_historyRow_whenShown_carriesTheIdentifierTheUITestsLookFor() async throws {
+        let screen = environment.historyScreen(coordinator: coordinator)
+
+        await screen.load()
+
+        XCTAssertEqual(try screen.content.rows.first?.identifier, "history.row.2023-11-14")
+    }
+
     func test_historyScreen_whenAGoalWasMet_marksThatDay() async throws {
         try await seedThreeDays()
 

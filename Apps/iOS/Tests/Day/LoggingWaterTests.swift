@@ -29,6 +29,24 @@ final class LoggingWaterTests: XCTestCase {
         XCTAssertTrue(try screen.content.entries.isEmpty)
     }
 
+    func test_quickAddButton_whenTheDayHasRoom_namesTheAmountItWillAdd() async throws {
+        let screen = environment.dayScreen()
+
+        await screen.load()
+
+        XCTAssertEqual(try screen.content.quickAddTitle, "Add 250 ml")
+        XCTAssertTrue(try screen.content.isQuickAddEnabled)
+    }
+
+    func test_quickAddButton_whenTheDayIsAtTheSafetyLimit_isDisabled() async throws {
+        try await environment.log(6000, at: environment.date(hour: 9))
+        let screen = environment.dayScreen()
+
+        await screen.load()
+
+        XCTAssertFalse(try screen.content.isQuickAddEnabled)
+    }
+
     func test_dailyTotal_whenTwoDifferentSizesAreLogged_addsThemUp() async throws {
         try await environment.log(300, at: environment.date(hour: 9))
         try await environment.log(450, at: environment.date(hour: 11))
