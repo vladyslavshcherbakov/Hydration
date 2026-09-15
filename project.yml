@@ -137,6 +137,14 @@ targets:
         product: HydrationDesignSystem
       - package: HydrationKit
         product: HydrationTestSupport
+      - package: HydrationKit
+        product: HydrationDomain
+      - package: HydrationKit
+        product: HydrationPersistence
+      - package: HydrationKit
+        product: HydrationPairedDevice
+      - package: HydrationKit
+        product: HydrationRouting
 
   HydrationWatchTests:
     type: bundle.unit-test
@@ -152,6 +160,14 @@ targets:
         product: HydrationDesignSystem
       - package: HydrationKit
         product: HydrationTestSupport
+      - package: HydrationKit
+        product: HydrationDomain
+      - package: HydrationKit
+        product: HydrationPersistence
+      - package: HydrationKit
+        product: HydrationPairedDevice
+      - package: HydrationKit
+        product: HydrationRouting
 
   HydrationWidgetTests:
     type: bundle.unit-test
@@ -170,6 +186,14 @@ targets:
         product: HydrationDesignSystem
       - package: HydrationKit
         product: HydrationTestSupport
+      - package: HydrationKit
+        product: HydrationDomain
+      - package: HydrationKit
+        product: HydrationPersistence
+      - package: HydrationKit
+        product: HydrationPairedDevice
+      - package: HydrationKit
+        product: HydrationRouting
 
   HydrationUITests:
     type: bundle.ui-testing

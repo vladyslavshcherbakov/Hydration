@@ -46,9 +46,13 @@ struct HydrationTimelineProvider: TimelineProvider {
 
     func makeTimeline() async -> Timeline<HydrationEntry> {
         let entry = await makeEntry()
-        let nextRefresh = entry.date.addingTimeInterval(Self.refreshInterval)
-        log.write(.info, "the widget timeline shows \(entry.viewData) read at \(entry.date), next refresh at \(nextRefresh)")
-        return Timeline(entries: [entry], policy: .after(nextRefresh))
+        let wakeUpAt = nextRefresh(after: entry)
+        log.write(.info, "the widget timeline shows \(entry.viewData) read at \(entry.date), next refresh at \(wakeUpAt)")
+        return Timeline(entries: [entry], policy: .after(wakeUpAt))
+    }
+
+    func nextRefresh(after entry: HydrationEntry) -> Date {
+        entry.date.addingTimeInterval(Self.refreshInterval)
     }
 
     func makeEntry() async -> HydrationEntry {

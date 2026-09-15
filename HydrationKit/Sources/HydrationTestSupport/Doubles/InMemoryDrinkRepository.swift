@@ -22,18 +22,32 @@ public final class InMemoryDrinkRepository: DrinkRepository, LocalDrinkWriter, @
     }
 
     public func save(_ entry: DrinkEntry) async throws {
+        put(entry)
+    }
+
+    public func delete(id: UUID) async throws {
+        remove(id)
+    }
+
+    public func replaceEntries(in range: DateInterval, with arriving: [DrinkEntry]) async throws {
+        replace(range, with: arriving)
+    }
+
+    // MARK: - Private
+
+    private func put(_ entry: DrinkEntry) {
         lock.lock()
         entries[entry.id] = entry
         lock.unlock()
     }
 
-    public func delete(id: UUID) async throws {
+    private func remove(_ id: UUID) {
         lock.lock()
         entries[id] = nil
         lock.unlock()
     }
 
-    public func replaceEntries(in range: DateInterval, with arriving: [DrinkEntry]) async throws {
+    private func replace(_ range: DateInterval, with arriving: [DrinkEntry]) {
         lock.lock()
         for entry in entries.values where range.contains(entry.day) {
             entries[entry.id] = nil

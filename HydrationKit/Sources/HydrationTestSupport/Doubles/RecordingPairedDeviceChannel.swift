@@ -7,6 +7,8 @@ public final class RecordingPairedDeviceChannel: PairedDeviceChannel, @unchecked
     private var sendOnReachable: OnPairedDeviceReachable?
     private let lock = NSLock()
 
+    // MARK: - Public
+
     public init() {}
 
     public var sent: [PairedDeviceMessage] {
@@ -55,10 +57,7 @@ public final class RecordingPairedDeviceChannel: PairedDeviceChannel, @unchecked
     }
 
     public func becomeReachable() async {
-        lock.lock()
-        let send = self.sendOnReachable
-        lock.unlock()
-        await send?()
+        await takeSendOnReachable()?()
     }
 
     public func deliver(_ message: PairedDeviceMessage) async throws {
@@ -67,9 +66,20 @@ public final class RecordingPairedDeviceChannel: PairedDeviceChannel, @unchecked
     }
 
     public func deliver(_ payload: Data) async {
+        await takeReceive()?(payload)
+    }
+
+    // MARK: - Private
+
+    private func takeReceive() -> ReceiveEncodedMessage? {
         lock.lock()
-        let receive = self.receive
-        lock.unlock()
-        await receive?(payload)
+        defer { lock.unlock() }
+        return receive
+    }
+
+    private func takeSendOnReachable() -> OnPairedDeviceReachable? {
+        lock.lock()
+        defer { lock.unlock() }
+        return sendOnReachable
     }
 }
