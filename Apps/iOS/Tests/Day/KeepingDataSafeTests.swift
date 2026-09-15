@@ -38,4 +38,13 @@ final class KeepingDataSafeTests: XCTestCase {
         XCTAssertEqual(try screen.failure.message, "Could not load your hydration data")
         XCTAssertEqual(try screen.failure.accent, .critical)
     }
+
+    func test_historyScreen_whenTheDataCannotBeRead_saysSoInsteadOfShowingEmptyDays() async throws {
+        let coordinator = AppCoordinator(selectedDay: environment.today)
+        let screen = environment.historyScreen(coordinator: coordinator, repository: FailingDrinkRepository())
+
+        await screen.load()
+
+        XCTAssertEqual(try screen.failure, "Could not load history")
+    }
 }

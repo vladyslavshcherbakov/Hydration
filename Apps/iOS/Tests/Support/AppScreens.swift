@@ -32,9 +32,9 @@ extension PersistenceEnvironment {
         )
     }
 
-    func historyScreen(coordinator: AppCoordinator) -> HistoryViewModel {
+    func historyScreen(coordinator: AppCoordinator, repository override: DrinkRepository? = nil) -> HistoryViewModel {
         HistoryViewModel(
-            fetchHistory: makeFetchHistory(),
+            fetchHistory: makeFetchHistory(repository: override),
             mapper: historyMapper,
             changes: observedRepository,
             log: silentLog,
