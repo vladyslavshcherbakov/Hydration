@@ -6,6 +6,7 @@ public struct WidgetTodayPresenter: Sendable {
     private let calendar: Calendar
     private let locale: Locale
 
+    // MARK: - Public
     public init(calendar: Calendar, locale: Locale) {
         self.calendar = calendar
         self.locale = locale
@@ -56,6 +57,7 @@ public struct WidgetTodayPresenter: Sendable {
         )
     }
 
+    // MARK: - Private
     private var quickAddTitle: String {
         "+\(Volume.quickAdd.milliliters)"
     }

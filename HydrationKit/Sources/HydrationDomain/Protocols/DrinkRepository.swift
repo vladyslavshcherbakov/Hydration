@@ -6,6 +6,7 @@ public protocol DrinkRepository: Sendable {
     func delete(id: UUID) async throws
 }
 
+// MARK: - DrinkRepository
 extension DrinkRepository {
     public func entries(of day: Date, in calendar: Calendar) async throws -> [DrinkEntry] {
         let nextDay = calendar.date(byAdding: .day, value: 1, to: day) ?? day.addingTimeInterval(86_400)

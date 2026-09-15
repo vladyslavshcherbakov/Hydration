@@ -9,6 +9,7 @@ public final class DeepLinkOpener {
     private let currentDay: CurrentDay
     private let log: HydrationLog
 
+    // MARK: - Public
     public init(coordinator: AppCoordinator, addDrink: AddDrinkUseCase, currentDay: CurrentDay, log: HydrationLog) {
         self.coordinator = coordinator
         self.addDrink = addDrink
@@ -41,6 +42,7 @@ public final class DeepLinkOpener {
         return await open(link)
     }
 
+    // MARK: - Private
     private func addDrinkAndShowToday(milliliters: Int) async -> DeepLinkOutcome {
         coordinator.popToRoot()
         do {

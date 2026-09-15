@@ -3,6 +3,8 @@ import HydrationDesignSystem
 import UIKit
 
 final class HistoryCollectionViewController: UIViewController {
+
+    // MARK: - Section
     private enum Section: Hashable {
         case main
     }
@@ -12,6 +14,7 @@ final class HistoryCollectionViewController: UIViewController {
     private(set) var collectionView: UICollectionView!
     private var dataSource: UICollectionViewDiffableDataSource<Section, HistoryViewState.Row>!
 
+    // MARK: - Public
     init(viewModel: HistoryViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -46,6 +49,7 @@ final class HistoryCollectionViewController: UIViewController {
         dataSource.apply(snapshot, animatingDifferences: true)
     }
 
+    // MARK: - Private
     private func configureCollectionView() {
         var configuration = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
         configuration.showsSeparators = true
@@ -77,6 +81,7 @@ final class HistoryCollectionViewController: UIViewController {
     }
 }
 
+// MARK: - HistoryCollectionViewController + UICollectionViewDelegate
 extension HistoryCollectionViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)

@@ -12,6 +12,7 @@ struct HydrationWidgetView: View {
 
     let entry: HydrationEntry
 
+    // MARK: - Public
     var body: some View {
         if #available(iOS 17.0, watchOS 10.0, *) {
             content.containerBackground(.fill.tertiary, for: .widget)
@@ -20,6 +21,7 @@ struct HydrationWidgetView: View {
         }
     }
 
+    // MARK: - Private
     private var content: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(entry.state.title).font(typography.caption).foregroundStyle(.secondary)
@@ -48,6 +50,8 @@ struct HydrationWidgetView: View {
 }
 
 @main
+
+// MARK: - HydrationWidget
 struct HydrationWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(

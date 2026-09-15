@@ -9,6 +9,7 @@ struct HydrationWatchApp: App {
     private let root: CompositionRoot
     private let incomingChanges: IncomingDrinkChanges
 
+    // MARK: - Public
     init() {
         let log = ConsoleLog(category: "hydration-watch")
         let coreDataStack = CoreDataStack.forLaunch(
@@ -47,6 +48,8 @@ struct HydrationWatchApp: App {
     }
 
     @MainActor
+
+    // MARK: - Private
     private func makeTodayViewModel() -> WatchTodayViewModel {
         WatchTodayViewModel(
             fetchProgress: root.makeFetchDay(),

@@ -13,6 +13,7 @@ struct SceneRoot: View {
     let todaySnapshotSender: TodaySnapshotSender
     let observedDrinks: ObservedDrinkRepository
 
+    // MARK: - Public
     init(root: CompositionRoot, todaySnapshotSender: TodaySnapshotSender, observedDrinks: ObservedDrinkRepository) {
         self.root = root
         self.todaySnapshotSender = todaySnapshotSender
@@ -32,6 +33,7 @@ struct SceneRoot: View {
             }
     }
 
+    // MARK: - Private
     private func makeFactory() -> ScreenFactory {
         ScreenFactory(root: root, coordinator: coordinator)
     }

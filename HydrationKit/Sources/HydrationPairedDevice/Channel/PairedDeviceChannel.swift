@@ -9,6 +9,7 @@ public protocol PairedDeviceChannel: Sendable {
     func whenPairedDeviceBecomesReachable(_ send: @escaping OnPairedDeviceReachable)
 }
 
+// MARK: - NoPairedDeviceChannel
 public struct NoPairedDeviceChannel: PairedDeviceChannel {
     public init() {}
 

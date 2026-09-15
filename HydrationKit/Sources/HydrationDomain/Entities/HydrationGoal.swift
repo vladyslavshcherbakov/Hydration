@@ -10,6 +10,7 @@ public struct HydrationGoal: Equatable, Hashable, Sendable {
     }
 }
 
+// MARK: - HydrationStatus
 public enum HydrationStatus: Equatable, Hashable, Sendable {
     case behind
     case onTrack

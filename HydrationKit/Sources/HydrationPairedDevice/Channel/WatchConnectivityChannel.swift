@@ -12,6 +12,7 @@ public final class WatchConnectivityChannel: NSObject, PairedDeviceChannel, @unc
     private var receive: ReceiveEncodedMessage?
     private var sendOnReachable: OnPairedDeviceReachable?
 
+    // MARK: - Public
     public init?(session: WCSession = .default, log: HydrationLog) {
         guard WCSession.isSupported() else {
             log.write(.warning, "this device has no WatchConnectivity session, no change will reach a paired device")
@@ -62,6 +63,7 @@ public final class WatchConnectivityChannel: NSObject, PairedDeviceChannel, @unc
         lock.unlock()
     }
 
+    // MARK: - Private
     private func pairedDeviceBecameReachable() {
         lock.lock()
         let send = self.sendOnReachable
@@ -78,6 +80,7 @@ public final class WatchConnectivityChannel: NSObject, PairedDeviceChannel, @unc
     }
 }
 
+// MARK: - WatchConnectivityChannel + WCSessionDelegate
 extension WatchConnectivityChannel: WCSessionDelegate {
     public func sessionReachabilityDidChange(_ session: WCSession) {
         guard session.isReachable else {

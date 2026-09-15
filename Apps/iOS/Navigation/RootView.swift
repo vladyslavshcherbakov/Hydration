@@ -7,12 +7,14 @@ struct RootView: View {
 
     let factory: ScreenFactory
 
+    // MARK: - Public
     var body: some View {
         content
             .onAppear { coordinator.apply(layout: preferredLayout) }
             .onChange(of: horizontalSizeClass) { _ in coordinator.apply(layout: preferredLayout) }
     }
 
+    // MARK: - Private
     private var preferredLayout: AppCoordinator.Layout {
         horizontalSizeClass == .regular ? .split : .stack
     }

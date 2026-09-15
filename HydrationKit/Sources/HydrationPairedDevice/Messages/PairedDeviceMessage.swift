@@ -14,6 +14,7 @@ public struct DrinkMessage: Codable, Equatable, Sendable {
     }
 }
 
+// MARK: - DrinkRemovalMessage
 public struct DrinkRemovalMessage: Codable, Equatable, Sendable {
     public let id: UUID
 
@@ -22,6 +23,7 @@ public struct DrinkRemovalMessage: Codable, Equatable, Sendable {
     }
 }
 
+// MARK: - DayOfDrinksMessage
 public struct DayOfDrinksMessage: Codable, Equatable, Sendable {
     public let day: Date
     public let drinks: [DrinkMessage]
@@ -32,9 +34,11 @@ public struct DayOfDrinksMessage: Codable, Equatable, Sendable {
     }
 }
 
+// MARK: - PairedDeviceMessage
 public struct PairedDeviceMessage: Codable, Equatable, Sendable {
     public static let currentVersion = 1
 
+    // MARK: - Content
     public enum Content: Codable, Equatable, Sendable {
         case drinkLogged(DrinkMessage)
         case drinkRemoved(DrinkRemovalMessage)
@@ -50,6 +54,7 @@ public struct PairedDeviceMessage: Codable, Equatable, Sendable {
     }
 }
 
+// MARK: - PairedDeviceMessage + CustomStringConvertible
 extension PairedDeviceMessage: CustomStringConvertible {
     public var description: String {
         switch content {

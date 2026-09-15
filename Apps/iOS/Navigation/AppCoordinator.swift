@@ -6,7 +6,11 @@ public enum AppRoute: Hashable, Sendable {
 }
 
 @MainActor
+
+// MARK: - AppCoordinator
 public final class AppCoordinator: ObservableObject {
+
+    // MARK: - Layout
     public enum Layout: Equatable, Sendable {
         case stack
         case split

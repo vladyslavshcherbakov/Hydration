@@ -19,6 +19,7 @@ public final class HistoryViewModel: ObservableObject {
     private var selectedDay: Date
     private var didLoad = false
 
+    // MARK: - Public
     public init(
         fetchHistory: FetchHistoryUseCase,
         presenter: HistoryPresenter,
@@ -68,6 +69,7 @@ public final class HistoryViewModel: ObservableObject {
         render()
     }
 
+    // MARK: - Private
     private func render() {
         publish(presenter.present(summaries: summaries, selected: selectedDay))
     }

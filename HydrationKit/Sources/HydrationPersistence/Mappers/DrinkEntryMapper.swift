@@ -9,6 +9,7 @@ enum MappingError: Error, Equatable {
     case unsupportedSchema(Int16)
 }
 
+// MARK: - DrinkEntryMapper
 enum DrinkEntryMapper {
     static let supportedSchemaVersion: Int16 = 1
 

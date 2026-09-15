@@ -1,6 +1,8 @@
 import SwiftUI
 
 public struct HydrationProgressView: View {
+
+    // MARK: - Style
     public enum Style: Equatable, Sendable {
         case ring(diameter: CGFloat)
         case bar
@@ -10,6 +12,7 @@ public struct HydrationProgressView: View {
     private let accent: SemanticColor
     private let style: Style
 
+    // MARK: - Public
     public init(fraction: Double, accent: SemanticColor, style: Style) {
         self.fraction = fraction
         self.accent = accent
@@ -24,6 +27,7 @@ public struct HydrationProgressView: View {
         }
     }
 
+    // MARK: - Private
     private var filledFraction: Double {
         min(max(fraction, 0), 1)
     }

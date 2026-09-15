@@ -3,6 +3,8 @@ import HydrationDesignSystem
 import HydrationDomain
 
 public struct DayViewState: Equatable, Sendable {
+
+    // MARK: - Entry
     public struct Entry: Equatable, Sendable, Identifiable, Hashable {
         public let id: UUID
         public let amountText: String

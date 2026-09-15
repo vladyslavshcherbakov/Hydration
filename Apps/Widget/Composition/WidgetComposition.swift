@@ -5,6 +5,7 @@ import HydrationPersistence
 import WidgetKit
 
 public enum WidgetComposition {
+
     private static let root: CompositionRoot = {
         let log = ConsoleLog(category: "hydration-widget")
         let coreDataStack = CoreDataStack.forLaunch(
@@ -24,6 +25,7 @@ public enum WidgetComposition {
         )
     }()
 
+    // MARK: - Public
     public static func fetchTodayProgress() -> FetchDayProgressUseCase {
         root.makeFetchDay()
     }

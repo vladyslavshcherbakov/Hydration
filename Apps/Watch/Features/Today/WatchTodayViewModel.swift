@@ -13,6 +13,7 @@ public final class WatchTodayViewModel: ObservableObject {
     private let changes: DrinkChanges
     private let log: HydrationLog
 
+    // MARK: - Public
     public init(
         fetchProgress: FetchDayProgressUseCase,
         addDrink: AddDrinkUseCase,
@@ -52,6 +53,7 @@ public final class WatchTodayViewModel: ObservableObject {
         await show("undoing the last drink") { try await removeLastDrink.execute(on: currentDay.start()) }
     }
 
+    // MARK: - Private
     private func show(_ attemptDescription: String, _ loadProgress: () async throws -> DailyProgress) async {
         do {
             state = presenter.present(progress: try await loadProgress())

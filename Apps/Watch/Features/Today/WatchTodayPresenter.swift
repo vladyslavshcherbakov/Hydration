@@ -9,6 +9,7 @@ public struct WatchTodayPresenter: Sendable {
     private let locale: Locale
     private let presets: [Int]
 
+    // MARK: - Public
     public init(calendar: Calendar, locale: Locale, presets: [Int] = WatchTodayPresenter.defaultPresets) {
         self.calendar = calendar
         self.locale = locale
@@ -60,6 +61,7 @@ public struct WatchTodayPresenter: Sendable {
         )
     }
 
+    // MARK: - Private
     private var disabledPresets: [WatchTodayViewState.Preset] {
         presets.map { WatchTodayViewState.Preset(milliliters: $0, title: "+\($0)", isEnabled: false) }
     }

@@ -14,6 +14,7 @@ public final class DayViewModel: ObservableObject {
     private let log: HydrationLog
     private let onHistoryRequested: () -> Void
 
+    // MARK: - Public
     public init(
         day: Date,
         fetchProgress: FetchDayProgressUseCase,
@@ -59,6 +60,7 @@ public final class DayViewModel: ObservableObject {
         onHistoryRequested()
     }
 
+    // MARK: - Private
     private func show(_ attemptDescription: String, _ loadProgress: () async throws -> DailyProgress) async {
         do {
             state = presenter.present(progress: try await loadProgress())

@@ -7,6 +7,7 @@ public enum DeepLink: Equatable, Hashable, Sendable {
     case addDrink(milliliters: Int)
 }
 
+// MARK: - DeepLinkOutcome
 public enum DeepLinkOutcome: Equatable, Sendable {
     case handled
     case rejected(HydrationError)

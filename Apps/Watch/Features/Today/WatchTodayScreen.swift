@@ -5,6 +5,7 @@ import SwiftUI
 struct WatchTodayScreen: View {
     @StateObject private var viewModel: WatchTodayViewModel
 
+    // MARK: - Public
     init(viewModel: @autoclosure @escaping () -> WatchTodayViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel())
     }
@@ -27,6 +28,7 @@ struct WatchTodayScreen: View {
         .task { await viewModel.observe() }
     }
 
+    // MARK: - Private
     private func totals(_ state: WatchTodayViewState) -> some View {
         VStack(spacing: 2) {
             HydrationTotalLabel(

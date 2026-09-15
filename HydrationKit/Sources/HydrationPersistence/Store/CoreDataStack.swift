@@ -8,6 +8,7 @@ public final class CoreDataStack {
 
     public let container: NSPersistentContainer
 
+    // MARK: - Public
     public var storeURL: URL? {
         container.persistentStoreDescriptions.first?.url
     }
@@ -83,6 +84,7 @@ public final class CoreDataStack {
         return model
     }()
 
+    // MARK: - Private
     private static var identifier: NSAttributeDescription {
         attribute(named: "id", type: .UUIDAttributeType, optional: true)
     }

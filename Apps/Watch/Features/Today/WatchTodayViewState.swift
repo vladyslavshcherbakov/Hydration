@@ -3,6 +3,8 @@ import HydrationDesignSystem
 import HydrationDomain
 
 public struct WatchTodayViewState: Equatable, Sendable {
+
+    // MARK: - Preset
     public struct Preset: Equatable, Sendable, Identifiable, Hashable {
         public let id: Int
         public let title: String

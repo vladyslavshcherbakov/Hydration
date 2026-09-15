@@ -5,10 +5,7 @@ public final class CoreDataDrinkRepository: DrinkRepository, LocalDrinkWriter, @
     private let coreDataStack: CoreDataStack
     private let log: HydrationLog
 
-    private var container: NSPersistentContainer {
-        coreDataStack.container
-    }
-
+    // MARK: - Public
     public init(coreDataStack: CoreDataStack, log: HydrationLog) {
         self.coreDataStack = coreDataStack
         self.log = log
@@ -47,6 +44,11 @@ public final class CoreDataDrinkRepository: DrinkRepository, LocalDrinkWriter, @
             try Self.store(entries, using: context)
             try context.save()
         }
+    }
+
+    // MARK: - Private
+    private var container: NSPersistentContainer {
+        coreDataStack.container
     }
 
     private static func deleteEntries(in range: DateInterval, missingFrom entries: [DrinkEntry], using context: NSManagedObjectContext) throws {

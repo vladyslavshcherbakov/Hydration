@@ -7,6 +7,7 @@ struct DayScreen: View {
 
     private let showsHistory: Bool
 
+    // MARK: - Public
     init(viewModel: @autoclosure @escaping () -> DayViewModel, showsHistory: Bool) {
         _viewModel = StateObject(wrappedValue: viewModel())
         self.showsHistory = showsHistory
@@ -58,6 +59,7 @@ struct DayScreen: View {
         .task { await viewModel.observe() }
     }
 
+    // MARK: - Private
     private func progress(_ state: DayViewState) -> some View {
         VStack(spacing: 24) {
             ZStack {

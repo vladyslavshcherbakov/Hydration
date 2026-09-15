@@ -4,6 +4,7 @@ public enum PairedDeviceMessageError: Error, Equatable {
     case unsupportedVersion(Int)
 }
 
+// MARK: - PairedDeviceMessageCoder
 public enum PairedDeviceMessageCoder {
     public static func encode(_ message: PairedDeviceMessage) throws -> Data {
         try JSONEncoder().encode(message)
