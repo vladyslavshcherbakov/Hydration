@@ -196,6 +196,7 @@ schemes:
         - HydrationUITests
         - package: HydrationKit/HydrationDomainTests
         - package: HydrationKit/HydrationPairedDeviceTests
+        - package: HydrationKit/HydrationRoutingTests
         - package: HydrationKit/HydrationPersistenceTests
     run:
       config: Debug

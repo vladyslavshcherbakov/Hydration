@@ -31,6 +31,10 @@ let package = Package(
             dependencies: ["HydrationPairedDevice", "HydrationDomain", "HydrationTestSupport"]
         ),
         .testTarget(
+            name: "HydrationRoutingTests",
+            dependencies: ["HydrationRouting", "HydrationDomain"]
+        ),
+        .testTarget(
             name: "HydrationPersistenceTests",
             dependencies: ["HydrationPersistence", "HydrationDomain", "HydrationTestSupport"]
         )
