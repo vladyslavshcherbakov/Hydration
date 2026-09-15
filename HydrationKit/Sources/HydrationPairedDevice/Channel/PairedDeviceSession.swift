@@ -1,15 +1,16 @@
-#if canImport(WatchConnectivity)
 import Foundation
-import WatchConnectivity
 
 public protocol PairedDeviceSession: AnyObject {
     var isReachable: Bool { get }
     var stateDescription: String { get }
 
-    func start(with delegate: WCSessionDelegate)
+    func start(deliveringTo receiver: AnyObject)
     func send(_ userInfo: [String: Any], onFailure: @escaping (Error) -> Void)
     func queue(_ userInfo: [String: Any])
 }
+
+#if canImport(WatchConnectivity)
+import WatchConnectivity
 
 // MARK: - WCSession + PairedDeviceSession
 
@@ -23,8 +24,8 @@ extension WCSession: PairedDeviceSession {
         return parts.joined(separator: ", ")
     }
 
-    public func start(with delegate: WCSessionDelegate) {
-        self.delegate = delegate
+    public func start(deliveringTo receiver: AnyObject) {
+        delegate = receiver as? WCSessionDelegate
         activate()
     }
 

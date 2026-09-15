@@ -1,4 +1,5 @@
 import HydrationDomain
+import HydrationTestSupport
 import XCTest
 
 final class DailySummaryTests: XCTestCase {

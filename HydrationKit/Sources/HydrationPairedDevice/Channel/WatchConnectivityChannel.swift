@@ -18,7 +18,7 @@ public final class WatchConnectivityChannel: NSObject, PairedDeviceChannel, @unc
         self.session = session
         self.log = log
         super.init()
-        session.start(with: self)
+        session.start(deliveringTo: self)
     }
 
     public static func forThisDevice(log: HydrationLog) -> PairedDeviceChannel {

@@ -1,7 +1,5 @@
-#if canImport(WatchConnectivity)
 import Foundation
 import HydrationPairedDevice
-import WatchConnectivity
 
 public final class RecordingPairedDeviceSession: PairedDeviceSession, @unchecked Sendable {
     public var isReachable: Bool
@@ -21,7 +19,7 @@ public final class RecordingPairedDeviceSession: PairedDeviceSession, @unchecked
         "a recorded session, reachable \(isReachable)"
     }
 
-    public func start(with delegate: WCSessionDelegate) {
+    public func start(deliveringTo receiver: AnyObject) {
         started = true
     }
 
@@ -40,4 +38,3 @@ public final class RecordingPairedDeviceSession: PairedDeviceSession, @unchecked
         userInfo["payload"] as? Data
     }
 }
-#endif
