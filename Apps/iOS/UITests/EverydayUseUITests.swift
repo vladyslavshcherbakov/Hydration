@@ -75,14 +75,6 @@ final class EverydayUseUITests: XCTestCase {
         XCTAssertTrue(total.waitForExistence(timeout: 5))
         XCTAssertTrue(total.waitForLabel("0.25 L", timeout: 5))
     }
-}
-
-private extension XCUIElement {
-    func waitForLabel(_ expected: String, timeout: TimeInterval) -> Bool {
-        let predicate = NSPredicate(format: "label == %@", expected)
-        let expectation = XCTNSPredicateExpectation(predicate: predicate, object: self)
-        return XCTWaiter().wait(for: [expectation], timeout: timeout) == .completed
-    }
 
     func test_loggedDrink_whenSwipedAway_leavesTheTotal() {
         quickAdd.tap()
@@ -93,5 +85,13 @@ private extension XCUIElement {
         app.buttons["Remove"].tap()
 
         XCTAssertTrue(total.waitForLabel("0 L", timeout: 5))
+    }
+}
+
+private extension XCUIElement {
+    func waitForLabel(_ expected: String, timeout: TimeInterval) -> Bool {
+        let predicate = NSPredicate(format: "label == %@", expected)
+        let expectation = XCTNSPredicateExpectation(predicate: predicate, object: self)
+        return XCTWaiter().wait(for: [expectation], timeout: timeout) == .completed
     }
 }

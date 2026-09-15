@@ -23,7 +23,7 @@ extension PersistenceEnvironment {
             removeDrink: makeRemoveDrink(repository: override),
             presenter: dayPresenter,
             changes: observedRepository,
-            log: recordedLog,
+            log: silentLog,
             onHistoryRequested: { coordinator?.show(.history) }
         )
     }
@@ -33,13 +33,13 @@ extension PersistenceEnvironment {
             fetchHistory: makeFetchHistory(),
             presenter: historyPresenter,
             changes: observedRepository,
-            log: recordedLog,
+            log: silentLog,
             selectedDay: coordinator.selectedDay,
             onDaySelected: { coordinator.select(day: $0) }
         )
     }
 
     func deepLinkOpener(coordinator: AppCoordinator) -> DeepLinkOpener {
-        DeepLinkOpener(coordinator: coordinator, addDrink: makeAddDrink(), currentDay: makeCurrentDay(), log: recordedLog)
+        DeepLinkOpener(coordinator: coordinator, addDrink: makeAddDrink(), currentDay: makeCurrentDay(), log: silentLog)
     }
 }

@@ -1,7 +1,7 @@
 import Foundation
 import HydrationDomain
 
-public struct DrinkChangeMessage: Equatable, Sendable, Codable {
+public struct DrinkChangeMessage: Equatable, Sendable {
     public static let currentVersion = 1
 
     public let id: String?

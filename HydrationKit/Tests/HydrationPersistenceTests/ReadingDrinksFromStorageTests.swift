@@ -16,7 +16,7 @@ final class ReadingDrinksFromStorageTests: XCTestCase {
         calendar.timeZone = TimeZone(secondsFromGMT: 0)!
         self.calendar = calendar
         coreDataStack = CoreDataStack.inMemory()
-        repository = CoreDataDrinkRepository(coreDataStack: coreDataStack, log: RecordingLog())
+        repository = CoreDataDrinkRepository(coreDataStack: coreDataStack, log: SilentLog())
     }
 
     override func tearDown() {

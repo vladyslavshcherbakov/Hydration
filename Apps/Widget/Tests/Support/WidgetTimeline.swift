@@ -16,7 +16,7 @@ extension PersistenceEnvironment {
             presenter: widgetPresenter,
             dateProvider: dateProvider,
             currentDay: makeCurrentDay(),
-            log: recordedLog
+            log: silentLog
         )
     }
     #endif

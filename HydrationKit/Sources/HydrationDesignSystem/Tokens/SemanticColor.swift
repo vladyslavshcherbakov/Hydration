@@ -1,7 +1,7 @@
 import Foundation
 import HydrationDomain
 
-public enum SemanticColor: String, Equatable, Hashable, Sendable {
+public enum SemanticColor: Equatable, Hashable, Sendable {
     case neutral
     case positive
     case warning

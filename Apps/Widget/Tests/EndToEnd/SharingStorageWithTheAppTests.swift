@@ -76,12 +76,12 @@ final class SharingStorageWithTheAppTests: XCTestCase {
             presenter: WidgetTodayPresenter(calendar: calendar, locale: locale),
             dateProvider: dateProvider,
             currentDay: CurrentDay(dateProvider: dateProvider, calendar: calendar),
-            log: RecordingLog()
+            log: SilentLog()
         )
     }
 
     private func repositoryInItsOwnProcess() -> CoreDataDrinkRepository {
-        CoreDataDrinkRepository(coreDataStack: CoreDataStack(storeURL: storeURL), log: RecordingLog())
+        CoreDataDrinkRepository(coreDataStack: CoreDataStack(storeURL: storeURL), log: SilentLog())
     }
 }
 

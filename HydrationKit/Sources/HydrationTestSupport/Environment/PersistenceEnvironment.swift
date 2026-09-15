@@ -21,7 +21,7 @@ public final class PersistenceEnvironment {
     public var today: Date {
         calendar.dayInterval(for: dateProvider.now()).start
     }
-    public let recordedLog: RecordingLog
+    public let silentLog: SilentLog
 
     public init(now: Date = PersistenceEnvironment.referenceNow, goal: HydrationGoal = .standard) {
         let locale = Locale(identifier: "en_US_POSIX")
@@ -29,7 +29,7 @@ public final class PersistenceEnvironment {
         calendar.timeZone = TimeZone(secondsFromGMT: 0)!
         calendar.locale = locale
 
-        let log = RecordingLog()
+        let log = SilentLog()
         let coreDataStack = CoreDataStack.inMemory()
         let coreDataRepository = CoreDataDrinkRepository(coreDataStack: coreDataStack, log: log)
         let observedRepository = ObservedDrinkRepository(localStorage: coreDataRepository)
@@ -38,7 +38,7 @@ public final class PersistenceEnvironment {
         self.calendar = calendar
         self.locale = locale
         self.goal = goal
-        self.recordedLog = log
+        self.silentLog = log
         self.coreDataStack = coreDataStack
         self.dateProvider = MutableDateProvider(now: now)
         self.localRepository = coreDataRepository

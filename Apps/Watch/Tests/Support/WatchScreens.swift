@@ -17,7 +17,7 @@ extension PersistenceEnvironment {
             presenter: watchPresenter,
             currentDay: makeCurrentDay(),
             changes: observedRepository,
-            log: recordedLog
+            log: silentLog
         )
     }
 }

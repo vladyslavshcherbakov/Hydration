@@ -1,7 +1,7 @@
 import Foundation
 import HydrationDomain
 
-struct DrinkEntryDTO: Equatable, Sendable, Codable {
+struct DrinkEntryDTO: Equatable, Sendable {
     let id: UUID?
     let amountML: Int64
     let day: Date?

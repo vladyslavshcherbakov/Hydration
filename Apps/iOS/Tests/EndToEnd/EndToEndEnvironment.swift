@@ -9,7 +9,7 @@ final class EndToEndEnvironment {
     let dateProvider: MutableDateProvider
     let calendar: Calendar
     let locale: Locale
-    let log = RecordingLog()
+    let log = SilentLog()
 
     init(now: Date = PersistenceEnvironment.referenceNow) {
         let locale = Locale(identifier: "en_US_POSIX")
