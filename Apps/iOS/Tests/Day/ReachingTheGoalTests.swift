@@ -25,9 +25,9 @@ final class ReachingTheGoalTests: XCTestCase {
         let screen = environment.dayScreen()
         await screen.load()
 
-        XCTAssertEqual(screen.state.totalText, "2.5 L")
-        XCTAssertEqual(screen.state.statusText, "Daily goal reached")
-        XCTAssertEqual(screen.state.accent, .positive)
+        XCTAssertEqual(try screen.content.totalText, "2.5 L")
+        XCTAssertEqual(try screen.content.statusText, "Daily goal reached")
+        XCTAssertEqual(try screen.content.accent, .positive)
     }
 
     func test_todayStatus_whenJustUnderTheGoal_doesNotSayItIsReached() async throws {
@@ -36,8 +36,8 @@ final class ReachingTheGoalTests: XCTestCase {
         let screen = environment.dayScreen()
         await screen.load()
 
-        XCTAssertEqual(screen.state.statusText, "On track, 100 ml to go")
-        XCTAssertNotEqual(screen.state.accent, .positive)
+        XCTAssertEqual(try screen.content.statusText, "On track, 100 ml to go")
+        XCTAssertNotEqual(try screen.content.accent, .positive)
     }
 
     func test_status_whenWellOverTheGoal_warnsTheUser() async throws {
@@ -46,7 +46,7 @@ final class ReachingTheGoalTests: XCTestCase {
         let screen = environment.dayScreen()
         await screen.load()
 
-        XCTAssertEqual(screen.state.statusText, "Well above your goal, consider slowing down")
-        XCTAssertEqual(screen.state.accent, .critical)
+        XCTAssertEqual(try screen.content.statusText, "Well above your goal, consider slowing down")
+        XCTAssertEqual(try screen.content.accent, .critical)
     }
 }

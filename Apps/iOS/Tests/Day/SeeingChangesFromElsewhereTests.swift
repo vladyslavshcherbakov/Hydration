@@ -21,11 +21,11 @@ final class SeeingChangesFromElsewhereTests: XCTestCase {
     func test_dayScreen_whenAnotherProcessWritesADrink_showsItWithoutBeingReopened() async throws {
         let screen = environment.dayScreen()
         let watching = Task { await screen.observe() }
-        try await waitFor { screen.state.totalText == "0 L" }
+        try await waitFor { try screen.content.totalText == "0 L" }
 
         try await environment.log(400, at: environment.date(hour: 9))
 
-        try await waitFor { screen.state.totalText == "0.4 L" }
+        try await waitFor { try screen.content.totalText == "0.4 L" }
         watching.cancel()
     }
 

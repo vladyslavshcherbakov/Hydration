@@ -24,11 +24,11 @@ final class LoggingIntoAnEarlierDayTests: XCTestCase {
 
         await earlier.quickAdd()
 
-        XCTAssertEqual(earlier.state.totalText, "0.25 L")
+        XCTAssertEqual(try earlier.content.totalText, "0.25 L")
 
         let today = environment.dayScreen()
         await today.load()
-        XCTAssertEqual(today.state.totalText, "0 L")
+        XCTAssertEqual(try today.content.totalText, "0 L")
     }
 
     func test_earlierDayEntry_whenRecordedOnAnotherDay_showsTheDateItWasRecorded() async throws {
@@ -37,7 +37,7 @@ final class LoggingIntoAnEarlierDayTests: XCTestCase {
 
         await earlier.quickAdd()
 
-        XCTAssertEqual(earlier.state.entries.first?.timeText, "14 Nov, 12:00")
+        XCTAssertEqual(try earlier.content.entries.first?.timeText, "14 Nov, 12:00")
     }
 
     func test_dayTitle_whenAnEarlierDayIsOpen_showsThatDate() async throws {
@@ -54,7 +54,7 @@ final class LoggingIntoAnEarlierDayTests: XCTestCase {
         let earlier = environment.dayScreen(day: yesterday)
         await earlier.load()
 
-        XCTAssertEqual(earlier.state.statusText, "1500 ml behind schedule")
+        XCTAssertEqual(try earlier.content.statusText, "1500 ml behind schedule")
     }
 
     func test_dailyLimit_whenAnEarlierDayIsAlreadyFull_refusesMore() async throws {
@@ -66,7 +66,7 @@ final class LoggingIntoAnEarlierDayTests: XCTestCase {
         await earlier.load()
         await earlier.quickAdd()
 
-        XCTAssertEqual(earlier.state.statusText, "You have reached the daily safety limit")
+        XCTAssertEqual(try earlier.failure.message, "You have reached the daily safety limit")
     }
 
     // MARK: - Helpers

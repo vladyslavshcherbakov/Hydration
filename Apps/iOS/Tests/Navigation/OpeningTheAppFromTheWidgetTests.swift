@@ -42,7 +42,7 @@ final class OpeningTheAppFromTheWidgetTests: XCTestCase {
         let today = environment.dayScreen()
         await today.load()
 
-        XCTAssertEqual(today.state.totalText, "0.4 L")
+        XCTAssertEqual(try today.content.totalText, "0.4 L")
     }
 
     func test_widgetLink_whenItLogsADrink_returnsTheUserToToday() async throws {
@@ -54,7 +54,7 @@ final class OpeningTheAppFromTheWidgetTests: XCTestCase {
 
         let today = environment.dayScreen()
         await today.load()
-        XCTAssertEqual(today.state.totalText, "0.25 L")
+        XCTAssertEqual(try today.content.totalText, "0.25 L")
     }
 
     func test_link_whenOpenedBeforeAnyScreenExists_stillTakesEffect() async throws {
@@ -67,7 +67,7 @@ final class OpeningTheAppFromTheWidgetTests: XCTestCase {
         await today.load()
 
         XCTAssertEqual(coordinator.path, [.history])
-        XCTAssertEqual(today.state.totalText, "0.5 L")
+        XCTAssertEqual(try today.content.totalText, "0.5 L")
     }
 
     func test_todayLink_whenOpenedFromHistory_returnsTheUserToToday() async throws {
@@ -100,7 +100,7 @@ final class OpeningTheAppFromTheWidgetTests: XCTestCase {
         let today = environment.dayScreen()
         await today.load()
 
-        XCTAssertEqual(today.state.totalText, "0 L")
+        XCTAssertEqual(try today.content.totalText, "0 L")
         XCTAssertTrue(coordinator.path.isEmpty)
     }
 

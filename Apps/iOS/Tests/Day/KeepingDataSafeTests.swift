@@ -25,9 +25,9 @@ final class KeepingDataSafeTests: XCTestCase {
         let screen = environment.dayScreen()
         await screen.load()
 
-        XCTAssertEqual(screen.state.totalText, "0.33 L")
-        XCTAssertEqual(screen.state.entries.first?.amountText, "333 ml")
-        XCTAssertEqual(screen.state.entries.first?.timeText, "09:00")
+        XCTAssertEqual(try screen.content.totalText, "0.33 L")
+        XCTAssertEqual(try screen.content.entries.first?.amountText, "333 ml")
+        XCTAssertEqual(try screen.content.entries.first?.timeText, "09:00")
     }
 
     func test_todayScreen_whenTheDataCannotBeRead_saysSo() async throws {
@@ -35,7 +35,7 @@ final class KeepingDataSafeTests: XCTestCase {
 
         await screen.load()
 
-        XCTAssertEqual(screen.state.statusText, "Could not load your hydration data")
-        XCTAssertEqual(screen.state.accent, .critical)
+        XCTAssertEqual(try screen.failure.message, "Could not load your hydration data")
+        XCTAssertEqual(try screen.failure.accent, .critical)
     }
 }

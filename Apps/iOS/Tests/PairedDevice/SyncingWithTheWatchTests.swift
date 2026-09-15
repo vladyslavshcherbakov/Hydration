@@ -32,8 +32,8 @@ final class SyncingWithTheWatchTests: XCTestCase {
         let screen = environment.dayScreen()
         await screen.load()
 
-        XCTAssertEqual(screen.state.totalText, "0.45 L")
-        XCTAssertEqual(screen.state.entries.first?.amountText, "450 ml")
+        XCTAssertEqual(try screen.content.totalText, "0.45 L")
+        XCTAssertEqual(try screen.content.entries.first?.amountText, "450 ml")
     }
 
     func test_todayScreen_whenTheWatchUndoesADrink_removesIt() async throws {
@@ -46,7 +46,7 @@ final class SyncingWithTheWatchTests: XCTestCase {
 
         let screen = environment.dayScreen()
         await screen.load()
-        XCTAssertEqual(screen.state.totalText, "0 L")
+        XCTAssertEqual(try screen.content.totalText, "0 L")
     }
 
     func test_todayScreen_whenTheSameDrinkArrivesTwice_countsItOnce() async throws {
@@ -58,8 +58,8 @@ final class SyncingWithTheWatchTests: XCTestCase {
         let screen = environment.dayScreen()
         await screen.load()
 
-        XCTAssertEqual(screen.state.totalText, "0.5 L")
-        XCTAssertEqual(screen.state.entries.count, 1)
+        XCTAssertEqual(try screen.content.totalText, "0.5 L")
+        XCTAssertEqual(try screen.content.entries.count, 1)
     }
 
     func test_todayScreen_whenTheOtherDeviceSendsSomethingUnreadable_ignoresIt() async throws {
@@ -67,7 +67,7 @@ final class SyncingWithTheWatchTests: XCTestCase {
 
         let screen = environment.dayScreen()
         await screen.load()
-        XCTAssertEqual(screen.state.totalText, "0 L")
+        XCTAssertEqual(try screen.content.totalText, "0 L")
     }
 
     func test_todayScreen_whenTheOtherDeviceSendsAnImpossibleAmount_ignoresIt() async throws {
@@ -77,7 +77,7 @@ final class SyncingWithTheWatchTests: XCTestCase {
 
         let screen = environment.dayScreen()
         await screen.load()
-        XCTAssertEqual(screen.state.totalText, "0 L")
+        XCTAssertEqual(try screen.content.totalText, "0 L")
     }
 
     func test_todayScreen_whenADrinkComesFromANewerAppVersion_ignoresIt() async throws {
@@ -87,7 +87,7 @@ final class SyncingWithTheWatchTests: XCTestCase {
 
         let screen = environment.dayScreen()
         await screen.load()
-        XCTAssertEqual(screen.state.totalText, "0 L")
+        XCTAssertEqual(try screen.content.totalText, "0 L")
     }
 
     func test_pairedDevice_whenTheAppBecomesActive_receivesDrinksTheWidgetLogged() async throws {
@@ -112,7 +112,7 @@ final class SyncingWithTheWatchTests: XCTestCase {
     func test_pairedDevice_whenADrinkIsDeleted_receivesAPictureWithoutIt() async throws {
         let screen = environment.dayScreen()
         await screen.quickAdd(milliliters: 250)
-        let logged = try XCTUnwrap(screen.state.entries.first)
+        let logged = try XCTUnwrap(try screen.content.entries.first)
 
         await screen.remove(entryID: logged.id)
         await environment.todaySnapshotSender.sendToPairedDevice()

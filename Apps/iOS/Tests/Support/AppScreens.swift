@@ -4,6 +4,30 @@ import HydrationRouting
 import HydrationTestSupport
 @testable import Hydration
 
+enum ScreenStateMismatch: Error {
+    case notLoading
+    case notContent
+    case notFailed
+}
+
+// MARK: - DayViewModel
+@MainActor
+extension DayViewModel {
+    var content: DayViewState.Content {
+        get throws {
+            guard case .content(let content) = state.situation else { throw ScreenStateMismatch.notContent }
+            return content
+        }
+    }
+
+    var failure: DayViewState.Failure {
+        get throws {
+            guard case .failed(let failure) = state.situation else { throw ScreenStateMismatch.notFailed }
+            return failure
+        }
+    }
+}
+
 // MARK: - PersistenceEnvironment
 extension PersistenceEnvironment {
     var dayPresenter: DayPresenter { DayPresenter(calendar: calendar, locale: locale) }

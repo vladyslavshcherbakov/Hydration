@@ -22,9 +22,9 @@ final class LoggingWaterTests: XCTestCase {
         let screen = environment.dayScreen()
         await screen.load()
 
-        XCTAssertEqual(screen.state.totalText, "0 L")
-        XCTAssertEqual(screen.state.footnote, "No drinks logged yet")
-        XCTAssertTrue(screen.state.entries.isEmpty)
+        XCTAssertEqual(try screen.content.totalText, "0 L")
+        XCTAssertEqual(try screen.content.footnote, "No drinks logged yet")
+        XCTAssertTrue(try screen.content.entries.isEmpty)
     }
 
     func test_dailyTotal_whenTwoDifferentSizesAreLogged_addsThemUp() async throws {
@@ -34,19 +34,19 @@ final class LoggingWaterTests: XCTestCase {
         let screen = environment.dayScreen()
         await screen.load()
 
-        XCTAssertEqual(screen.state.totalText, "0.75 L")
-        XCTAssertEqual(screen.state.entries.count, 2)
+        XCTAssertEqual(try screen.content.totalText, "0.75 L")
+        XCTAssertEqual(try screen.content.entries.count, 2)
     }
 
     func test_quickAdd_whenTappedTwice_showsHalfALitre() async throws {
         let screen = environment.dayScreen()
         await screen.load()
-        XCTAssertEqual(screen.state.totalText, "0 L")
+        XCTAssertEqual(try screen.content.totalText, "0 L")
 
         await screen.quickAdd()
         await screen.quickAdd()
 
-        XCTAssertEqual(screen.state.totalText, "0.5 L")
+        XCTAssertEqual(try screen.content.totalText, "0.5 L")
     }
 
     func test_todayScreen_whenDrinksAreLogged_listsEachWithItsTime() async throws {
@@ -56,9 +56,9 @@ final class LoggingWaterTests: XCTestCase {
         let screen = environment.dayScreen()
         await screen.load()
 
-        XCTAssertEqual(screen.state.entries.map(\.amountText), ["500 ml", "250 ml"])
-        XCTAssertEqual(screen.state.entries.map(\.timeText), ["11:40", "09:15"])
-        XCTAssertEqual(screen.state.footnote, "2 drinks logged")
+        XCTAssertEqual(try screen.content.entries.map(\.amountText), ["500 ml", "250 ml"])
+        XCTAssertEqual(try screen.content.entries.map(\.timeText), ["11:40", "09:15"])
+        XCTAssertEqual(try screen.content.footnote, "2 drinks logged")
     }
 
     func test_dailyTotal_whenTheNextDayStarts_startsFromZero() async throws {
@@ -68,8 +68,8 @@ final class LoggingWaterTests: XCTestCase {
         let nextDay = environment.dayScreen()
         await nextDay.load()
 
-        XCTAssertEqual(nextDay.state.totalText, "0 L")
-        XCTAssertTrue(nextDay.state.entries.isEmpty)
+        XCTAssertEqual(try nextDay.content.totalText, "0 L")
+        XCTAssertTrue(try nextDay.content.entries.isEmpty)
     }
 
     func test_dayEntry_whenRemoved_dropsOutOfTheTotal() async throws {
@@ -78,10 +78,10 @@ final class LoggingWaterTests: XCTestCase {
         let screen = environment.dayScreen()
         await screen.load()
 
-        let morningDrink = try XCTUnwrap(screen.state.entries.last)
+        let morningDrink = try XCTUnwrap(try screen.content.entries.last)
         await screen.remove(entryID: morningDrink.id)
 
-        XCTAssertEqual(screen.state.totalText, "0.2 L")
-        XCTAssertEqual(screen.state.entries.count, 1)
+        XCTAssertEqual(try screen.content.totalText, "0.2 L")
+        XCTAssertEqual(try screen.content.entries.count, 1)
     }
 }

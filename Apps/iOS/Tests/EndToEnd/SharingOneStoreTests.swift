@@ -28,7 +28,7 @@ final class SharingOneStoreTests: XCTestCase {
 
         let today = todayScreen(app)
         await today.load()
-        XCTAssertEqual(today.state.totalText, "1.5 L")
+        XCTAssertEqual(try today.content.totalText, "1.5 L")
 
         let history = HistoryViewModel(
             fetchHistory: app.makeFetchHistory(),
@@ -46,13 +46,13 @@ final class SharingOneStoreTests: XCTestCase {
         let firstLaunch = todayScreen(environment.makeCompositionRoot())
         await firstLaunch.quickAdd(milliliters: 500)
         await firstLaunch.quickAdd(milliliters: 250)
-        XCTAssertEqual(firstLaunch.state.totalText, "0.75 L")
+        XCTAssertEqual(try firstLaunch.content.totalText, "0.75 L")
 
         let secondLaunch = todayScreen(environment.makeCompositionRoot())
         await secondLaunch.load()
 
-        XCTAssertEqual(secondLaunch.state.totalText, "0.75 L")
-        XCTAssertEqual(secondLaunch.state.entries.count, 2)
+        XCTAssertEqual(try secondLaunch.content.totalText, "0.75 L")
+        XCTAssertEqual(try secondLaunch.content.entries.count, 2)
     }
 
     func test_dailyLimit_whenTwoCopiesOfTheAppAreRunning_stillHolds() async throws {
@@ -70,7 +70,7 @@ final class SharingOneStoreTests: XCTestCase {
             XCTAssertEqual(error as? HydrationError, .safetyLimitReached)
         }
 
-        XCTAssertEqual(today.state.totalText, "6 L")
+        XCTAssertEqual(try today.content.totalText, "6 L")
     }
 
     // MARK: - Helpers

@@ -24,14 +24,14 @@ final class DailySafetyLimitTests: XCTestCase {
 
         let screen = environment.dayScreen()
         await screen.load()
-        XCTAssertEqual(screen.state.totalText, "6 L")
+        XCTAssertEqual(try screen.content.totalText, "6 L")
 
         await screen.quickAdd()
 
         let reopened = environment.dayScreen()
         await reopened.load()
-        XCTAssertEqual(reopened.state.totalText, "6 L")
-        XCTAssertEqual(reopened.state.entries.count, 6)
+        XCTAssertEqual(try reopened.content.totalText, "6 L")
+        XCTAssertEqual(try reopened.content.entries.count, 6)
     }
 
     func test_todayScreen_whenADrinkIsRefused_saysWhy() async throws {
@@ -40,8 +40,8 @@ final class DailySafetyLimitTests: XCTestCase {
         let screen = environment.dayScreen()
         await screen.quickAdd()
 
-        XCTAssertEqual(screen.state.statusText, "You have reached the daily safety limit")
-        XCTAssertEqual(screen.state.accent, .critical)
+        XCTAssertEqual(try screen.failure.message, "You have reached the daily safety limit")
+        XCTAssertEqual(try screen.failure.accent, .critical)
     }
 
     func test_widgetLink_whenItWouldExceedTheLimit_isRefused() async throws {
@@ -54,6 +54,6 @@ final class DailySafetyLimitTests: XCTestCase {
 
         let screen = environment.dayScreen()
         await screen.load()
-        XCTAssertEqual(screen.state.totalText, "6 L")
+        XCTAssertEqual(try screen.content.totalText, "6 L")
     }
 }

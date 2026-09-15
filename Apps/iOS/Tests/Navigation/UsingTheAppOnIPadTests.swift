@@ -42,7 +42,7 @@ final class UsingTheAppOnIPadTests: XCTestCase {
         XCTAssertTrue(coordinator.path.isEmpty)
 
         await today.load()
-        XCTAssertEqual(today.state.totalText, "0.6 L")
+        XCTAssertEqual(try today.content.totalText, "0.6 L")
     }
 
     func test_historyScreen_whenTheWindowWidens_staysOpen() async throws {
@@ -101,7 +101,7 @@ final class UsingTheAppOnIPadTests: XCTestCase {
         await firstWindow.quickAdd(milliliters: 600)
         await secondWindow.load()
 
-        XCTAssertEqual(secondWindow.state.totalText, "0.6 L")
+        XCTAssertEqual(try secondWindow.content.totalText, "0.6 L")
     }
 
     func test_secondWindow_whenTheFirstOpensHistory_staysOnToday() async throws {
@@ -116,7 +116,7 @@ final class UsingTheAppOnIPadTests: XCTestCase {
         XCTAssertTrue(secondCoordinator.path.isEmpty)
 
         await secondWindowToday.load()
-        XCTAssertEqual(secondWindowToday.state.totalText, "0.6 L")
+        XCTAssertEqual(try secondWindowToday.content.totalText, "0.6 L")
     }
 
     func test_iPadHistoryList_whenLoaded_showsOneRowPerDayAndTheDaysOnTarget() async throws {

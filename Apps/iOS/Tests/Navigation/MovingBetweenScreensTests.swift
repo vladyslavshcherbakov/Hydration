@@ -43,7 +43,7 @@ final class MovingBetweenScreensTests: XCTestCase {
 
         XCTAssertTrue(coordinator.path.isEmpty)
         await today.load()
-        XCTAssertEqual(today.state.totalText, "0.6 L")
+        XCTAssertEqual(try today.content.totalText, "0.6 L")
     }
 
     func test_selectedDay_whenTheUserReturnsToTheDayScreen_isStillTicked() async throws {
@@ -79,7 +79,7 @@ final class MovingBetweenScreensTests: XCTestCase {
 
         let day = environment.dayScreen(day: coordinator.selectedDay)
         await day.load()
-        XCTAssertEqual(day.state.totalText, "0.6 L")
+        XCTAssertEqual(try day.content.totalText, "0.6 L")
         XCTAssertEqual(day.state.title, "13 Nov")
     }
 }

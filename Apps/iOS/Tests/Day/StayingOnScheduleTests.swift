@@ -25,8 +25,8 @@ final class StayingOnScheduleTests: XCTestCase {
         let screen = environment.dayScreen()
         await screen.load()
 
-        XCTAssertEqual(screen.state.statusText, "On track, 2500 ml to go")
-        XCTAssertEqual(screen.state.accent, .neutral)
+        XCTAssertEqual(try screen.content.statusText, "On track, 2500 ml to go")
+        XCTAssertEqual(try screen.content.accent, .neutral)
     }
 
     func test_status_whenALitreIsLoggedByMidMorning_saysOnTrack() async throws {
@@ -36,8 +36,8 @@ final class StayingOnScheduleTests: XCTestCase {
         let screen = environment.dayScreen()
         await screen.load()
 
-        XCTAssertEqual(screen.state.statusText, "On track, 1500 ml to go")
-        XCTAssertEqual(screen.state.accent, .neutral)
+        XCTAssertEqual(try screen.content.statusText, "On track, 1500 ml to go")
+        XCTAssertEqual(try screen.content.accent, .neutral)
     }
 
     func test_todayStatus_whenALitreIsLoggedByMidday_saysAQuarterLitreBehind() async throws {
@@ -47,8 +47,8 @@ final class StayingOnScheduleTests: XCTestCase {
         let screen = environment.dayScreen()
         await screen.load()
 
-        XCTAssertEqual(screen.state.statusText, "250 ml behind schedule")
-        XCTAssertEqual(screen.state.accent, .warning)
+        XCTAssertEqual(try screen.content.statusText, "250 ml behind schedule")
+        XCTAssertEqual(try screen.content.accent, .warning)
     }
 
     func test_todayStatus_whenItIsAfterTenInTheEvening_expectsTheWholeGoal() async throws {
@@ -58,7 +58,7 @@ final class StayingOnScheduleTests: XCTestCase {
         let screen = environment.dayScreen()
         await screen.load()
 
-        XCTAssertEqual(screen.state.statusText, "1500 ml behind schedule")
-        XCTAssertEqual(screen.state.accent, .warning)
+        XCTAssertEqual(try screen.content.statusText, "1500 ml behind schedule")
+        XCTAssertEqual(try screen.content.accent, .warning)
     }
 }

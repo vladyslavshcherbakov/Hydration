@@ -15,25 +15,52 @@ public struct DayPresenter: Sendable {
     public func presentLoading() -> DayViewState {
         DayViewState(
             title: "Today",
-            totalText: "—",
-            goalText: "",
-            statusText: "Loading your day…",
-            fraction: 0,
-            accent: .neutral,
-            quickAddTitle: quickAddTitle,
-            isQuickAddEnabled: false,
-            historyTitle: "History",
-            entries: [],
-            footnote: nil,
-            accessibilityLabel: "Loading hydration progress"
+            historyTitle: historyTitle,
+            situation: .loading(
+                DayViewState.Loading(
+                    message: "Loading your day…",
+                    accessibilityLabel: "Loading hydration progress"
+                )
+            )
         )
     }
 
     public func present(progress: DailyProgress) -> DayViewState {
+        DayViewState(
+            title: title(for: progress),
+            historyTitle: historyTitle,
+            situation: .content(content(of: progress))
+        )
+    }
+
+    public func present(error: Error) -> DayViewState {
+        DayViewState(
+            title: "Today",
+            historyTitle: historyTitle,
+            situation: .failed(
+                DayViewState.Failure(
+                    message: message(for: error),
+                    retryTitle: "Try again",
+                    accent: .critical,
+                    accessibilityLabel: message(for: error)
+                )
+            )
+        )
+    }
+
+    // MARK: - Private
+    private var historyTitle: String {
+        "History"
+    }
+
+    private var quickAddTitle: String {
+        "Add \(VolumeFormatting.milliliters(.quickAdd))"
+    }
+
+    private func content(of progress: DailyProgress) -> DayViewState.Content {
         let status = statusText(for: progress)
 
-        return DayViewState(
-            title: title(for: progress),
+        return DayViewState.Content(
             totalText: "\(liters(progress.total)) L",
             goalText: "of \(liters(progress.goal.target)) L",
             statusText: status,
@@ -41,33 +68,10 @@ public struct DayPresenter: Sendable {
             accent: SemanticColor(status: progress.status),
             quickAddTitle: quickAddTitle,
             isQuickAddEnabled: progress.canAddMore,
-            historyTitle: "History",
             entries: entries(of: progress),
             footnote: footnote(for: progress),
             accessibilityLabel: "\(liters(progress.total)) liters of \(liters(progress.goal.target)) liters, \(status)"
         )
-    }
-
-    public func present(error: Error) -> DayViewState {
-        DayViewState(
-            title: "Today",
-            totalText: "—",
-            goalText: "",
-            statusText: message(for: error),
-            fraction: 0,
-            accent: .critical,
-            quickAddTitle: "Try again",
-            isQuickAddEnabled: true,
-            historyTitle: "History",
-            entries: [],
-            footnote: nil,
-            accessibilityLabel: message(for: error)
-        )
-    }
-
-    // MARK: - Private
-    private var quickAddTitle: String {
-        "Add \(VolumeFormatting.milliliters(.quickAdd))"
     }
 
     private func title(for progress: DailyProgress) -> String {
