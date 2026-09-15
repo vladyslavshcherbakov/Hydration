@@ -40,6 +40,7 @@ public final class HistoryViewModel: ObservableObject {
         let changeSignals = changes.whenDrinksChange()
         await load()
         for await _ in changeSignals {
+            log.write(.info, "history is reloading, the drinks changed somewhere")
             await load()
         }
     }
@@ -48,6 +49,7 @@ public final class HistoryViewModel: ObservableObject {
         do {
             summaries = try await fetchHistory.execute(days: HistoryViewModel.visibleDays)
             didLoad = true
+            log.write(.info, "history read \(HistoryViewModel.visibleDays) days, \(daysWithDrinks) of them with drinks")
             render()
         } catch {
             log.write(.error, "loading the last \(HistoryViewModel.visibleDays) days failed: \(error)")
@@ -70,6 +72,10 @@ public final class HistoryViewModel: ObservableObject {
     }
 
     // MARK: - Private
+    private var daysWithDrinks: Int {
+        summaries.filter { $0.total > .zero }.count
+    }
+
     private func render() {
         publish(presenter.present(summaries: summaries, selected: selectedDay))
     }

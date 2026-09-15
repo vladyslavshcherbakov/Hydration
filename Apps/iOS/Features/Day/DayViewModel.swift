@@ -40,6 +40,7 @@ public final class DayViewModel: ObservableObject {
         let changeSignals = changes.whenDrinksChange()
         await load()
         for await _ in changeSignals {
+            log.write(.info, "the day screen is reloading, the drinks changed somewhere")
             await load()
         }
     }
@@ -63,7 +64,9 @@ public final class DayViewModel: ObservableObject {
     // MARK: - Private
     private func show(_ attemptDescription: String, _ loadProgress: () async throws -> DailyProgress) async {
         do {
-            state = presenter.present(progress: try await loadProgress())
+            let progress = try await loadProgress()
+            log.write(.info, "\(attemptDescription): \(progress.day) now holds \(progress.total.milliliters) ml")
+            state = presenter.present(progress: progress)
         } catch {
             log.write(.error, "\(attemptDescription) failed: \(error)")
             state = presenter.present(error: error)
