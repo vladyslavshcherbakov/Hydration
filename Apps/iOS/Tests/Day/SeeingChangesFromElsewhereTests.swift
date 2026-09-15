@@ -17,6 +17,7 @@ final class SeeingChangesFromElsewhereTests: XCTestCase {
         super.tearDown()
     }
 
+    // MARK: - Tests
     func test_dayScreen_whenAnotherProcessWritesADrink_showsItWithoutBeingReopened() async throws {
         let screen = environment.dayScreen()
         let watching = Task { await screen.observe() }
@@ -40,6 +41,7 @@ final class SeeingChangesFromElsewhereTests: XCTestCase {
         watching.cancel()
     }
 
+    // MARK: - Helpers
     private func waitFor(
         _ condition: () -> Bool,
         within attempts: Int = 200,

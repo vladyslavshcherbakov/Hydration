@@ -7,8 +7,11 @@ import XCTest
 
 final class SharingStorageWithTheAppTests: XCTestCase {
     private var storeURL: URL!
+
     private var calendar: Calendar!
+
     private var locale: Locale!
+
     private var dateProvider: MutableDateProvider!
 
     override func setUp() {
@@ -31,6 +34,7 @@ final class SharingStorageWithTheAppTests: XCTestCase {
         super.tearDown()
     }
 
+    // MARK: - Tests
     func test_widgetTimeline_whenTheAppLogsADrink_showsTheNewTotal() async throws {
         let beforeTheDrink = await widgetTimeline().makeEntry()
         XCTAssertEqual(beforeTheDrink.state.totalText, "0 L")
@@ -51,6 +55,7 @@ final class SharingStorageWithTheAppTests: XCTestCase {
         XCTAssertEqual(entry.state.totalText, "0 L")
     }
 
+    // MARK: - Helpers
     private var today: Date {
         calendar.dayInterval(for: dateProvider.now()).start
     }

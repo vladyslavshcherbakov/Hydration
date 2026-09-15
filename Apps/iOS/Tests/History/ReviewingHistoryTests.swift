@@ -8,6 +8,7 @@ import XCTest
 @MainActor
 final class ReviewingHistoryTests: XCTestCase {
     private var environment: PersistenceEnvironment!
+
     private var coordinator: AppCoordinator!
 
     override func setUp() {
@@ -22,12 +23,7 @@ final class ReviewingHistoryTests: XCTestCase {
         super.tearDown()
     }
 
-    private func seedThreeDays() async throws {
-        try await environment.log(2600, at: environment.date(hour: 11))
-        try await environment.log(1200, at: environment.date(hour: 11, dayOffset: -1))
-        try await environment.log(2500, at: environment.date(hour: 11, dayOffset: -2))
-    }
-
+    // MARK: - Tests
     func test_historyScreen_whenOpened_showsTheLastTwoWeeks() async throws {
         try await seedThreeDays()
 
@@ -100,5 +96,12 @@ final class ReviewingHistoryTests: XCTestCase {
         await screen.load()
 
         XCTAssertEqual(screen.state.rows[0].dayText, "Today")
+    }
+
+    // MARK: - Helpers
+    private func seedThreeDays() async throws {
+        try await environment.log(2600, at: environment.date(hour: 11))
+        try await environment.log(1200, at: environment.date(hour: 11, dayOffset: -1))
+        try await environment.log(2500, at: environment.date(hour: 11, dayOffset: -2))
     }
 }

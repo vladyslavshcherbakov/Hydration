@@ -16,6 +16,7 @@ final class UsingTheAppOnAWideScreenUITests: XCTestCase {
         super.tearDown()
     }
 
+    // MARK: - Tests
     func test_usersDays_whenTheScreenIsWide_areOnScreenWithoutBeingAskedFor() throws {
         try skipUnlessTheScreenIsWide()
 
@@ -33,6 +34,7 @@ final class UsingTheAppOnAWideScreenUITests: XCTestCase {
         XCTAssertTrue(total.waitForLabel("0 L", timeout: 5))
     }
 
+    // MARK: - Helpers
     private var historyList: XCUIElement { element("history.list") }
 
     private func element(_ identifier: String) -> XCUIElement {
@@ -51,6 +53,7 @@ final class UsingTheAppOnAWideScreenUITests: XCTestCase {
     }
 
     private var total: XCUIElement { app.staticTexts["today.total"] }
+
     private var quickAdd: XCUIElement { app.buttons["today.quickAdd"] }
 
     private func skipUnlessTheScreenIsWide() throws {
@@ -59,6 +62,7 @@ final class UsingTheAppOnAWideScreenUITests: XCTestCase {
     }
 }
 
+// MARK: - XCUIElement
 private extension XCUIElement {
     func waitForLabel(_ expected: String, timeout: TimeInterval) -> Bool {
         let matched = XCTNSPredicateExpectation(

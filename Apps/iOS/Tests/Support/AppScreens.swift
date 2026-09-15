@@ -4,12 +4,15 @@ import HydrationRouting
 import HydrationTestSupport
 @testable import Hydration
 
+// MARK: - PersistenceEnvironment
 extension PersistenceEnvironment {
     var dayPresenter: DayPresenter { DayPresenter(calendar: calendar, locale: locale) }
     var historyPresenter: HistoryPresenter { HistoryPresenter(calendar: calendar, locale: locale, today: today) }
 }
 
 @MainActor
+
+// MARK: - PersistenceEnvironment
 extension PersistenceEnvironment {
     func dayScreen(
         day: Date? = nil,

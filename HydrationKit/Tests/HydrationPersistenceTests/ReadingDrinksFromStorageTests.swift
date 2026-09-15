@@ -26,29 +26,7 @@ final class ReadingDrinksFromStorageTests: XCTestCase {
         super.tearDown()
     }
 
-    private func insertRow(
-        id: UUID?,
-        amountML: Int64,
-        day: Date?,
-        recordedAt: Date?,
-        schemaVersion: Int16 = DrinkEntryMapper.supportedSchemaVersion
-    ) async throws {
-        let context = coreDataStack.container.newBackgroundContext()
-        try await context.perform {
-            let managedEntry = CDDrinkEntry(context: context)
-            managedEntry.id = id
-            managedEntry.amountML = amountML
-            managedEntry.day = day
-            managedEntry.recordedAt = recordedAt
-            managedEntry.schemaVersion = schemaVersion
-            try context.save()
-        }
-    }
-
-    private func readToday() async throws -> [DrinkEntry] {
-        try await repository.entries(in: calendar.dayInterval(for: reference))
-    }
-
+    // MARK: - Tests
     func test_day_whenARecordCannotBeRead_leavesItOut() async throws {
         let day = calendar.dayInterval(for: reference).start
         let morning = day.addingTimeInterval(9 * 3600)
@@ -74,5 +52,29 @@ final class ReadingDrinksFromStorageTests: XCTestCase {
         let entries = try await readToday()
 
         XCTAssertTrue(entries.isEmpty)
+    }
+
+    // MARK: - Helpers
+    private func insertRow(
+        id: UUID?,
+        amountML: Int64,
+        day: Date?,
+        recordedAt: Date?,
+        schemaVersion: Int16 = DrinkEntryMapper.supportedSchemaVersion
+    ) async throws {
+        let context = coreDataStack.container.newBackgroundContext()
+        try await context.perform {
+            let managedEntry = CDDrinkEntry(context: context)
+            managedEntry.id = id
+            managedEntry.amountML = amountML
+            managedEntry.day = day
+            managedEntry.recordedAt = recordedAt
+            managedEntry.schemaVersion = schemaVersion
+            try context.save()
+        }
+    }
+
+    private func readToday() async throws -> [DrinkEntry] {
+        try await repository.entries(in: calendar.dayInterval(for: reference))
     }
 }

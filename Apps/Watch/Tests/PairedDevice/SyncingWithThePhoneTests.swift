@@ -18,25 +18,7 @@ final class SyncingWithThePhoneTests: XCTestCase {
         super.tearDown()
     }
 
-    private func drinkFromThePhone(_ milliliters: Int, at hour: Int = 11, id: UUID = UUID()) -> DrinkMessage {
-        DrinkMessage(
-            id: id,
-            amountML: milliliters,
-            day: environment.today,
-            recordedAt: environment.date(hour: hour)
-        )
-    }
-
-    private func pictureOfToday(
-        _ drinks: [DrinkMessage],
-        version: Int = PairedDeviceMessage.currentVersion
-    ) -> PairedDeviceMessage {
-        PairedDeviceMessage(
-            version: version,
-            content: .daySnapshot(DayOfDrinksMessage(day: environment.today, drinks: drinks))
-        )
-    }
-
+    // MARK: - Tests
     func test_watchFace_whenThePhoneLogsADrink_showsTheNewTotal() async throws {
         try await environment.receiveFromPairedDevice(
             PairedDeviceMessage(content: .drinkLogged(drinkFromThePhone(600)))
@@ -96,5 +78,25 @@ final class SyncingWithThePhoneTests: XCTestCase {
 
         await screen.load()
         XCTAssertEqual(screen.state.totalText, "0.35")
+    }
+
+    // MARK: - Helpers
+    private func drinkFromThePhone(_ milliliters: Int, at hour: Int = 11, id: UUID = UUID()) -> DrinkMessage {
+        DrinkMessage(
+            id: id,
+            amountML: milliliters,
+            day: environment.today,
+            recordedAt: environment.date(hour: hour)
+        )
+    }
+
+    private func pictureOfToday(
+        _ drinks: [DrinkMessage],
+        version: Int = PairedDeviceMessage.currentVersion
+    ) -> PairedDeviceMessage {
+        PairedDeviceMessage(
+            version: version,
+            content: .daySnapshot(DayOfDrinksMessage(day: environment.today, drinks: drinks))
+        )
     }
 }

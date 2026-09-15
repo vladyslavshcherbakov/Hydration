@@ -7,6 +7,7 @@ import XCTest
 @MainActor
 final class OpeningTheAppFromTheWidgetTests: XCTestCase {
     private var environment: PersistenceEnvironment!
+
     private var coordinator: AppCoordinator!
 
     override func setUp() {
@@ -21,10 +22,7 @@ final class OpeningTheAppFromTheWidgetTests: XCTestCase {
         super.tearDown()
     }
 
-    private func makeOpener() -> DeepLinkOpener {
-        environment.deepLinkOpener(coordinator: coordinator)
-    }
-
+    // MARK: - Tests
     func test_widgetLink_whenTapped_opensHistory() async throws {
         try await environment.log(2600, at: environment.date(hour: 11))
 
@@ -104,5 +102,10 @@ final class OpeningTheAppFromTheWidgetTests: XCTestCase {
 
         XCTAssertEqual(today.state.totalText, "0 L")
         XCTAssertTrue(coordinator.path.isEmpty)
+    }
+
+    // MARK: - Helpers
+    private func makeOpener() -> DeepLinkOpener {
+        environment.deepLinkOpener(coordinator: coordinator)
     }
 }

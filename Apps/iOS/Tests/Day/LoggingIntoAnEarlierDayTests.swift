@@ -17,10 +17,7 @@ final class LoggingIntoAnEarlierDayTests: XCTestCase {
         super.tearDown()
     }
 
-    private var yesterday: Date {
-        environment.date(hour: 0, dayOffset: -1)
-    }
-
+    // MARK: - Tests
     func test_quickAdd_whenAnEarlierDayIsOpen_addsToThatDayOnly() async throws {
         let earlier = environment.dayScreen(day: yesterday)
         await earlier.load()
@@ -70,5 +67,10 @@ final class LoggingIntoAnEarlierDayTests: XCTestCase {
         await earlier.quickAdd()
 
         XCTAssertEqual(earlier.state.statusText, "You have reached the daily safety limit")
+    }
+
+    // MARK: - Helpers
+    private var yesterday: Date {
+        environment.date(hour: 0, dayOffset: -1)
     }
 }

@@ -18,25 +18,7 @@ final class SyncingWithTheWatchTests: XCTestCase {
         super.tearDown()
     }
 
-    private func drinkFromTheWatch(
-        _ milliliters: Int,
-        at hour: Int = 11,
-        id: UUID = UUID(),
-        version: Int = PairedDeviceMessage.currentVersion
-    ) -> PairedDeviceMessage {
-        PairedDeviceMessage(
-            version: version,
-            content: .drinkLogged(
-                DrinkMessage(
-                    id: id,
-                    amountML: milliliters,
-                    day: environment.today,
-                    recordedAt: environment.date(hour: hour)
-                )
-            )
-        )
-    }
-
+    // MARK: - Tests
     func test_todayScreen_whenWaterIsLogged_sendsItToTheWatch() async throws {
         await environment.dayScreen().quickAdd(milliliters: 250)
 
@@ -145,5 +127,25 @@ final class SyncingWithTheWatchTests: XCTestCase {
 
         XCTAssertEqual(environment.pairedDevice.sentSnapshots.count, 1)
         XCTAssertEqual(environment.pairedDevice.sentSnapshots.first?.drinks.first?.amountML, 400)
+    }
+
+    // MARK: - Helpers
+    private func drinkFromTheWatch(
+        _ milliliters: Int,
+        at hour: Int = 11,
+        id: UUID = UUID(),
+        version: Int = PairedDeviceMessage.currentVersion
+    ) -> PairedDeviceMessage {
+        PairedDeviceMessage(
+            version: version,
+            content: .drinkLogged(
+                DrinkMessage(
+                    id: id,
+                    amountML: milliliters,
+                    day: environment.today,
+                    recordedAt: environment.date(hour: hour)
+                )
+            )
+        )
     }
 }

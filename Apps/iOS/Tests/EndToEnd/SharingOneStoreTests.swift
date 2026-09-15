@@ -19,19 +19,7 @@ final class SharingOneStoreTests: XCTestCase {
         super.tearDown()
     }
 
-    private func todayScreen(_ root: CompositionRoot) -> DayViewModel {
-        DayViewModel(
-            day: root.makeCurrentDay().start(),
-            fetchProgress: root.makeFetchDay(),
-            addDrink: root.makeAddDrink(),
-            removeDrink: root.makeRemoveDrink(),
-            presenter: DayPresenter(calendar: environment.calendar, locale: environment.locale),
-            changes: root.changes,
-            log: environment.log,
-            onHistoryRequested: {}
-        )
-    }
-
+    // MARK: - Tests
     func test_todayScreen_whenASecondCopyOfTheAppLogsADrink_showsItAndSoDoesHistory() async throws {
         let secondCopy = environment.makeCompositionRoot()
         let app = environment.makeCompositionRoot()
@@ -83,5 +71,19 @@ final class SharingOneStoreTests: XCTestCase {
         }
 
         XCTAssertEqual(today.state.totalText, "6 L")
+    }
+
+    // MARK: - Helpers
+    private func todayScreen(_ root: CompositionRoot) -> DayViewModel {
+        DayViewModel(
+            day: root.makeCurrentDay().start(),
+            fetchProgress: root.makeFetchDay(),
+            addDrink: root.makeAddDrink(),
+            removeDrink: root.makeRemoveDrink(),
+            presenter: DayPresenter(calendar: environment.calendar, locale: environment.locale),
+            changes: root.changes,
+            log: environment.log,
+            onHistoryRequested: {}
+        )
     }
 }

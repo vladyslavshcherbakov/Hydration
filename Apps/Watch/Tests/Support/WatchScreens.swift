@@ -3,11 +3,14 @@ import HydrationDomain
 import HydrationTestSupport
 @testable import HydrationWatch
 
+// MARK: - PersistenceEnvironment
 extension PersistenceEnvironment {
     var watchPresenter: WatchTodayPresenter { WatchTodayPresenter(calendar: calendar, locale: locale) }
 }
 
 @MainActor
+
+// MARK: - PersistenceEnvironment
 extension PersistenceEnvironment {
     func todayScreen(repository override: DrinkRepository? = nil) -> WatchTodayViewModel {
         WatchTodayViewModel(

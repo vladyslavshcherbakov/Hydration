@@ -15,34 +15,7 @@ final class EverydayUseUITests: XCTestCase {
         super.tearDown()
     }
 
-    private func launch(resettingStore: Bool) {
-        var arguments = ["-uiTestStore", "-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
-        if resettingStore {
-            arguments.append("-resetStore")
-        }
-        app.launchArguments = arguments
-        app.launch()
-    }
-
-
-    private func element(_ identifier: String) -> XCUIElement {
-        app.descendants(matching: .any).matching(identifier: identifier).firstMatch
-    }
-
-    private func historyRow(daysAgo: Int) -> XCUIElement {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.locale = Locale(identifier: "en_US_POSIX")
-        let day = calendar.date(byAdding: .day, value: -daysAgo, to: Date())!
-        let formatter = DateFormatter()
-        formatter.calendar = calendar
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.dateFormat = "yyyy-MM-dd"
-        return element("history.row.\(formatter.string(from: day))")
-    }
-
-    private var total: XCUIElement { app.staticTexts["today.total"] }
-    private var quickAdd: XCUIElement { app.buttons["today.quickAdd"] }
-
+    // MARK: - Tests
     func test_quickAdd_whenTappedTwice_showsHalfALitre() {
         XCTAssertTrue(total.waitForExistence(timeout: 5))
         XCTAssertEqual(total.label, "0 L")
@@ -86,8 +59,38 @@ final class EverydayUseUITests: XCTestCase {
 
         XCTAssertTrue(total.waitForLabel("0 L", timeout: 5))
     }
+
+    // MARK: - Helpers
+    private func launch(resettingStore: Bool) {
+        var arguments = ["-uiTestStore", "-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
+        if resettingStore {
+            arguments.append("-resetStore")
+        }
+        app.launchArguments = arguments
+        app.launch()
+    }
+
+    private func element(_ identifier: String) -> XCUIElement {
+        app.descendants(matching: .any).matching(identifier: identifier).firstMatch
+    }
+
+    private func historyRow(daysAgo: Int) -> XCUIElement {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.locale = Locale(identifier: "en_US_POSIX")
+        let day = calendar.date(byAdding: .day, value: -daysAgo, to: Date())!
+        let formatter = DateFormatter()
+        formatter.calendar = calendar
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd"
+        return element("history.row.\(formatter.string(from: day))")
+    }
+
+    private var total: XCUIElement { app.staticTexts["today.total"] }
+
+    private var quickAdd: XCUIElement { app.buttons["today.quickAdd"] }
 }
 
+// MARK: - XCUIElement
 private extension XCUIElement {
     func waitForLabel(_ expected: String, timeout: TimeInterval) -> Bool {
         let predicate = NSPredicate(format: "label == %@", expected)

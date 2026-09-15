@@ -6,6 +6,7 @@ import HydrationTestSupport
 import WidgetKit
 #endif
 
+// MARK: - PersistenceEnvironment
 extension PersistenceEnvironment {
     var widgetPresenter: WidgetTodayPresenter { WidgetTodayPresenter(calendar: calendar, locale: locale) }
 
