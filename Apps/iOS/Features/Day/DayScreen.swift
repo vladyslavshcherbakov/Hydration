@@ -33,6 +33,18 @@ struct DayScreen: View {
             }
         }
         .task { await viewModel.observe() }
+        .alert(
+            viewModel.notice ?? "",
+            isPresented: Binding(
+                get: { viewModel.notice != nil },
+                set: { isPresented in
+                    guard !isPresented else { return }
+                    viewModel.dismissNotice()
+                }
+            )
+        ) {
+            Button("OK") { viewModel.dismissNotice() }
+        }
     }
 
     // MARK: - Private
@@ -57,9 +69,9 @@ struct DayScreen: View {
                 prominence: .filled,
                 isEnabled: true
             ) {
-                Task { await viewModel.quickAdd() }
+                Task { await viewModel.load() }
             }
-            .accessibilityIdentifier("today.quickAdd")
+            .accessibilityIdentifier("today.retry")
         }
         .accessibilityLabel(failure.accessibilityLabel)
     }

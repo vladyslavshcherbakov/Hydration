@@ -4,6 +4,7 @@ import HydrationDomain
 @MainActor
 public final class DayViewModel: ObservableObject {
     @Published public private(set) var viewData: DayViewData
+    @Published public private(set) var notice: String?
 
     private let day: Date
     private let fetchProgress: FetchDayProgressUseCase
@@ -54,15 +55,24 @@ public final class DayViewModel: ObservableObject {
     }
 
     public func load() async {
-        await show("loading the day") { try await fetchProgress.execute(day: day) }
+        do {
+            show(try await fetchProgress.execute(day: day), after: "loading the day")
+        } catch {
+            log.write(.error, "loading the day failed: \(error)")
+            viewData = mapper.viewData(for: error)
+        }
     }
 
     public func quickAdd(milliliters: Int = Volume.quickAdd.milliliters) async {
-        await show("adding \(milliliters) ml") { try await addDrink.execute(milliliters: milliliters, on: day) }
+        await attempt("adding \(milliliters) ml") { try await addDrink.execute(milliliters: milliliters, on: day) }
     }
 
     public func remove(entryID: UUID) async {
-        await show("removing the drink \(entryID)") { try await removeDrink.execute(id: entryID, on: day) }
+        await attempt("removing the drink \(entryID)") { try await removeDrink.execute(id: entryID, on: day) }
+    }
+
+    public func dismissNotice() {
+        notice = nil
     }
 
     public func openHistory() {
@@ -71,14 +81,18 @@ public final class DayViewModel: ObservableObject {
 
     // MARK: - Private
 
-    private func show(_ attemptDescription: String, _ loadProgress: () async throws -> DailyProgress) async {
+    private func attempt(_ attemptDescription: String, _ change: () async throws -> DailyProgress) async {
         do {
-            let progress = try await loadProgress()
-            log.write(.info, "\(attemptDescription): \(progress.day) now holds \(progress.total.milliliters) ml")
-            viewData = mapper.viewData(for: progress)
+            show(try await change(), after: attemptDescription)
         } catch {
-            log.write(.error, "\(attemptDescription) failed: \(error)")
-            viewData = mapper.viewData(for: error)
+            log.write(.error, "\(attemptDescription) failed, the day stays as it is: \(error)")
+            notice = mapper.notice(for: error)
         }
+    }
+
+    private func show(_ progress: DailyProgress, after attemptDescription: String) {
+        log.write(.info, "\(attemptDescription): \(progress.day) now holds \(progress.total.milliliters) ml")
+        viewData = mapper.viewData(for: progress)
+        notice = nil
     }
 }

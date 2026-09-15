@@ -40,13 +40,24 @@ public struct DayViewDataMapper: Sendable {
             historyTitle: historyTitle,
             state: .failed(
                 DayViewData.Failure(
-                    message: message(for: error),
+                    message: notice(for: error),
                     retryTitle: "Try again",
                     accent: .critical,
-                    accessibilityLabel: message(for: error)
+                    accessibilityLabel: notice(for: error)
                 )
             )
         )
+    }
+
+    public func notice(for error: Error) -> String {
+        switch error {
+        case HydrationError.safetyLimitReached:
+            return "You have reached the daily safety limit"
+        case HydrationError.invalidVolume:
+            return "That amount is not valid"
+        default:
+            return "Could not load your hydration data"
+        }
     }
 
     // MARK: - Private
@@ -128,14 +139,4 @@ public struct DayViewDataMapper: Sendable {
         }
     }
 
-    private func message(for error: Error) -> String {
-        switch error {
-        case HydrationError.safetyLimitReached:
-            return "You have reached the daily safety limit"
-        case HydrationError.invalidVolume:
-            return "That amount is not valid"
-        default:
-            return "Could not load your hydration data"
-        }
-    }
 }
