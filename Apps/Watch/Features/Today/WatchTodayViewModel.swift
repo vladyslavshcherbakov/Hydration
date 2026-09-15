@@ -1,0 +1,63 @@
+import Foundation
+import HydrationDomain
+
+@MainActor
+public final class WatchTodayViewModel: ObservableObject {
+    @Published public private(set) var state: WatchTodayViewState
+
+    private let fetchProgress: FetchDayProgressUseCase
+    private let addDrink: AddDrinkUseCase
+    private let removeLastDrink: RemoveLastDrinkUseCase
+    private let presenter: WatchTodayPresenter
+    private let currentDay: CurrentDay
+    private let changes: DrinkChanges
+    private let log: HydrationLog
+
+    public init(
+        fetchProgress: FetchDayProgressUseCase,
+        addDrink: AddDrinkUseCase,
+        removeLastDrink: RemoveLastDrinkUseCase,
+        presenter: WatchTodayPresenter,
+        currentDay: CurrentDay,
+        changes: DrinkChanges,
+        log: HydrationLog
+    ) {
+        self.fetchProgress = fetchProgress
+        self.addDrink = addDrink
+        self.removeLastDrink = removeLastDrink
+        self.presenter = presenter
+        self.currentDay = currentDay
+        self.changes = changes
+        self.log = log
+        self.state = presenter.presentLoading()
+    }
+
+    public func observe() async {
+        let changeSignals = changes.whenDrinksChange()
+        await load()
+        for await _ in changeSignals {
+            await load()
+        }
+    }
+
+    public func load() async {
+        await show("loading today") { try await fetchProgress.execute(day: currentDay.start()) }
+    }
+
+    public func add(milliliters: Int) async {
+        await show("adding \(milliliters) ml") { try await addDrink.execute(milliliters: milliliters, on: currentDay.start()) }
+    }
+
+    public func undoLast() async {
+        await show("undoing the last drink") { try await removeLastDrink.execute(on: currentDay.start()) }
+    }
+
+    private func show(_ attemptDescription: String, _ loadProgress: () async throws -> DailyProgress) async {
+        do {
+            state = presenter.present(progress: try await loadProgress())
+        } catch {
+            log.write(.error, "\(attemptDescription) failed: \(error)")
+            state = presenter.present(error: error)
+        }
+    }
+}
