@@ -12,16 +12,16 @@ enum WatchScreenStateMismatch: Error {
 
 @MainActor
 extension WatchTodayViewModel {
-    var content: WatchTodayViewState.Content {
+    var content: WatchTodayViewData.Content {
         get throws {
-            guard case .content(let content) = state.situation else { throw WatchScreenStateMismatch.notContent }
+            guard case .content(let content) = viewData.state else { throw WatchScreenStateMismatch.notContent }
             return content
         }
     }
 
-    var failure: WatchTodayViewState.Failure {
+    var failure: WatchTodayViewData.Failure {
         get throws {
-            guard case .failed(let failure) = state.situation else { throw WatchScreenStateMismatch.notFailed }
+            guard case .failed(let failure) = viewData.state else { throw WatchScreenStateMismatch.notFailed }
             return failure
         }
     }
@@ -30,7 +30,7 @@ extension WatchTodayViewModel {
 // MARK: - PersistenceEnvironment
 
 extension PersistenceEnvironment {
-    var watchPresenter: WatchTodayPresenter { WatchTodayPresenter(calendar: calendar, locale: locale) }
+    var watchMapper: WatchTodayViewDataMapper { WatchTodayViewDataMapper(calendar: calendar, locale: locale) }
 }
 
 // MARK: - PersistenceEnvironment
@@ -42,7 +42,7 @@ extension PersistenceEnvironment {
             fetchProgress: makeFetchDay(repository: override),
             addDrink: makeAddDrink(repository: override),
             removeLastDrink: makeRemoveLast(repository: override),
-            presenter: watchPresenter,
+            mapper: watchMapper,
             currentDay: makeCurrentDay(),
             changes: observedRepository,
             log: silentLog

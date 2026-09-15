@@ -46,7 +46,7 @@ final class LoggingIntoAnEarlierDayTests: XCTestCase {
 
         await earlier.load()
 
-        XCTAssertEqual(earlier.state.title, "13 Nov")
+        XCTAssertEqual(earlier.viewData.title, "13 Nov")
     }
 
     func test_dayStatus_whenAnEarlierDayIsShortOfTheGoal_expectsTheWholeGoal() async throws {

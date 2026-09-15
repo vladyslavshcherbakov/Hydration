@@ -13,21 +13,21 @@ struct DayScreen: View {
     }
 
     var body: some View {
-        let state = viewModel.state
+        let viewData = viewModel.viewData
 
         List {
-            switch state.situation {
+            switch viewData.state {
             case .loading(let loading): waiting(loading)
             case .content(let content): day(content)
             case .failed(let failure): problem(failure)
             }
         }
         .listStyle(.insetGrouped)
-        .navigationTitle(state.title)
+        .navigationTitle(viewData.title)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 if showsHistory {
-                    Button(state.historyTitle) { viewModel.openHistory() }
+                    Button(viewData.historyTitle) { viewModel.openHistory() }
                         .accessibilityIdentifier("today.history")
                 }
             }
@@ -38,7 +38,7 @@ struct DayScreen: View {
     // MARK: - Private
 
     @ViewBuilder
-    private func waiting(_ loading: DayViewState.Loading) -> some View {
+    private func waiting(_ loading: DayViewData.Loading) -> some View {
         Section {
             Text(loading.message).foregroundStyle(.secondary)
         }
@@ -46,7 +46,7 @@ struct DayScreen: View {
     }
 
     @ViewBuilder
-    private func problem(_ failure: DayViewState.Failure) -> some View {
+    private func problem(_ failure: DayViewData.Failure) -> some View {
         Section {
             HydrationStatusLabel(text: failure.message, accent: failure.accent, typography: .phone)
 
@@ -65,7 +65,7 @@ struct DayScreen: View {
     }
 
     @ViewBuilder
-    private func day(_ content: DayViewState.Content) -> some View {
+    private func day(_ content: DayViewData.Content) -> some View {
         Section {
             progress(content)
         }
@@ -95,7 +95,7 @@ struct DayScreen: View {
         }
     }
 
-    private func progress(_ content: DayViewState.Content) -> some View {
+    private func progress(_ content: DayViewData.Content) -> some View {
         VStack(spacing: 24) {
             ZStack {
                 HydrationProgressView(

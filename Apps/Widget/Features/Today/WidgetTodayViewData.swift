@@ -2,25 +2,12 @@ import Foundation
 import HydrationDesignSystem
 import HydrationDomain
 
-public struct DayViewState: Equatable, Sendable {
-    // MARK: - Situation
+public struct WidgetTodayViewData: Equatable, Sendable {
+    // MARK: - State
 
-    public enum Situation: Equatable, Sendable {
-        case loading(Loading)
+    public enum State: Equatable, Sendable {
         case content(Content)
         case failed(Failure)
-    }
-
-    // MARK: - Loading
-
-    public struct Loading: Equatable, Sendable {
-        public let message: String
-        public let accessibilityLabel: String
-
-        public init(message: String, accessibilityLabel: String) {
-            self.message = message
-            self.accessibilityLabel = accessibilityLabel
-        }
     }
 
     // MARK: - Content
@@ -33,7 +20,6 @@ public struct DayViewState: Equatable, Sendable {
         public let accent: SemanticColor
         public let quickAddTitle: String
         public let isQuickAddEnabled: Bool
-        public let entries: [Entry]
         public let footnote: String
         public let accessibilityLabel: String
 
@@ -45,7 +31,6 @@ public struct DayViewState: Equatable, Sendable {
             accent: SemanticColor,
             quickAddTitle: String,
             isQuickAddEnabled: Bool,
-            entries: [Entry],
             footnote: String,
             accessibilityLabel: String
         ) {
@@ -56,7 +41,6 @@ public struct DayViewState: Equatable, Sendable {
             self.accent = accent
             self.quickAddTitle = quickAddTitle
             self.isQuickAddEnabled = isQuickAddEnabled
-            self.entries = entries
             self.footnote = footnote
             self.accessibilityLabel = accessibilityLabel
         }
@@ -66,39 +50,32 @@ public struct DayViewState: Equatable, Sendable {
 
     public struct Failure: Equatable, Sendable {
         public let message: String
-        public let retryTitle: String
         public let accent: SemanticColor
         public let accessibilityLabel: String
 
-        public init(message: String, retryTitle: String, accent: SemanticColor, accessibilityLabel: String) {
+        public init(message: String, accent: SemanticColor, accessibilityLabel: String) {
             self.message = message
-            self.retryTitle = retryTitle
             self.accent = accent
             self.accessibilityLabel = accessibilityLabel
         }
     }
 
-    // MARK: - Entry
-
-    public struct Entry: Equatable, Sendable, Identifiable, Hashable {
-        public let id: UUID
-        public let amountText: String
-        public let timeText: String
-
-        public init(id: UUID, amountText: String, timeText: String) {
-            self.id = id
-            self.amountText = amountText
-            self.timeText = timeText
-        }
-    }
-
     public let title: String
-    public let historyTitle: String
-    public let situation: Situation
+    public let state: State
 
-    public init(title: String, historyTitle: String, situation: Situation) {
+    public init(title: String, state: State) {
         self.title = title
-        self.historyTitle = historyTitle
-        self.situation = situation
+        self.state = state
+    }
+}
+
+// MARK: - WidgetTodayViewData + CustomStringConvertible
+
+extension WidgetTodayViewData: CustomStringConvertible {
+    public var description: String {
+        switch state {
+        case .content(let day): return "\(day.totalText) \(day.goalText)"
+        case .failed(let failure): return failure.message
+        }
     }
 }

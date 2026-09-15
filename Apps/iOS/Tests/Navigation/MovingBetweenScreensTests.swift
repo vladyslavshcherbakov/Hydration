@@ -80,6 +80,6 @@ final class MovingBetweenScreensTests: XCTestCase {
         let day = environment.dayScreen(day: coordinator.selectedDay)
         await day.load()
         XCTAssertEqual(try day.content.totalText, "0.6 L")
-        XCTAssertEqual(day.state.title, "13 Nov")
+        XCTAssertEqual(day.viewData.title, "13 Nov")
     }
 }

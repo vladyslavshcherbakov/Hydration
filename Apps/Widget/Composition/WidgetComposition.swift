@@ -35,8 +35,8 @@ public enum WidgetComposition {
         root.makeAddDrink()
     }
 
-    public static func presenter() -> WidgetTodayPresenter {
-        WidgetTodayPresenter(calendar: root.calendar, locale: root.locale)
+    public static func mapper() -> WidgetTodayViewDataMapper {
+        WidgetTodayViewDataMapper(calendar: root.calendar, locale: root.locale)
     }
 
     public static func currentDay() -> CurrentDay {

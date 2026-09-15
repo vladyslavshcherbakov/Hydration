@@ -56,7 +56,7 @@ struct HydrationWatchApp: App {
             fetchProgress: root.makeFetchDay(),
             addDrink: root.makeAddDrink(),
             removeLastDrink: root.makeRemoveLastDrink(),
-            presenter: WatchTodayPresenter(calendar: root.calendar, locale: root.locale),
+            mapper: WatchTodayViewDataMapper(calendar: root.calendar, locale: root.locale),
             currentDay: root.makeCurrentDay(),
             changes: root.changes,
             log: root.log

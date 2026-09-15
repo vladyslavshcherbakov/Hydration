@@ -2,12 +2,23 @@ import Foundation
 import HydrationDesignSystem
 import HydrationDomain
 
-public struct WidgetTodayViewState: Equatable, Sendable {
-    // MARK: - Situation
+public struct WatchTodayViewData: Equatable, Sendable {
+    // MARK: - State
 
-    public enum Situation: Equatable, Sendable {
+    public enum State: Equatable, Sendable {
+        case loading(Loading)
         case content(Content)
         case failed(Failure)
+    }
+
+    // MARK: - Loading
+
+    public struct Loading: Equatable, Sendable {
+        public let accessibilityLabel: String
+
+        public init(accessibilityLabel: String) {
+            self.accessibilityLabel = accessibilityLabel
+        }
     }
 
     // MARK: - Content
@@ -18,9 +29,9 @@ public struct WidgetTodayViewState: Equatable, Sendable {
         public let statusText: String
         public let fraction: Double
         public let accent: SemanticColor
-        public let quickAddTitle: String
-        public let isQuickAddEnabled: Bool
-        public let footnote: String
+        public let presets: [Preset]
+        public let undoTitle: String
+        public let isUndoEnabled: Bool
         public let accessibilityLabel: String
 
         public init(
@@ -29,9 +40,9 @@ public struct WidgetTodayViewState: Equatable, Sendable {
             statusText: String,
             fraction: Double,
             accent: SemanticColor,
-            quickAddTitle: String,
-            isQuickAddEnabled: Bool,
-            footnote: String,
+            presets: [Preset],
+            undoTitle: String,
+            isUndoEnabled: Bool,
             accessibilityLabel: String
         ) {
             self.totalText = totalText
@@ -39,9 +50,9 @@ public struct WidgetTodayViewState: Equatable, Sendable {
             self.statusText = statusText
             self.fraction = fraction
             self.accent = accent
-            self.quickAddTitle = quickAddTitle
-            self.isQuickAddEnabled = isQuickAddEnabled
-            self.footnote = footnote
+            self.presets = presets
+            self.undoTitle = undoTitle
+            self.isUndoEnabled = isUndoEnabled
             self.accessibilityLabel = accessibilityLabel
         }
     }
@@ -60,22 +71,27 @@ public struct WidgetTodayViewState: Equatable, Sendable {
         }
     }
 
-    public let title: String
-    public let situation: Situation
+    // MARK: - Preset
 
-    public init(title: String, situation: Situation) {
-        self.title = title
-        self.situation = situation
-    }
-}
+    public struct Preset: Equatable, Sendable, Identifiable, Hashable {
+        public let id: Int
+        public let title: String
+        public let isEnabled: Bool
 
-// MARK: - WidgetTodayViewState + CustomStringConvertible
+        public var milliliters: Int { id }
 
-extension WidgetTodayViewState: CustomStringConvertible {
-    public var description: String {
-        switch situation {
-        case .content(let day): return "\(day.totalText) \(day.goalText)"
-        case .failed(let failure): return failure.message
+        public init(milliliters: Int, title: String, isEnabled: Bool) {
+            self.id = milliliters
+            self.title = title
+            self.isEnabled = isEnabled
         }
+    }
+
+    public let title: String
+    public let state: State
+
+    public init(title: String, state: State) {
+        self.title = title
+        self.state = state
     }
 }

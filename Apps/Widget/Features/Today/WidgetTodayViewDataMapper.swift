@@ -2,7 +2,7 @@ import Foundation
 import HydrationDesignSystem
 import HydrationDomain
 
-public struct WidgetTodayPresenter: Sendable {
+public struct WidgetTodayViewDataMapper: Sendable {
     private let calendar: Calendar
     private let locale: Locale
 
@@ -13,11 +13,11 @@ public struct WidgetTodayPresenter: Sendable {
         self.locale = locale
     }
 
-    public func presentPlaceholder() -> WidgetTodayViewState {
-        WidgetTodayViewState(
+    public func placeholder() -> WidgetTodayViewData {
+        WidgetTodayViewData(
             title: title,
-            situation: .content(
-                WidgetTodayViewState.Content(
+            state: .content(
+                WidgetTodayViewData.Content(
                     totalText: "1.2 L",
                     goalText: "of 2.5 L",
                     statusText: "On track",
@@ -32,15 +32,15 @@ public struct WidgetTodayPresenter: Sendable {
         )
     }
 
-    public func present(progress: DailyProgress) -> WidgetTodayViewState {
-        WidgetTodayViewState(title: title, situation: .content(content(of: progress)))
+    public func viewData(for progress: DailyProgress) -> WidgetTodayViewData {
+        WidgetTodayViewData(title: title, state: .content(content(of: progress)))
     }
 
-    public func present(error: Error) -> WidgetTodayViewState {
-        WidgetTodayViewState(
+    public func viewData(for error: Error) -> WidgetTodayViewData {
+        WidgetTodayViewData(
             title: title,
-            situation: .failed(
-                WidgetTodayViewState.Failure(
+            state: .failed(
+                WidgetTodayViewData.Failure(
                     message: "Open the app",
                     accent: .critical,
                     accessibilityLabel: "Hydration data unavailable"
@@ -59,10 +59,10 @@ public struct WidgetTodayPresenter: Sendable {
         "+\(Volume.quickAdd.milliliters)"
     }
 
-    private func content(of progress: DailyProgress) -> WidgetTodayViewState.Content {
+    private func content(of progress: DailyProgress) -> WidgetTodayViewData.Content {
         let status = statusText(for: progress)
 
-        return WidgetTodayViewState.Content(
+        return WidgetTodayViewData.Content(
             totalText: "\(liters(progress.total)) L",
             goalText: "of \(liters(progress.goal.target)) L",
             statusText: status,

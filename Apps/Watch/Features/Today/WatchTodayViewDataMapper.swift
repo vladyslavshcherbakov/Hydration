@@ -2,7 +2,7 @@ import Foundation
 import HydrationDesignSystem
 import HydrationDomain
 
-public struct WatchTodayPresenter: Sendable {
+public struct WatchTodayViewDataMapper: Sendable {
     public static let defaultPresets = [200, 350, 500]
 
     private let calendar: Calendar
@@ -11,28 +11,28 @@ public struct WatchTodayPresenter: Sendable {
 
     // MARK: - Public
 
-    public init(calendar: Calendar, locale: Locale, presets: [Int] = WatchTodayPresenter.defaultPresets) {
+    public init(calendar: Calendar, locale: Locale, presets: [Int] = WatchTodayViewDataMapper.defaultPresets) {
         self.calendar = calendar
         self.locale = locale
         self.presets = presets
     }
 
-    public func presentLoading() -> WatchTodayViewState {
-        WatchTodayViewState(
+    public func loading() -> WatchTodayViewData {
+        WatchTodayViewData(
             title: title,
-            situation: .loading(WatchTodayViewState.Loading(accessibilityLabel: "Loading"))
+            state: .loading(WatchTodayViewData.Loading(accessibilityLabel: "Loading"))
         )
     }
 
-    public func present(progress: DailyProgress) -> WatchTodayViewState {
-        WatchTodayViewState(title: title, situation: .content(content(of: progress)))
+    public func viewData(for progress: DailyProgress) -> WatchTodayViewData {
+        WatchTodayViewData(title: title, state: .content(content(of: progress)))
     }
 
-    public func present(error: Error) -> WatchTodayViewState {
-        WatchTodayViewState(
+    public func viewData(for error: Error) -> WatchTodayViewData {
+        WatchTodayViewData(
             title: title,
-            situation: .failed(
-                WatchTodayViewState.Failure(
+            state: .failed(
+                WatchTodayViewData.Failure(
                     message: message(for: error),
                     accent: .critical,
                     accessibilityLabel: "Hydration data unavailable"
@@ -47,10 +47,10 @@ public struct WatchTodayPresenter: Sendable {
         "Water"
     }
 
-    private func content(of progress: DailyProgress) -> WatchTodayViewState.Content {
+    private func content(of progress: DailyProgress) -> WatchTodayViewData.Content {
         let status = statusText(for: progress)
 
-        return WatchTodayViewState.Content(
+        return WatchTodayViewData.Content(
             totalText: liters(progress.total),
             goalText: "/ \(liters(progress.goal.target))",
             statusText: status,
@@ -63,8 +63,8 @@ public struct WatchTodayPresenter: Sendable {
         )
     }
 
-    private func preset(for amount: Int, within progress: DailyProgress) -> WatchTodayViewState.Preset {
-        WatchTodayViewState.Preset(
+    private func preset(for amount: Int, within progress: DailyProgress) -> WatchTodayViewData.Preset {
+        WatchTodayViewData.Preset(
             milliliters: amount,
             title: "+\(amount)",
             isEnabled: progress.total.milliliters + amount <= Volume.dailySafetyLimit.milliliters

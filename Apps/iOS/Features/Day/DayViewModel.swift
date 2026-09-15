@@ -3,13 +3,13 @@ import HydrationDomain
 
 @MainActor
 public final class DayViewModel: ObservableObject {
-    @Published public private(set) var state: DayViewState
+    @Published public private(set) var viewData: DayViewData
 
     private let day: Date
     private let fetchProgress: FetchDayProgressUseCase
     private let addDrink: AddDrinkUseCase
     private let removeDrink: RemoveDrinkUseCase
-    private let presenter: DayPresenter
+    private let mapper: DayViewDataMapper
     private let changes: DrinkChanges
     private let log: HydrationLog
     private let onHistoryRequested: () -> Void
@@ -21,7 +21,7 @@ public final class DayViewModel: ObservableObject {
         fetchProgress: FetchDayProgressUseCase,
         addDrink: AddDrinkUseCase,
         removeDrink: RemoveDrinkUseCase,
-        presenter: DayPresenter,
+        mapper: DayViewDataMapper,
         changes: DrinkChanges,
         log: HydrationLog,
         onHistoryRequested: @escaping () -> Void
@@ -30,11 +30,11 @@ public final class DayViewModel: ObservableObject {
         self.fetchProgress = fetchProgress
         self.addDrink = addDrink
         self.removeDrink = removeDrink
-        self.presenter = presenter
+        self.mapper = mapper
         self.changes = changes
         self.log = log
         self.onHistoryRequested = onHistoryRequested
-        self.state = presenter.presentLoading()
+        self.viewData = mapper.loading()
     }
 
     public func observe() async {
@@ -68,10 +68,10 @@ public final class DayViewModel: ObservableObject {
         do {
             let progress = try await loadProgress()
             log.write(.info, "\(attemptDescription): \(progress.day) now holds \(progress.total.milliliters) ml")
-            state = presenter.present(progress: progress)
+            viewData = mapper.viewData(for: progress)
         } catch {
             log.write(.error, "\(attemptDescription) failed: \(error)")
-            state = presenter.present(error: error)
+            viewData = mapper.viewData(for: error)
         }
     }
 }

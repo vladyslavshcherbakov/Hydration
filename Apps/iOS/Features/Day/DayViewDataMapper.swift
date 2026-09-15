@@ -2,7 +2,7 @@ import Foundation
 import HydrationDesignSystem
 import HydrationDomain
 
-public struct DayPresenter: Sendable {
+public struct DayViewDataMapper: Sendable {
     private let calendar: Calendar
     private let locale: Locale
 
@@ -13,12 +13,12 @@ public struct DayPresenter: Sendable {
         self.locale = locale
     }
 
-    public func presentLoading() -> DayViewState {
-        DayViewState(
+    public func loading() -> DayViewData {
+        DayViewData(
             title: "Today",
             historyTitle: historyTitle,
-            situation: .loading(
-                DayViewState.Loading(
+            state: .loading(
+                DayViewData.Loading(
                     message: "Loading your day…",
                     accessibilityLabel: "Loading hydration progress"
                 )
@@ -26,20 +26,20 @@ public struct DayPresenter: Sendable {
         )
     }
 
-    public func present(progress: DailyProgress) -> DayViewState {
-        DayViewState(
+    public func viewData(for progress: DailyProgress) -> DayViewData {
+        DayViewData(
             title: title(for: progress),
             historyTitle: historyTitle,
-            situation: .content(content(of: progress))
+            state: .content(content(of: progress))
         )
     }
 
-    public func present(error: Error) -> DayViewState {
-        DayViewState(
+    public func viewData(for error: Error) -> DayViewData {
+        DayViewData(
             title: "Today",
             historyTitle: historyTitle,
-            situation: .failed(
-                DayViewState.Failure(
+            state: .failed(
+                DayViewData.Failure(
                     message: message(for: error),
                     retryTitle: "Try again",
                     accent: .critical,
@@ -59,10 +59,10 @@ public struct DayPresenter: Sendable {
         "Add \(VolumeFormatting.milliliters(.quickAdd))"
     }
 
-    private func content(of progress: DailyProgress) -> DayViewState.Content {
+    private func content(of progress: DailyProgress) -> DayViewData.Content {
         let status = statusText(for: progress)
 
-        return DayViewState.Content(
+        return DayViewData.Content(
             totalText: "\(liters(progress.total)) L",
             goalText: "of \(liters(progress.goal.target)) L",
             statusText: status,
@@ -85,9 +85,9 @@ public struct DayPresenter: Sendable {
         VolumeFormatting.liters(volume, locale: locale)
     }
 
-    private func entries(of progress: DailyProgress) -> [DayViewState.Entry] {
+    private func entries(of progress: DailyProgress) -> [DayViewData.Entry] {
         progress.entries.reversed().map { entry in
-            DayViewState.Entry(
+            DayViewData.Entry(
                 id: entry.id,
                 amountText: VolumeFormatting.milliliters(entry.volume),
                 timeText: recordedText(for: entry)

@@ -80,7 +80,7 @@ final class SharingStorageWithTheAppTests: XCTestCase {
                 calendar: calendar,
                 goal: .standard
             ),
-            presenter: WidgetTodayPresenter(calendar: calendar, locale: locale),
+            mapper: WidgetTodayViewDataMapper(calendar: calendar, locale: locale),
             dateProvider: dateProvider,
             currentDay: CurrentDay(dateProvider: dateProvider, calendar: calendar),
             log: SilentLog()

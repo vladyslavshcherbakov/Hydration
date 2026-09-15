@@ -26,7 +26,7 @@ public struct HistoryPresenter: Sendable {
         )
     }
 
-    public func present(error: Error) -> HistoryViewState {
+    public func viewData(for error: Error) -> HistoryViewState {
         HistoryViewState(
             title: "History",
             summaryText: "",

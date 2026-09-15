@@ -56,7 +56,7 @@ public final class HistoryViewModel: ObservableObject {
             log.write(.error, "loading the last \(HistoryViewModel.visibleDays) days failed: \(error)")
             summaries = []
             didLoad = false
-            publish(presenter.present(error: error))
+            publish(presenter.viewData(for: error))
         }
     }
 

@@ -10,34 +10,34 @@ struct WatchTodayScreen: View {
     }
 
     var body: some View {
-        let state = viewModel.state
+        let viewData = viewModel.viewData
 
         ScrollView {
-            switch state.situation {
+            switch viewData.state {
             case .loading(let loading): waiting(loading)
             case .content(let content): today(content)
             case .failed(let failure): problem(failure)
             }
         }
-        .navigationTitle(state.title)
+        .navigationTitle(viewData.title)
         .task { await viewModel.observe() }
     }
 
     // MARK: - Private
 
-    private func waiting(_ loading: WatchTodayViewState.Loading) -> some View {
+    private func waiting(_ loading: WatchTodayViewData.Loading) -> some View {
         ProgressView()
             .accessibilityLabel(loading.accessibilityLabel)
     }
 
-    private func problem(_ failure: WatchTodayViewState.Failure) -> some View {
+    private func problem(_ failure: WatchTodayViewData.Failure) -> some View {
         HydrationStatusLabel(text: failure.message, accent: failure.accent, typography: .watch)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 12)
             .accessibilityLabel(failure.accessibilityLabel)
     }
 
-    private func today(_ content: WatchTodayViewState.Content) -> some View {
+    private func today(_ content: WatchTodayViewData.Content) -> some View {
         VStack(spacing: 10) {
             totals(content)
             HydrationProgressView(fraction: content.fraction, accent: content.accent, style: .bar)
@@ -49,7 +49,7 @@ struct WatchTodayScreen: View {
         .accessibilityLabel(content.accessibilityLabel)
     }
 
-    private func totals(_ content: WatchTodayViewState.Content) -> some View {
+    private func totals(_ content: WatchTodayViewData.Content) -> some View {
         VStack(spacing: 2) {
             HydrationTotalLabel(
                 total: content.totalText,
@@ -62,7 +62,7 @@ struct WatchTodayScreen: View {
         .frame(maxWidth: .infinity)
     }
 
-    private func presets(_ content: WatchTodayViewState.Content) -> some View {
+    private func presets(_ content: WatchTodayViewData.Content) -> some View {
         HStack(spacing: 4) {
             ForEach(content.presets) { preset in
                 HydrationActionButton(
@@ -78,7 +78,7 @@ struct WatchTodayScreen: View {
         }
     }
 
-    private func undo(_ content: WatchTodayViewState.Content) -> some View {
+    private func undo(_ content: WatchTodayViewData.Content) -> some View {
         HydrationActionButton(
             title: content.undoTitle,
             accent: .critical,

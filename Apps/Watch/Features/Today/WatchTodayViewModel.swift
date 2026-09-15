@@ -3,12 +3,12 @@ import HydrationDomain
 
 @MainActor
 public final class WatchTodayViewModel: ObservableObject {
-    @Published public private(set) var state: WatchTodayViewState
+    @Published public private(set) var viewData: WatchTodayViewData
 
     private let fetchProgress: FetchDayProgressUseCase
     private let addDrink: AddDrinkUseCase
     private let removeLastDrink: RemoveLastDrinkUseCase
-    private let presenter: WatchTodayPresenter
+    private let mapper: WatchTodayViewDataMapper
     private let currentDay: CurrentDay
     private let changes: DrinkChanges
     private let log: HydrationLog
@@ -19,7 +19,7 @@ public final class WatchTodayViewModel: ObservableObject {
         fetchProgress: FetchDayProgressUseCase,
         addDrink: AddDrinkUseCase,
         removeLastDrink: RemoveLastDrinkUseCase,
-        presenter: WatchTodayPresenter,
+        mapper: WatchTodayViewDataMapper,
         currentDay: CurrentDay,
         changes: DrinkChanges,
         log: HydrationLog
@@ -27,11 +27,11 @@ public final class WatchTodayViewModel: ObservableObject {
         self.fetchProgress = fetchProgress
         self.addDrink = addDrink
         self.removeLastDrink = removeLastDrink
-        self.presenter = presenter
+        self.mapper = mapper
         self.currentDay = currentDay
         self.changes = changes
         self.log = log
-        self.state = presenter.presentLoading()
+        self.viewData = mapper.loading()
     }
 
     public func observe() async {
@@ -61,10 +61,10 @@ public final class WatchTodayViewModel: ObservableObject {
         do {
             let progress = try await loadProgress()
             log.write(.info, "\(attemptDescription): \(progress.day) now holds \(progress.total.milliliters) ml")
-            state = presenter.present(progress: progress)
+            viewData = mapper.viewData(for: progress)
         } catch {
             log.write(.error, "\(attemptDescription) failed: \(error)")
-            state = presenter.present(error: error)
+            viewData = mapper.viewData(for: error)
         }
     }
 }

@@ -14,16 +14,16 @@ enum ScreenStateMismatch: Error {
 
 @MainActor
 extension DayViewModel {
-    var content: DayViewState.Content {
+    var content: DayViewData.Content {
         get throws {
-            guard case .content(let content) = state.situation else { throw ScreenStateMismatch.notContent }
+            guard case .content(let content) = viewData.state else { throw ScreenStateMismatch.notContent }
             return content
         }
     }
 
-    var failure: DayViewState.Failure {
+    var failure: DayViewData.Failure {
         get throws {
-            guard case .failed(let failure) = state.situation else { throw ScreenStateMismatch.notFailed }
+            guard case .failed(let failure) = viewData.state else { throw ScreenStateMismatch.notFailed }
             return failure
         }
     }
@@ -32,7 +32,7 @@ extension DayViewModel {
 // MARK: - PersistenceEnvironment
 
 extension PersistenceEnvironment {
-    var dayPresenter: DayPresenter { DayPresenter(calendar: calendar, locale: locale) }
+    var dayMapper: DayViewDataMapper { DayViewDataMapper(calendar: calendar, locale: locale) }
     var historyPresenter: HistoryPresenter { HistoryPresenter(calendar: calendar, locale: locale, today: today) }
 }
 
@@ -50,7 +50,7 @@ extension PersistenceEnvironment {
             fetchProgress: makeFetchDay(repository: override),
             addDrink: makeAddDrink(repository: override),
             removeDrink: makeRemoveDrink(repository: override),
-            presenter: dayPresenter,
+            mapper: dayMapper,
             changes: observedRepository,
             log: silentLog,
             onHistoryRequested: { coordinator?.show(.history) }

@@ -2,10 +2,10 @@ import Foundation
 import HydrationDesignSystem
 import HydrationDomain
 
-public struct WatchTodayViewState: Equatable, Sendable {
-    // MARK: - Situation
+public struct DayViewData: Equatable, Sendable {
+    // MARK: - State
 
-    public enum Situation: Equatable, Sendable {
+    public enum State: Equatable, Sendable {
         case loading(Loading)
         case content(Content)
         case failed(Failure)
@@ -14,9 +14,11 @@ public struct WatchTodayViewState: Equatable, Sendable {
     // MARK: - Loading
 
     public struct Loading: Equatable, Sendable {
+        public let message: String
         public let accessibilityLabel: String
 
-        public init(accessibilityLabel: String) {
+        public init(message: String, accessibilityLabel: String) {
+            self.message = message
             self.accessibilityLabel = accessibilityLabel
         }
     }
@@ -29,9 +31,10 @@ public struct WatchTodayViewState: Equatable, Sendable {
         public let statusText: String
         public let fraction: Double
         public let accent: SemanticColor
-        public let presets: [Preset]
-        public let undoTitle: String
-        public let isUndoEnabled: Bool
+        public let quickAddTitle: String
+        public let isQuickAddEnabled: Bool
+        public let entries: [Entry]
+        public let footnote: String
         public let accessibilityLabel: String
 
         public init(
@@ -40,9 +43,10 @@ public struct WatchTodayViewState: Equatable, Sendable {
             statusText: String,
             fraction: Double,
             accent: SemanticColor,
-            presets: [Preset],
-            undoTitle: String,
-            isUndoEnabled: Bool,
+            quickAddTitle: String,
+            isQuickAddEnabled: Bool,
+            entries: [Entry],
+            footnote: String,
             accessibilityLabel: String
         ) {
             self.totalText = totalText
@@ -50,9 +54,10 @@ public struct WatchTodayViewState: Equatable, Sendable {
             self.statusText = statusText
             self.fraction = fraction
             self.accent = accent
-            self.presets = presets
-            self.undoTitle = undoTitle
-            self.isUndoEnabled = isUndoEnabled
+            self.quickAddTitle = quickAddTitle
+            self.isQuickAddEnabled = isQuickAddEnabled
+            self.entries = entries
+            self.footnote = footnote
             self.accessibilityLabel = accessibilityLabel
         }
     }
@@ -61,37 +66,39 @@ public struct WatchTodayViewState: Equatable, Sendable {
 
     public struct Failure: Equatable, Sendable {
         public let message: String
+        public let retryTitle: String
         public let accent: SemanticColor
         public let accessibilityLabel: String
 
-        public init(message: String, accent: SemanticColor, accessibilityLabel: String) {
+        public init(message: String, retryTitle: String, accent: SemanticColor, accessibilityLabel: String) {
             self.message = message
+            self.retryTitle = retryTitle
             self.accent = accent
             self.accessibilityLabel = accessibilityLabel
         }
     }
 
-    // MARK: - Preset
+    // MARK: - Entry
 
-    public struct Preset: Equatable, Sendable, Identifiable, Hashable {
-        public let id: Int
-        public let title: String
-        public let isEnabled: Bool
+    public struct Entry: Equatable, Sendable, Identifiable, Hashable {
+        public let id: UUID
+        public let amountText: String
+        public let timeText: String
 
-        public var milliliters: Int { id }
-
-        public init(milliliters: Int, title: String, isEnabled: Bool) {
-            self.id = milliliters
-            self.title = title
-            self.isEnabled = isEnabled
+        public init(id: UUID, amountText: String, timeText: String) {
+            self.id = id
+            self.amountText = amountText
+            self.timeText = timeText
         }
     }
 
     public let title: String
-    public let situation: Situation
+    public let historyTitle: String
+    public let state: State
 
-    public init(title: String, situation: Situation) {
+    public init(title: String, historyTitle: String, state: State) {
         self.title = title
-        self.situation = situation
+        self.historyTitle = historyTitle
+        self.state = state
     }
 }

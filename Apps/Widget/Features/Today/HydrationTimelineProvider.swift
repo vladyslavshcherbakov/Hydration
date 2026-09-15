@@ -4,7 +4,7 @@ import WidgetKit
 
 struct HydrationEntry: TimelineEntry {
     let date: Date
-    let state: WidgetTodayViewState
+    let viewData: WidgetTodayViewData
 }
 
 // MARK: - HydrationTimelineProvider
@@ -13,27 +13,27 @@ struct HydrationTimelineProvider: TimelineProvider {
     static let refreshInterval: TimeInterval = 15 * 60
 
     private let fetchProgress: FetchDayProgressUseCase
-    private let presenter: WidgetTodayPresenter
+    private let mapper: WidgetTodayViewDataMapper
     private let dateProvider: DateProvider
     private let currentDay: CurrentDay
     private let log: HydrationLog
 
     init(
         fetchProgress: FetchDayProgressUseCase,
-        presenter: WidgetTodayPresenter,
+        mapper: WidgetTodayViewDataMapper,
         dateProvider: DateProvider,
         currentDay: CurrentDay,
         log: HydrationLog
     ) {
         self.fetchProgress = fetchProgress
-        self.presenter = presenter
+        self.mapper = mapper
         self.dateProvider = dateProvider
         self.currentDay = currentDay
         self.log = log
     }
 
     func placeholder(in context: Context) -> HydrationEntry {
-        HydrationEntry(date: dateProvider.now(), state: presenter.presentPlaceholder())
+        HydrationEntry(date: dateProvider.now(), viewData: mapper.placeholder())
     }
 
     func getSnapshot(in context: Context, completion: @escaping (HydrationEntry) -> Void) {
@@ -44,7 +44,7 @@ struct HydrationTimelineProvider: TimelineProvider {
         Task {
             let entry = await makeEntry()
             let nextRefresh = entry.date.addingTimeInterval(Self.refreshInterval)
-            log.write(.info, "the widget timeline shows \(entry.state) read at \(entry.date), next refresh at \(nextRefresh)")
+            log.write(.info, "the widget timeline shows \(entry.viewData) read at \(entry.date), next refresh at \(nextRefresh)")
             completion(Timeline(entries: [entry], policy: .after(nextRefresh)))
         }
     }
@@ -52,10 +52,10 @@ struct HydrationTimelineProvider: TimelineProvider {
     func makeEntry() async -> HydrationEntry {
         do {
             let progress = try await fetchProgress.execute(day: currentDay.start())
-            return HydrationEntry(date: progress.evaluatedAt, state: presenter.present(progress: progress))
+            return HydrationEntry(date: progress.evaluatedAt, viewData: mapper.viewData(for: progress))
         } catch {
             log.write(.error, "the widget could not read today's progress: \(error)")
-            return HydrationEntry(date: dateProvider.now(), state: presenter.present(error: error))
+            return HydrationEntry(date: dateProvider.now(), viewData: mapper.viewData(for: error))
         }
     }
 }

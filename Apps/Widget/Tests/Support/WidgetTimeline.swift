@@ -15,16 +15,16 @@ enum WidgetStateMismatch: Error {
 // MARK: - HydrationEntry
 
 extension HydrationEntry {
-    var content: WidgetTodayViewState.Content {
+    var content: WidgetTodayViewData.Content {
         get throws {
-            guard case .content(let content) = state.situation else { throw WidgetStateMismatch.notContent }
+            guard case .content(let content) = viewData.state else { throw WidgetStateMismatch.notContent }
             return content
         }
     }
 
-    var failure: WidgetTodayViewState.Failure {
+    var failure: WidgetTodayViewData.Failure {
         get throws {
-            guard case .failed(let failure) = state.situation else { throw WidgetStateMismatch.notFailed }
+            guard case .failed(let failure) = viewData.state else { throw WidgetStateMismatch.notFailed }
             return failure
         }
     }
@@ -34,13 +34,13 @@ extension HydrationEntry {
 // MARK: - PersistenceEnvironment
 
 extension PersistenceEnvironment {
-    var widgetPresenter: WidgetTodayPresenter { WidgetTodayPresenter(calendar: calendar, locale: locale) }
+    var widgetMapper: WidgetTodayViewDataMapper { WidgetTodayViewDataMapper(calendar: calendar, locale: locale) }
 
     #if canImport(WidgetKit)
     func widgetTimeline(repository override: DrinkRepository? = nil) -> HydrationTimelineProvider {
         HydrationTimelineProvider(
             fetchProgress: makeFetchDay(repository: override),
-            presenter: widgetPresenter,
+            mapper: widgetMapper,
             dateProvider: dateProvider,
             currentDay: makeCurrentDay(),
             log: silentLog

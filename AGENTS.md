@@ -29,7 +29,7 @@ Domain is `HydrationKit/Sources/HydrationDomain`, imports nothing. `Entities` ho
 
 Data is `HydrationPersistence` over Core Data and `HydrationPairedDevice` over WatchConnectivity. Both implement domain protocols, and both keep their framework types inside: a managed object or a message dictionary never leaves the module, a value does. Repositories here are stacked as decorators, each adding one effect to every write.
 
-Presentation is per surface, inside each app under `Features/<feature>`. A presenter turns a domain value into a view state with every string already formatted, a view model owns the loading and holds the state, a view renders it and sends intents. The same use case feeds the phone, the watch and the widget through three presenters.
+Presentation is per surface, inside each app under `Features/<feature>`. A mapper turns a domain value into view data with every string already formatted, a view model owns the loading and holds the view data, a view renders it and sends intents. View data names the state the screen is in, so loading, content and failure carry only what each of them has. The same use case feeds the phone, the watch and the widget through three mappers.
 
 The look is shared. `HydrationDesignSystem` holds the tokens, `SemanticColor`, `HydrationAccent`, `HydrationTypography` and `HydrationMetrics`, and the components every surface draws with: a progress view as a ring or a bar, a total label stacked or in a line, a status label and an action button. A component takes a configuration where the surfaces genuinely differ. An element only one surface has stays in that app.
 
@@ -49,13 +49,13 @@ Log a drink, undo or delete one, see the day's total against the goal and whethe
 
 ## Adding, changing and removing
 
-A new thing the user can do is a use case in the domain plus a presenter and view state per surface that shows it. Rules go in the use case, never in a presenter or a view.
+A new thing the user can do is a use case in the domain plus a mapper and view data per surface that shows it. Rules go in the use case, never in a mapper or a view.
 
-A new surface reuses the existing use cases and gets its own presenter, view state and view model. Do not widen an existing view state to serve two surfaces.
+A new surface reuses the existing use cases and gets its own mapper, view data and view model. Do not widen existing view data to serve two surfaces, and do not add a field that only one state of the screen can fill.
 
 A new effect on every write is a repository decorator in composition, not a call added to each caller.
 
-Removing a feature means removing its use case, its presenters and view states, and its tests. A domain type with no use case left is dead.
+Removing a feature means removing its use case, its mappers and view data, and its tests. A domain type with no use case left is dead.
 
 Whatever is added or removed, update the two sections above in broad strokes only. They are a map for finding things, not a changelog: a new screen or module belongs there, a renamed method does not.
 

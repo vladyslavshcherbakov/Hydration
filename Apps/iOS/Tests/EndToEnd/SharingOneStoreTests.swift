@@ -82,7 +82,7 @@ final class SharingOneStoreTests: XCTestCase {
             fetchProgress: root.makeFetchDay(),
             addDrink: root.makeAddDrink(),
             removeDrink: root.makeRemoveDrink(),
-            presenter: DayPresenter(calendar: environment.calendar, locale: environment.locale),
+            mapper: DayViewDataMapper(calendar: environment.calendar, locale: environment.locale),
             changes: root.changes,
             log: environment.log,
             onHistoryRequested: {}

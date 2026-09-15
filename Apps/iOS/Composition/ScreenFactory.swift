@@ -17,7 +17,7 @@ public final class ScreenFactory {
             fetchProgress: root.makeFetchDay(),
             addDrink: root.makeAddDrink(),
             removeDrink: root.makeRemoveDrink(),
-            presenter: DayPresenter(calendar: root.calendar, locale: root.locale),
+            mapper: DayViewDataMapper(calendar: root.calendar, locale: root.locale),
             changes: root.changes,
             log: root.log,
             onHistoryRequested: { [coordinator] in coordinator.show(.history) }

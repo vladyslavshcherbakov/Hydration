@@ -26,9 +26,9 @@ struct HydrationWidgetView: View {
 
     private var content: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(entry.state.title).font(typography.caption).foregroundStyle(.secondary)
+            Text(entry.viewData.title).font(typography.caption).foregroundStyle(.secondary)
 
-            switch entry.state.situation {
+            switch entry.viewData.state {
             case .content(let day): today(day)
             case .failed(let failure): problem(failure)
             }
@@ -37,13 +37,13 @@ struct HydrationWidgetView: View {
     }
 
     @ViewBuilder
-    private func problem(_ failure: WidgetTodayViewState.Failure) -> some View {
+    private func problem(_ failure: WidgetTodayViewData.Failure) -> some View {
         HydrationStatusLabel(text: failure.message, accent: failure.accent, typography: .widget)
             .accessibilityLabel(failure.accessibilityLabel)
     }
 
     @ViewBuilder
-    private func today(_ day: WidgetTodayViewState.Content) -> some View {
+    private func today(_ day: WidgetTodayViewData.Content) -> some View {
         HydrationTotalLabel(
             total: day.totalText,
             goal: day.goalText,
@@ -76,7 +76,7 @@ struct HydrationWidget: Widget {
             kind: HydrationWidgetKind.today,
             provider: HydrationTimelineProvider(
                 fetchProgress: WidgetComposition.fetchTodayProgress(),
-                presenter: WidgetComposition.presenter(),
+                mapper: WidgetComposition.mapper(),
                 dateProvider: WidgetComposition.dateProvider(),
                 currentDay: WidgetComposition.currentDay(),
                 log: WidgetComposition.log()
