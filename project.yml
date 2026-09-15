@@ -190,7 +190,11 @@ schemes:
     test:
       gatherCoverageData: true
       coverageTargets: [Hydration]
-      targets: [HydrationTests, HydrationWidgetTests, HydrationUITests]
+      targets:
+        - HydrationTests
+        - HydrationWidgetTests
+        - HydrationUITests
+        - package: HydrationKit/HydrationPersistenceTests
     run:
       config: Debug
 

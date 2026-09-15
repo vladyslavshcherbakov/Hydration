@@ -15,7 +15,8 @@ Build system: XcodeGen, `project.yml`. No other tooling.
 
 Shared code becomes a module in `HydrationKit` only when two or more production targets use it. Code used by several apps that is not a module lives in `Shared`.
 Naming: plain English, no comments or documentation comments, one level of abstraction per function.
-Tests: behaviour through a real screen, one bundle per app, named `test_subject_whenCondition_outcome`.
+Tests: behaviour through a real screen, one bundle per app, named `test_subject_whenCondition_outcome`. A module gets its own test target only for behaviour no screen can reach, such as a stored row the app is unable to write; the `Hydration` scheme runs those alongside the app bundles.
+Commits: Conventional Commits. A subject line of `type(scope): summary`, in the imperative, under 72 characters, no full stop. Types are `feat`, `fix`, `refactor`, `test`, `docs`, `build` and `chore`. Scopes name where the change lands: `domain`, `persistence`, `paired-device`, `design-system`, `routing`, `test-support`, `ios`, `watch`, `widget`, `project`. The body wraps at 72 columns and says why rather than what, the diff already says what. A change to the paired device's wire format or to the stored schema carries a `BREAKING CHANGE:` footer saying what stops understanding what. Trailers come last.
 Logging: through the `HydrationLog` protocol in the domain. No platform logging framework inside a layer. Every line carries a timestamp, and a function with more than one way out says which one it took, so a silent early return is never mistaken for a call that never happened.
 Colours, fonts and shared visual components live once in `HydrationDesignSystem`. A surface names a token, never a colour value or a point size. Colours are the platform's system colours, so every surface follows the chosen theme.
 The quick-add amount, the daily goal, and the safety limit are domain values, not UI constants.
