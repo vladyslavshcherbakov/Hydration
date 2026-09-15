@@ -35,5 +35,18 @@ public struct WatchGraph {
 
         incomingChanges.start()
     }
+
+    @MainActor
+    public func makeTodayViewModel() -> WatchTodayViewModel {
+        WatchTodayViewModel(
+            fetchProgress: root.makeFetchDay(),
+            addDrink: root.makeAddDrink(),
+            removeLastDrink: root.makeRemoveLastDrink(),
+            mapper: WatchTodayViewDataMapper(calendar: root.calendar, locale: root.locale),
+            currentDay: root.makeCurrentDay(),
+            changes: root.changes,
+            log: root.log
+        )
+    }
 }
 #endif

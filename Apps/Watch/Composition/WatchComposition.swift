@@ -33,24 +33,9 @@ struct HydrationWatchApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationStack {
-                WatchTodayScreen(viewModel: makeTodayViewModel())
+                WatchTodayScreen(viewModel: graph.makeTodayViewModel())
             }
         }
-    }
-
-    // MARK: - Private
-
-    @MainActor
-    private func makeTodayViewModel() -> WatchTodayViewModel {
-        WatchTodayViewModel(
-            fetchProgress: graph.root.makeFetchDay(),
-            addDrink: graph.root.makeAddDrink(),
-            removeLastDrink: graph.root.makeRemoveLastDrink(),
-            mapper: WatchTodayViewDataMapper(calendar: graph.root.calendar, locale: graph.root.locale),
-            currentDay: graph.root.makeCurrentDay(),
-            changes: graph.root.changes,
-            log: graph.root.log
-        )
     }
 }
 #endif
