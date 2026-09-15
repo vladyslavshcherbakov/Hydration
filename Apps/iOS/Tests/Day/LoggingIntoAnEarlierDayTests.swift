@@ -58,7 +58,7 @@ final class LoggingIntoAnEarlierDayTests: XCTestCase {
         XCTAssertEqual(try earlier.content.statusText, "1500 ml behind schedule")
     }
 
-    func test_dailyLimit_whenAnEarlierDayIsAlreadyFull_refusesMore() async throws {
+    func test_dailyLimit_whenAnEarlierDayIsAlreadyFull_refusesMoreAndKeepsThatDayOnScreen() async throws {
         for hour in 0..<6 {
             try await environment.log(1000, at: environment.date(hour: hour, dayOffset: -1))
         }
@@ -67,7 +67,8 @@ final class LoggingIntoAnEarlierDayTests: XCTestCase {
         await earlier.load()
         await earlier.quickAdd()
 
-        XCTAssertEqual(try earlier.failure.message, "You have reached the daily safety limit")
+        XCTAssertEqual(earlier.notice, "You have reached the daily safety limit")
+        XCTAssertEqual(try earlier.content.totalText, "6 L")
     }
 
     // MARK: - Helpers
