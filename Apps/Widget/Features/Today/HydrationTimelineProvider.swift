@@ -41,12 +41,14 @@ struct HydrationTimelineProvider: TimelineProvider {
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<HydrationEntry>) -> Void) {
-        Task {
-            let entry = await makeEntry()
-            let nextRefresh = entry.date.addingTimeInterval(Self.refreshInterval)
-            log.write(.info, "the widget timeline shows \(entry.viewData) read at \(entry.date), next refresh at \(nextRefresh)")
-            completion(Timeline(entries: [entry], policy: .after(nextRefresh)))
-        }
+        Task { completion(await makeTimeline()) }
+    }
+
+    func makeTimeline() async -> Timeline<HydrationEntry> {
+        let entry = await makeEntry()
+        let nextRefresh = entry.date.addingTimeInterval(Self.refreshInterval)
+        log.write(.info, "the widget timeline shows \(entry.viewData) read at \(entry.date), next refresh at \(nextRefresh)")
+        return Timeline(entries: [entry], policy: .after(nextRefresh))
     }
 
     func makeEntry() async -> HydrationEntry {
