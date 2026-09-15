@@ -3,13 +3,12 @@ import HydrationDomain
 import HydrationPairedDevice
 import HydrationPersistence
 import HydrationTestSupport
-@testable import Hydration
+@testable import HydrationWatch
 
-final class AppGraphEnvironment {
-    let graph: AppGraph
+final class WatchGraphEnvironment {
+    let graph: WatchGraph
     let storage: DrinkRepository & LocalDrinkWriter
     let pairedDevice: RecordingPairedDeviceChannel
-    let widgetReloads: CallCounter
     let dateProvider: MutableDateProvider
     let silentLog: SilentLog
 
@@ -21,8 +20,6 @@ final class AppGraphEnvironment {
 
     var observedRepository: ObservedDrinkRepository { graph.observedDrinks }
 
-    var todaySnapshotSender: TodaySnapshotSender { graph.todaySnapshotSender }
-
     // MARK: - Public
 
     init(
@@ -31,19 +28,16 @@ final class AppGraphEnvironment {
         goal: HydrationGoal = .standard
     ) {
         let pairedDevice = RecordingPairedDeviceChannel()
-        let widgetReloads = CallCounter()
         let dateProvider = MutableDateProvider(now: now)
         let log = SilentLog()
 
         self.storage = storage
         self.pairedDevice = pairedDevice
-        self.widgetReloads = widgetReloads
         self.dateProvider = dateProvider
         self.silentLog = log
-        self.graph = AppGraph(
+        self.graph = WatchGraph(
             storage: storage,
             pairedDevice: pairedDevice,
-            reloadWidget: { widgetReloads.increment() },
             dateProvider: dateProvider,
             calendar: DayFixture.calendar,
             goal: goal,
@@ -67,28 +61,8 @@ final class AppGraphEnvironment {
         )
     }
 
-    func fillToDailyLimit(startingAt hour: Int = 12) async throws {
-        dateProvider.set(date(hour: hour))
-        for _ in 0..<6 {
-            _ = try await makeAddDrink().execute(milliliters: 1000, on: today)
-            dateProvider.advance(by: 60)
-        }
-    }
-
     func receiveFromPairedDevice(_ message: PairedDeviceMessage) async throws {
         try await pairedDevice.deliver(message)
-    }
-
-    func receiveFromPairedDevice(encoded payload: Data) async {
-        await pairedDevice.deliver(payload)
-    }
-
-    func drinkFromTheWatch(_ milliliters: Int, at hour: Int = 11) -> PairedDeviceMessage {
-        PairedDeviceMessage(
-            content: .drinkLogged(
-                DrinkMessage(id: UUID(), amountML: milliliters, day: today, recordedAt: date(hour: hour))
-            )
-        )
     }
 
     func makeAddDrink() -> AddDrinkUseCase {

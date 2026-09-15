@@ -5,11 +5,11 @@ import XCTest
 
 @MainActor
 final class LoggingOnTheWatchTests: XCTestCase {
-    private var environment: PersistenceEnvironment!
+    private var environment: WatchGraphEnvironment!
 
     override func setUp() {
         super.setUp()
-        environment = PersistenceEnvironment()
+        environment = WatchGraphEnvironment()
     }
 
     override func tearDown() {

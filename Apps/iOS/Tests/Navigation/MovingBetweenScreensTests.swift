@@ -6,12 +6,12 @@ import XCTest
 
 @MainActor
 final class MovingBetweenScreensTests: XCTestCase {
-    private var environment: PersistenceEnvironment!
+    private var environment: AppGraphEnvironment!
     private var coordinator: AppCoordinator!
 
     override func setUp() {
         super.setUp()
-        environment = PersistenceEnvironment()
+        environment = AppGraphEnvironment()
         coordinator = AppCoordinator(layout: .stack, selectedDay: environment.today)
     }
 

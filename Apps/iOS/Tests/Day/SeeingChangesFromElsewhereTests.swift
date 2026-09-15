@@ -5,11 +5,11 @@ import XCTest
 
 @MainActor
 final class SeeingChangesFromElsewhereTests: XCTestCase {
-    private var environment: PersistenceEnvironment!
+    private var environment: AppGraphEnvironment!
 
     override func setUp() {
         super.setUp()
-        environment = PersistenceEnvironment()
+        environment = AppGraphEnvironment()
     }
 
     override func tearDown() {
@@ -49,7 +49,7 @@ final class SeeingChangesFromElsewhereTests: XCTestCase {
         let watching = Task { await screen.observe() }
         try await waitFor { try screen.content.footnote == "No drinks logged yet" }
 
-        try await environment.localRepository.save(
+        try await environment.storage.save(
             DrinkEntry(
                 id: UUID(),
                 volume: Volume(milliliters: 400)!,

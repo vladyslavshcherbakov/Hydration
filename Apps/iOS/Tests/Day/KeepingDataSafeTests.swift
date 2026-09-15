@@ -7,11 +7,11 @@ import XCTest
 
 @MainActor
 final class KeepingDataSafeTests: XCTestCase {
-    private var environment: PersistenceEnvironment!
+    private var environment: AppGraphEnvironment!
 
     override func setUp() {
         super.setUp()
-        environment = PersistenceEnvironment()
+        environment = AppGraphEnvironment()
     }
 
     override func tearDown() {
@@ -31,7 +31,8 @@ final class KeepingDataSafeTests: XCTestCase {
     }
 
     func test_todayScreen_whenTheDataCannotBeRead_saysSo() async throws {
-        let screen = environment.dayScreen(repository: FailingDrinkRepository())
+        let broken = AppGraphEnvironment(storage: FailingDrinkRepository())
+        let screen = broken.dayScreen()
 
         await screen.load()
 
@@ -40,8 +41,8 @@ final class KeepingDataSafeTests: XCTestCase {
     }
 
     func test_historyScreen_whenTheDataCannotBeRead_saysSoInsteadOfShowingEmptyDays() async throws {
-        let coordinator = AppCoordinator(selectedDay: environment.today)
-        let screen = environment.historyScreen(coordinator: coordinator, repository: FailingDrinkRepository())
+        let broken = AppGraphEnvironment(storage: FailingDrinkRepository())
+        let screen = broken.historyScreen(coordinator: AppCoordinator(selectedDay: broken.today))
 
         await screen.load()
 

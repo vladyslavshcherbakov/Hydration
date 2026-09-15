@@ -15,6 +15,8 @@ public struct WatchGraph {
         storage: DrinkRepository & LocalDrinkWriter,
         pairedDevice: PairedDeviceChannel,
         dateProvider: DateProvider,
+        calendar: Calendar = .current,
+        goal: HydrationGoal = .standard,
         log: HydrationLog
     ) {
         let observedRepository = ObservedDrinkRepository(localStorage: storage)
@@ -24,7 +26,9 @@ public struct WatchGraph {
             repository: MirroringDrinkRepository(localStorage: observedRepository, pairedDevice: pairedDevice),
             changes: observedRepository,
             log: log,
-            dateProvider: dateProvider
+            dateProvider: dateProvider,
+            calendar: calendar,
+            goal: goal
         )
         incomingChanges = IncomingDrinkChanges(
             localStorage: observedRepository,

@@ -16,11 +16,9 @@ final class SharingStorageWithTheAppTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        locale = Locale(identifier: "en_US_POSIX")
-        calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
-        calendar.locale = locale
-        dateProvider = MutableDateProvider(now: PersistenceEnvironment.referenceNow)
+        locale = DayFixture.calendar.locale!
+        calendar = DayFixture.calendar
+        dateProvider = MutableDateProvider(now: DayFixture.moment(hour: 12))
         storeURL = FileManager.default.temporaryDirectory
             .appendingPathComponent("SharingStorageWithTheApp-\(UUID().uuidString).sqlite")
     }

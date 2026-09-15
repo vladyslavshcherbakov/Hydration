@@ -1,28 +1,12 @@
 import Foundation
-import HydrationDomain
 import HydrationTestSupport
 @testable import HydrationWatch
 
-// MARK: - PersistenceEnvironment
-
-extension PersistenceEnvironment {
-    var watchMapper: WatchTodayViewDataMapper { WatchTodayViewDataMapper(calendar: calendar, locale: locale) }
-}
-
-// MARK: - PersistenceEnvironment
+// MARK: - WatchGraphEnvironment
 
 @MainActor
-extension PersistenceEnvironment {
-    func todayScreen(repository override: DrinkRepository? = nil) -> WatchTodayViewModel {
-        WatchTodayViewModel(
-            fetchProgress: makeFetchDay(repository: override),
-            addDrink: makeAddDrink(repository: override),
-            removeLastDrink: makeRemoveLast(repository: override),
-            mapper: watchMapper,
-            currentDay: makeCurrentDay(),
-            calendar: calendar,
-            changes: observedRepository,
-            log: silentLog
-        )
+extension WatchGraphEnvironment {
+    func todayScreen() -> WatchTodayViewModel {
+        graph.makeTodayViewModel()
     }
 }

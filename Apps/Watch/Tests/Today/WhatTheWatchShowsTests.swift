@@ -6,11 +6,11 @@ import XCTest
 
 @MainActor
 final class WhatTheWatchShowsTests: XCTestCase {
-    private var environment: PersistenceEnvironment!
+    private var environment: WatchGraphEnvironment!
 
     override func setUp() {
         super.setUp()
-        environment = PersistenceEnvironment()
+        environment = WatchGraphEnvironment()
     }
 
     override func tearDown() {
@@ -61,8 +61,36 @@ final class WhatTheWatchShowsTests: XCTestCase {
         XCTAssertEqual(try screen.content.accent, .critical)
     }
 
+    func test_watchFace_beforeTheDayIsRead_isWaiting() throws {
+        let screen = environment.todayScreen()
+
+        guard case .loading(let loading) = screen.viewData.state else { return XCTFail("expected loading") }
+        XCTAssertEqual(screen.viewData.title, "Water")
+        XCTAssertEqual(loading.accessibilityLabel, "Loading")
+    }
+
+    func test_watchFace_whenTheDayIsRead_tellsVoiceOverTheTotalTheGoalAndTheStatus() async throws {
+        try await environment.log(1250, at: environment.date(hour: 9))
+
+        let screen = environment.todayScreen()
+        await screen.load()
+
+        XCTAssertEqual(try screen.content.accessibilityLabel, "1.25 of 2.5, On track")
+    }
+
+    func test_watchFace_whenADrinkIsRefused_saysTheLimitIsReached() async throws {
+        try await environment.log(6000, at: environment.date(hour: 9))
+        let screen = environment.todayScreen()
+        await screen.load()
+
+        await screen.add(milliliters: 200)
+
+        XCTAssertEqual(try screen.failure.message, "Limit")
+    }
+
     func test_watchFace_whenTheDataCannotBeRead_offersARetry() async throws {
-        let screen = environment.todayScreen(repository: FailingDrinkRepository())
+        let broken = WatchGraphEnvironment(storage: FailingDrinkRepository())
+        let screen = broken.todayScreen()
 
         await screen.load()
 

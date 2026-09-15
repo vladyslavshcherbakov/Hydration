@@ -17,6 +17,8 @@ public struct AppGraph {
         pairedDevice: PairedDeviceChannel,
         reloadWidget: @escaping @Sendable () async -> Void,
         dateProvider: DateProvider,
+        calendar: Calendar = .current,
+        goal: HydrationGoal = .standard,
         log: HydrationLog
     ) {
         let observedRepository = ObservedDrinkRepository(localStorage: storage)
@@ -27,7 +29,9 @@ public struct AppGraph {
             repository: MirroringDrinkRepository(localStorage: localWrites, pairedDevice: pairedDevice),
             changes: observedRepository,
             log: log,
-            dateProvider: dateProvider
+            dateProvider: dateProvider,
+            calendar: calendar,
+            goal: goal
         )
         incomingChanges = IncomingDrinkChanges(
             localStorage: localWrites,

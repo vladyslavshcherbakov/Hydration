@@ -1,20 +1,24 @@
 import Foundation
 import HydrationDomain
 import HydrationPairedDevice
+import HydrationPersistence
 import HydrationTestSupport
 import XCTest
 @testable import Hydration
 
 final class HowTheAppIsWiredTests: XCTestCase {
     private var environment: AppGraphEnvironment!
+    private var storage: InMemoryDrinkRepository!
 
     override func setUp() {
         super.setUp()
-        environment = AppGraphEnvironment()
+        storage = InMemoryDrinkRepository()
+        environment = AppGraphEnvironment(storage: storage)
     }
 
     override func tearDown() {
         environment = nil
+        storage = nil
         super.tearDown()
     }
 
@@ -72,6 +76,6 @@ final class HowTheAppIsWiredTests: XCTestCase {
     func test_theDay_whenTheWatchLogsADrink_holdsIt() async throws {
         try await environment.receiveFromPairedDevice(environment.drinkFromTheWatch(450))
 
-        XCTAssertEqual(environment.storage.stored.map(\.volume.milliliters), [450])
+        XCTAssertEqual(storage.stored.map(\.volume.milliliters), [450])
     }
 }

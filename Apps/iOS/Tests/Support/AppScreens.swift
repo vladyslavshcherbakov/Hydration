@@ -4,40 +4,36 @@ import HydrationRouting
 import HydrationTestSupport
 @testable import Hydration
 
-// MARK: - PersistenceEnvironment
+// MARK: - AppGraphEnvironment
 
-extension PersistenceEnvironment {
+extension AppGraphEnvironment {
     var dayMapper: DayViewDataMapper { DayViewDataMapper(calendar: calendar, locale: locale) }
     var historyMapper: HistoryViewDataMapper { HistoryViewDataMapper(calendar: calendar, locale: locale, today: today) }
 }
 
-// MARK: - PersistenceEnvironment
+// MARK: - AppGraphEnvironment
 
 @MainActor
-extension PersistenceEnvironment {
-    func dayScreen(
-        day: Date? = nil,
-        coordinator: AppCoordinator? = nil,
-        repository override: DrinkRepository? = nil
-    ) -> DayViewModel {
+extension AppGraphEnvironment {
+    func dayScreen(day: Date? = nil, coordinator: AppCoordinator? = nil) -> DayViewModel {
         DayViewModel(
             day: day ?? today,
-            fetchProgress: makeFetchDay(repository: override),
-            addDrink: makeAddDrink(repository: override),
-            removeDrink: makeRemoveDrink(repository: override),
+            fetchProgress: graph.root.makeFetchDay(),
+            addDrink: graph.root.makeAddDrink(),
+            removeDrink: graph.root.makeRemoveDrink(),
             mapper: dayMapper,
             calendar: calendar,
-            changes: observedRepository,
+            changes: graph.root.changes,
             log: silentLog,
             onHistoryRequested: { coordinator?.show(.history) }
         )
     }
 
-    func historyScreen(coordinator: AppCoordinator, repository override: DrinkRepository? = nil) -> HistoryViewModel {
+    func historyScreen(coordinator: AppCoordinator) -> HistoryViewModel {
         HistoryViewModel(
-            fetchHistory: makeFetchHistory(repository: override),
+            fetchHistory: graph.root.makeFetchHistory(),
             mapper: historyMapper,
-            changes: observedRepository,
+            changes: graph.root.changes,
             log: silentLog,
             selectedDay: coordinator.selectedDay,
             onDaySelected: { coordinator.select(day: $0) }
@@ -45,6 +41,11 @@ extension PersistenceEnvironment {
     }
 
     func deepLinkOpener(coordinator: AppCoordinator) -> DeepLinkOpener {
-        DeepLinkOpener(coordinator: coordinator, addDrink: makeAddDrink(), currentDay: makeCurrentDay(), log: silentLog)
+        DeepLinkOpener(
+            coordinator: coordinator,
+            addDrink: graph.root.makeAddDrink(),
+            currentDay: graph.root.makeCurrentDay(),
+            log: silentLog
+        )
     }
 }

@@ -6,11 +6,11 @@ import XCTest
 
 @MainActor
 final class LoggingWaterTests: XCTestCase {
-    private var environment: PersistenceEnvironment!
+    private var environment: AppGraphEnvironment!
 
     override func setUp() {
         super.setUp()
-        environment = PersistenceEnvironment()
+        environment = AppGraphEnvironment()
     }
 
     override func tearDown() {

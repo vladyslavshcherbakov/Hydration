@@ -11,14 +11,9 @@ final class EndToEndEnvironment {
     let locale: Locale
     let log = SilentLog()
 
-    init(now: Date = PersistenceEnvironment.referenceNow) {
-        let locale = Locale(identifier: "en_US_POSIX")
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
-        calendar.locale = locale
-
-        self.calendar = calendar
-        self.locale = locale
+    init(now: Date = DayFixture.moment(hour: 12)) {
+        self.calendar = DayFixture.calendar
+        self.locale = DayFixture.calendar.locale!
         self.dateProvider = MutableDateProvider(now: now)
         self.storeURL = FileManager.default.temporaryDirectory
             .appendingPathComponent("\(UUID().uuidString).sqlite")
