@@ -8,6 +8,10 @@ public final class CoreDataStack {
 
     public let container: NSPersistentContainer
 
+    public var storeURL: URL? {
+        container.persistentStoreDescriptions.first?.url
+    }
+
     public convenience init(storeURL: URL) {
         let description = NSPersistentStoreDescription(url: storeURL)
         description.type = NSSQLiteStoreType

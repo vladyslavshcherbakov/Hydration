@@ -20,9 +20,11 @@ public final class DeepLinkOpener {
     public func open(_ link: DeepLink) async -> DeepLinkOutcome {
         switch link {
         case .today:
+            log.write(.info, "a link opened today")
             coordinator.popToRoot()
             return .handled
         case .history:
+            log.write(.info, "a link opened history")
             coordinator.show(.history)
             return .handled
         case .addDrink(let milliliters):

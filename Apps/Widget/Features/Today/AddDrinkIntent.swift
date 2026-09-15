@@ -1,5 +1,6 @@
 #if canImport(AppIntents) && canImport(WidgetKit)
 import AppIntents
+import Foundation
 import HydrationRouting
 import WidgetKit
 
@@ -17,10 +18,20 @@ struct AddDrinkIntent: AppIntent {
     }
 
     func perform() async throws -> some IntentResult {
-        let today = WidgetComposition.currentDay().start()
-        _ = try await WidgetComposition.addDrink().execute(milliliters: milliliters, on: today)
+        try await logDrink(into: WidgetComposition.currentDay().start())
         WidgetCenter.shared.reloadTimelines(ofKind: HydrationWidgetKind.today)
         return .result()
+    }
+
+    private func logDrink(into day: Date) async throws {
+        let log = WidgetComposition.log()
+        do {
+            _ = try await WidgetComposition.addDrink().execute(milliliters: milliliters, on: day)
+            log.write(.info, "the widget button logged \(milliliters) ml into \(day)")
+        } catch {
+            log.write(.error, "the widget button could not log \(milliliters) ml into \(day): \(error)")
+            throw error
+        }
     }
 }
 #endif

@@ -14,7 +14,11 @@ public struct WidgetRefresh: Sendable {
     }
 
     public func reload() async {
-        guard await isInstalled() else { return }
+        guard await isInstalled() else {
+            log.write(.info, "no \(kind) widget is installed, skipping the refresh")
+            return
+        }
+        log.write(.info, "reloading the \(kind) widget after a write")
         WidgetCenter.shared.reloadTimelines(ofKind: kind)
     }
 

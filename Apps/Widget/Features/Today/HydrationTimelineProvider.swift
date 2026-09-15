@@ -42,6 +42,7 @@ struct HydrationTimelineProvider: TimelineProvider {
         Task {
             let entry = await makeEntry()
             let nextRefresh = entry.date.addingTimeInterval(Self.refreshInterval)
+            log.write(.info, "the widget timeline shows \(entry.state.totalText) read at \(entry.date), next refresh at \(nextRefresh)")
             completion(Timeline(entries: [entry], policy: .after(nextRefresh)))
         }
     }

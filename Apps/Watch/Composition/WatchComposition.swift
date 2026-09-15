@@ -40,7 +40,10 @@ struct HydrationWatchApp: App {
             await todaysDrinksSender.sendToPairedDevice()
         }
 
-        log.write(.info, "the watch app started, paired device link is \(type(of: pairedDevice))")
+        log.write(
+            .info,
+            "the watch app started, store at \(coreDataStack.storeURL?.path ?? "an unknown path"), paired device link is \(type(of: pairedDevice))"
+        )
     }
 
     var body: some Scene {

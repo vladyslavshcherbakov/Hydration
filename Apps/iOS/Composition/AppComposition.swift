@@ -47,7 +47,10 @@ struct HydrationApp: App {
             await todaysDrinksSender.sendToPairedDevice()
         }
 
-        log.write(.info, "the phone app started, sharing \(AppGroup.identifier), paired device link is \(type(of: pairedDevice))")
+        log.write(
+            .info,
+            "the phone app started, sharing \(AppGroup.identifier), store at \(coreDataStack.storeURL?.path ?? "an unknown path"), paired device link is \(type(of: pairedDevice))"
+        )
     }
 
     var body: some Scene {

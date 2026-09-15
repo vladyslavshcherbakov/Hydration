@@ -1,3 +1,4 @@
+import Foundation
 import HydrationDomain
 
 struct ConsoleLog: HydrationLog {
@@ -8,6 +9,13 @@ struct ConsoleLog: HydrationLog {
     }
 
     func write(_ level: LogLevel, _ message: String) {
-        print("[\(level.rawValue)] \(category): \(message)")
+        print("\(timestamp()) [\(level.rawValue)] \(category): \(message)")
+    }
+
+    private func timestamp() -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "MMM d HH:mm:ss.SSS"
+        return formatter.string(from: Date())
     }
 }

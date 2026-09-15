@@ -12,6 +12,10 @@ public enum WidgetComposition {
             arguments: ProcessInfo.processInfo.arguments
         )
         let observedRepository = ObservedDrinkRepository(localStorage: CoreDataDrinkRepository(coreDataStack: coreDataStack, log: log))
+        log.write(
+            .info,
+            "the widget started, sharing \(AppGroup.identifier), store at \(coreDataStack.storeURL?.path ?? "an unknown path")"
+        )
         return CompositionRoot(
             repository: observedRepository,
             changes: observedRepository,

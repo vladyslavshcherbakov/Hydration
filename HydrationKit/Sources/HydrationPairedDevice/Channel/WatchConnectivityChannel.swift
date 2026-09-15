@@ -11,7 +11,10 @@ public final class WatchConnectivityChannel: NSObject, PairedDeviceChannel, @unc
     private var resend: SendCurrentDrinks?
 
     public init?(session: WCSession = .default, log: HydrationLog) {
-        guard WCSession.isSupported() else { return nil }
+        guard WCSession.isSupported() else {
+            log.write(.warning, "this device has no WatchConnectivity session, no change will reach a paired device")
+            return nil
+        }
         self.session = session
         self.log = log
         super.init()
@@ -20,13 +23,13 @@ public final class WatchConnectivityChannel: NSObject, PairedDeviceChannel, @unc
     }
 
     public func send(_ message: DrinkChangeMessage) {
-        log.write(.info, "sending a change to the paired device, session is \(describe(session)): \(message.dictionary)")
-
         guard session.isReachable else {
+            log.write(.info, "queueing a change for the paired device, it is not reachable, session is \(describe(session)): \(message.dictionary)")
             session.transferUserInfo(message.dictionary)
             return
         }
 
+        log.write(.info, "sending a change to the paired device by message, session is \(describe(session)): \(message.dictionary)")
         session.sendMessage(
             message.dictionary,
             replyHandler: nil,
@@ -53,15 +56,21 @@ public final class WatchConnectivityChannel: NSObject, PairedDeviceChannel, @unc
         lock.lock()
         let resend = self.resend
         lock.unlock()
-        guard let resend else { return }
+        guard let resend else {
+            log.write(.warning, "the paired device became reachable before anything was listening for it, today's drinks were not resent")
+            return
+        }
         Task { await resend() }
     }
 }
 
 extension WatchConnectivityChannel: WCSessionDelegate {
     public func sessionReachabilityDidChange(_ session: WCSession) {
-        log.write(.info, "the paired device changed, session is \(describe(session))")
-        guard session.isReachable else { return }
+        guard session.isReachable else {
+            log.write(.info, "the paired device is no longer reachable, nothing is being resent, session is \(describe(session))")
+            return
+        }
+        log.write(.info, "the paired device became reachable, resending today's drinks, session is \(describe(session))")
         pairedDeviceBecameReachable()
     }
 
@@ -121,8 +130,11 @@ extension WatchConnectivityChannel: WCSessionDelegate {
 
     #if os(iOS)
     public func sessionWatchStateDidChange(_ session: WCSession) {
-        log.write(.info, "the watch state changed, session is \(describe(session))")
-        guard session.isReachable else { return }
+        guard session.isReachable else {
+            log.write(.info, "the watch state changed and it is not reachable, nothing is being resent, session is \(describe(session))")
+            return
+        }
+        log.write(.info, "the watch state changed and it is reachable, resending today's drinks, session is \(describe(session))")
         pairedDeviceBecameReachable()
     }
 
