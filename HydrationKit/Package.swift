@@ -7,6 +7,7 @@ let package = Package(
     products: [
         .library(name: "HydrationDomain", targets: ["HydrationDomain"]),
         .library(name: "HydrationPersistence", targets: ["HydrationPersistence"]),
+        .library(name: "HydrationDesignSystem", targets: ["HydrationDesignSystem"]),
         .library(name: "HydrationRouting", targets: ["HydrationRouting"]),
         .library(name: "HydrationPairedDevice", targets: ["HydrationPairedDevice"]),
         .library(name: "HydrationTestSupport", targets: ["HydrationTestSupport"])
@@ -14,6 +15,7 @@ let package = Package(
     targets: [
         .target(name: "HydrationDomain"),
         .target(name: "HydrationPersistence", dependencies: ["HydrationDomain"]),
+        .target(name: "HydrationDesignSystem", dependencies: ["HydrationDomain"]),
         .target(name: "HydrationRouting", dependencies: ["HydrationDomain"]),
         .target(name: "HydrationPairedDevice", dependencies: ["HydrationDomain"]),
         .target(

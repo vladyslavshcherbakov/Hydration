@@ -1,4 +1,5 @@
 #if canImport(WidgetKit)
+import HydrationDesignSystem
 import HydrationDomain
 import HydrationRouting
 import SwiftUI
@@ -6,6 +7,8 @@ import WidgetKit
 
 struct HydrationWidgetView: View {
     @Environment(\.widgetFamily) private var family
+
+    private let typography = HydrationTypography.widget
 
     let entry: HydrationEntry
 
@@ -19,34 +22,28 @@ struct HydrationWidgetView: View {
 
     private var content: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(entry.state.title).font(.caption).foregroundStyle(.secondary)
-            Text(entry.state.totalText).font(.title2.weight(.semibold))
-            Text(entry.state.goalText).font(.caption2).foregroundStyle(.secondary)
-            ProgressView(value: entry.state.fraction).tint(WidgetTheme.color(entry.state.accent))
-            Text(entry.state.statusText).font(.caption2)
+            Text(entry.state.title).font(typography.caption).foregroundStyle(.secondary)
+            HydrationTotalLabel(
+                total: entry.state.totalText,
+                goal: entry.state.goalText,
+                typography: .widget,
+                layout: .stacked
+            )
+            HydrationProgressView(fraction: entry.state.fraction, accent: entry.state.accent, style: .bar)
+            HydrationStatusLabel(text: entry.state.statusText, accent: entry.state.accent, typography: .widget)
             if !entry.state.footnote.isEmpty {
-                Text(entry.state.footnote).font(.caption2).foregroundStyle(.tertiary)
+                Text(entry.state.footnote).font(typography.caption).foregroundStyle(.tertiary)
             }
             if #available(iOS 17.0, *), family == .systemSmall, entry.state.isQuickAddEnabled {
                 Button(intent: AddDrinkIntent(milliliters: Volume.quickAdd.milliliters)) {
                     Text(entry.state.quickAddTitle)
                 }
+                .font(typography.action)
                 .buttonStyle(.bordered)
             }
         }
         .accessibilityLabel(entry.state.accessibilityLabel)
         .widgetURL(DeepLinkMapper.url(for: .history))
-    }
-}
-
-enum WidgetTheme {
-    static func color(_ token: SemanticColor) -> Color {
-        switch token {
-        case .neutral: return .blue
-        case .positive: return .green
-        case .warning: return .orange
-        case .critical: return .red
-        }
     }
 }
 

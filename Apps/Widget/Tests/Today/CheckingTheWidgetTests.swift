@@ -1,3 +1,4 @@
+import HydrationDesignSystem
 import HydrationDomain
 import HydrationTestSupport
 import XCTest

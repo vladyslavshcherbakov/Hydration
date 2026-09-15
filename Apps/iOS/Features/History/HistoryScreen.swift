@@ -1,4 +1,5 @@
 #if os(iOS)
+import HydrationDesignSystem
 import SwiftUI
 
 struct HistoryScreen: View {
@@ -31,17 +32,17 @@ struct HistoryScreen: View {
                                             .font(.caption2.weight(.semibold))
                                             .padding(.horizontal, 8)
                                             .padding(.vertical, 3)
-                                            .background(PhoneTheme.color(row.accent).opacity(0.18), in: Capsule())
-                                            .foregroundStyle(PhoneTheme.color(row.accent))
+                                            .background(HydrationAccent.color(row.accent).opacity(HydrationMetrics.badgeOpacity), in: Capsule())
+                                            .foregroundStyle(HydrationAccent.color(row.accent))
                                     }
                                     Text(row.totalText).foregroundStyle(.secondary)
                                     if row.isSelected {
                                         Image(systemName: "checkmark")
-                                            .foregroundStyle(PhoneTheme.color(row.accent))
+                                            .foregroundStyle(HydrationAccent.color(row.accent))
                                     }
                                 }
                                 ProgressView(value: row.fraction)
-                                    .tint(PhoneTheme.color(row.accent))
+                                    .tint(HydrationAccent.color(row.accent))
                             }
                         }
                         .accessibilityIdentifier(row.identifier)

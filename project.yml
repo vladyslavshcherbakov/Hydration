@@ -36,6 +36,8 @@ targets:
       - package: HydrationKit
         product: HydrationPersistence
       - package: HydrationKit
+        product: HydrationDesignSystem
+      - package: HydrationKit
         product: HydrationRouting
       - package: HydrationKit
         product: HydrationPairedDevice
@@ -72,6 +74,8 @@ targets:
       - package: HydrationKit
         product: HydrationPersistence
       - package: HydrationKit
+        product: HydrationDesignSystem
+      - package: HydrationKit
         product: HydrationPairedDevice
     entitlements:
       path: Apps/Watch/HydrationWatch.entitlements
@@ -101,6 +105,8 @@ targets:
       - package: HydrationKit
         product: HydrationPersistence
       - package: HydrationKit
+        product: HydrationDesignSystem
+      - package: HydrationKit
         product: HydrationRouting
     entitlements:
       path: Apps/Widget/HydrationWidget.entitlements
@@ -128,6 +134,8 @@ targets:
     dependencies:
       - target: Hydration
       - package: HydrationKit
+        product: HydrationDesignSystem
+      - package: HydrationKit
         product: HydrationTestSupport
 
   HydrationWatchTests:
@@ -140,6 +148,8 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
     dependencies:
       - target: HydrationWatch
+      - package: HydrationKit
+        product: HydrationDesignSystem
       - package: HydrationKit
         product: HydrationTestSupport
 
@@ -156,6 +166,8 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
     dependencies:
       - target: Hydration
+      - package: HydrationKit
+        product: HydrationDesignSystem
       - package: HydrationKit
         product: HydrationTestSupport
 

@@ -17,6 +17,7 @@ Shared code becomes a module in `HydrationKit` only when two or more production 
 Naming: plain English, no comments or documentation comments, one level of abstraction per function.
 Tests: behaviour through a real screen, one bundle per app, named `test_subject_whenCondition_outcome`.
 Logging: through the `HydrationLog` protocol in the domain. No platform logging framework inside a layer.
+Colours, fonts and shared visual components live once in `HydrationDesignSystem`. A surface names a token, never a colour value or a point size. Colours are the platform's system colours, so every surface follows the chosen theme.
 The quick-add amount, the daily goal, and the safety limit are domain values, not UI constants.
 
 ## How the project is put together
@@ -29,6 +30,8 @@ Data is `HydrationPersistence` over Core Data and `HydrationPairedDevice` over W
 
 Presentation is per surface, inside each app under `Features/<feature>`. A presenter turns a domain value into a view state with every string already formatted, a view model owns the loading and holds the state, a view renders it and sends intents. The same use case feeds the phone, the watch and the widget through three presenters.
 
+The look is shared. `HydrationDesignSystem` holds the tokens, `SemanticColor`, `HydrationAccent`, `HydrationTypography` and `HydrationMetrics`, and the components every surface draws with: a progress view as a ring or a bar, a total label stacked or in a line, a status label and an action button. A component takes a configuration where the surfaces genuinely differ. An element only one surface has stays in that app.
+
 Composition is `Shared/Composition` plus one file per app. It creates the real implementations, stacks the decorators and hands them in. It is the only place that knows concrete types.
 
 Modules exist only where two or more production targets need the code. Code shared by apps that is not a module lives in `Shared`.
@@ -37,7 +40,7 @@ Modules exist only where two or more production targets need the code. Code shar
 
 `Apps/iOS` is the phone and iPad app: the day screen, history, navigation through `AppCoordinator`, deep links, widget refresh. `Apps/Watch` is the companion. `Apps/Widget` is the extension. Each owns its `Tests` and its generated configuration.
 
-`HydrationKit` holds `HydrationDomain`, `HydrationPersistence`, `HydrationPairedDevice`, `HydrationRouting` for deep links, and `HydrationTestSupport` for the shared test environment and doubles.
+`HydrationKit` holds `HydrationDomain`, `HydrationPersistence`, `HydrationPairedDevice`, `HydrationRouting` for deep links, `HydrationDesignSystem` for the tokens and the shared components, and `HydrationTestSupport` for the shared test environment and doubles.
 
 ## What the apps do
 

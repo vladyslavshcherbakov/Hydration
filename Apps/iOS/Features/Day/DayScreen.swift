@@ -1,4 +1,5 @@
 #if os(iOS)
+import HydrationDesignSystem
 import SwiftUI
 
 struct DayScreen: View {
@@ -60,32 +61,31 @@ struct DayScreen: View {
     private func progress(_ state: DayViewState) -> some View {
         VStack(spacing: 24) {
             ZStack {
-                Circle()
-                    .stroke(PhoneTheme.color(state.accent).opacity(0.15), lineWidth: PhoneTheme.ringWidth)
-                Circle()
-                    .trim(from: 0, to: state.fraction)
-                    .stroke(PhoneTheme.color(state.accent), style: StrokeStyle(lineWidth: PhoneTheme.ringWidth, lineCap: .round))
-                    .rotationEffect(.degrees(-90))
-                VStack(spacing: 4) {
-                    Text(state.totalText)
-                        .font(PhoneTheme.valueFont)
-                        .accessibilityIdentifier("today.total")
-                    Text(state.goalText).font(.subheadline).foregroundStyle(.secondary)
-                }
+                HydrationProgressView(
+                    fraction: state.fraction,
+                    accent: state.accent,
+                    style: .ring(diameter: HydrationMetrics.ringDiameter)
+                )
+                HydrationTotalLabel(
+                    total: state.totalText,
+                    goal: state.goalText,
+                    typography: .phone,
+                    layout: .stacked,
+                    totalIdentifier: "today.total"
+                )
             }
-            .frame(width: 220, height: 220)
-            .animation(.easeInOut, value: state.fraction)
 
-            Text(state.statusText)
-                .font(.headline)
-                .foregroundStyle(PhoneTheme.color(state.accent))
+            HydrationStatusLabel(text: state.statusText, accent: state.accent, typography: .phone)
 
-            Button(state.quickAddTitle) {
+            HydrationActionButton(
+                title: state.quickAddTitle,
+                accent: state.accent,
+                typography: .phone,
+                prominence: .filled,
+                isEnabled: state.isQuickAddEnabled
+            ) {
                 Task { await viewModel.quickAdd() }
             }
-            .buttonStyle(.borderedProminent)
-            .tint(PhoneTheme.color(state.accent))
-            .disabled(!state.isQuickAddEnabled)
             .accessibilityIdentifier("today.quickAdd")
         }
         .frame(maxWidth: .infinity)

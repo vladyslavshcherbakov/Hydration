@@ -1,4 +1,5 @@
 #if os(iOS)
+import HydrationDesignSystem
 import UIKit
 
 final class HistoryCollectionViewController: UIViewController {
@@ -64,7 +65,7 @@ final class HistoryCollectionViewController: UIViewController {
             var content = cell.defaultContentConfiguration()
             content.text = row.dayText
             content.secondaryText = [row.badgeText, row.totalText].compactMap { $0 }.joined(separator: " · ")
-            content.secondaryTextProperties.color = PadTheme.color(row.accent)
+            content.secondaryTextProperties.color = HydrationAccent.uiColor(row.accent)
             cell.contentConfiguration = content
             cell.accessibilityIdentifier = row.identifier
             cell.accessories = row.isSelected ? [.checkmark(), .disclosureIndicator()] : [.disclosureIndicator()]

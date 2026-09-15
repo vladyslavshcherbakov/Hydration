@@ -1,4 +1,5 @@
 import Foundation
+import HydrationDesignSystem
 import HydrationDomain
 
 public struct DayViewState: Equatable, Sendable {
