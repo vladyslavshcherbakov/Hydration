@@ -14,52 +14,63 @@ public struct WidgetTodayPresenter: Sendable {
 
     public func presentPlaceholder() -> WidgetTodayViewState {
         WidgetTodayViewState(
-            title: "Water",
-            totalText: "1.2 L",
-            goalText: "of 2.5 L",
-            statusText: "On track",
-            fraction: 0.48,
-            accent: .neutral,
-            quickAddTitle: quickAddTitle,
-            isQuickAddEnabled: false,
-            footnote: "Updated 12:00",
-            accessibilityLabel: "Hydration placeholder"
+            title: title,
+            situation: .content(
+                WidgetTodayViewState.Content(
+                    totalText: "1.2 L",
+                    goalText: "of 2.5 L",
+                    statusText: "On track",
+                    fraction: 0.48,
+                    accent: .neutral,
+                    quickAddTitle: quickAddTitle,
+                    isQuickAddEnabled: false,
+                    footnote: "Updated 12:00",
+                    accessibilityLabel: "Hydration placeholder"
+                )
+            )
         )
     }
 
     public func present(progress: DailyProgress) -> WidgetTodayViewState {
+        WidgetTodayViewState(title: title, situation: .content(content(of: progress)))
+    }
+
+    public func present(error: Error) -> WidgetTodayViewState {
         WidgetTodayViewState(
-            title: "Water",
+            title: title,
+            situation: .failed(
+                WidgetTodayViewState.Failure(
+                    message: "Open the app",
+                    accent: .critical,
+                    accessibilityLabel: "Hydration data unavailable"
+                )
+            )
+        )
+    }
+
+    // MARK: - Private
+    private var title: String {
+        "Water"
+    }
+
+    private var quickAddTitle: String {
+        "+\(Volume.quickAdd.milliliters)"
+    }
+
+    private func content(of progress: DailyProgress) -> WidgetTodayViewState.Content {
+        let status = statusText(for: progress)
+
+        return WidgetTodayViewState.Content(
             totalText: "\(liters(progress.total)) L",
             goalText: "of \(liters(progress.goal.target)) L",
-            statusText: statusText(for: progress),
+            statusText: status,
             fraction: progress.fraction,
             accent: SemanticColor(status: progress.status),
             quickAddTitle: quickAddTitle,
             isQuickAddEnabled: progress.canAddMore,
             footnote: "Updated \(VolumeFormatting.time(progress.evaluatedAt, calendar: calendar))",
-            accessibilityLabel: "\(liters(progress.total)) of \(liters(progress.goal.target)), \(statusText(for: progress))"
+            accessibilityLabel: "\(liters(progress.total)) of \(liters(progress.goal.target)), \(status)"
         )
-    }
-
-    public func present(error: Error) -> WidgetTodayViewState {
-        WidgetTodayViewState(
-            title: "Water",
-            totalText: "—",
-            goalText: "",
-            statusText: "Open the app",
-            fraction: 0,
-            accent: .critical,
-            quickAddTitle: "",
-            isQuickAddEnabled: false,
-            footnote: "",
-            accessibilityLabel: "Hydration data unavailable"
-        )
-    }
-
-    // MARK: - Private
-    private var quickAddTitle: String {
-        "+\(Volume.quickAdd.milliliters)"
     }
 
     private func liters(_ volume: Volume) -> String {

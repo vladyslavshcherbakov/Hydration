@@ -37,13 +37,13 @@ final class SharingStorageWithTheAppTests: XCTestCase {
     // MARK: - Tests
     func test_widgetTimeline_whenTheAppLogsADrink_showsTheNewTotal() async throws {
         let beforeTheDrink = await widgetTimeline().makeEntry()
-        XCTAssertEqual(beforeTheDrink.state.totalText, "0 L")
+        XCTAssertEqual(try beforeTheDrink.content.totalText, "0 L")
 
         _ = try await appAddDrink().execute(milliliters: 450, on: today)
 
         let afterTheDrink = await widgetTimeline().makeEntry()
-        XCTAssertEqual(afterTheDrink.state.totalText, "0.45 L")
-        XCTAssertEqual(afterTheDrink.state.goalText, "of 2.5 L")
+        XCTAssertEqual(try afterTheDrink.content.totalText, "0.45 L")
+        XCTAssertEqual(try afterTheDrink.content.goalText, "of 2.5 L")
     }
 
     func test_widgetTimeline_whenTheAppLogsAnEarlierDay_leavesTodayAlone() async throws {
@@ -52,7 +52,7 @@ final class SharingStorageWithTheAppTests: XCTestCase {
         _ = try await appAddDrink().execute(milliliters: 450, on: yesterday)
 
         let entry = await widgetTimeline().makeEntry()
-        XCTAssertEqual(entry.state.totalText, "0 L")
+        XCTAssertEqual(try entry.content.totalText, "0 L")
     }
 
     // MARK: - Helpers

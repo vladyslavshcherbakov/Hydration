@@ -25,27 +25,43 @@ struct HydrationWidgetView: View {
     private var content: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(entry.state.title).font(typography.caption).foregroundStyle(.secondary)
-            HydrationTotalLabel(
-                total: entry.state.totalText,
-                goal: entry.state.goalText,
-                typography: .widget,
-                layout: .stacked
-            )
-            HydrationProgressView(fraction: entry.state.fraction, accent: entry.state.accent, style: .bar)
-            HydrationStatusLabel(text: entry.state.statusText, accent: entry.state.accent, typography: .widget)
-            if !entry.state.footnote.isEmpty {
-                Text(entry.state.footnote).font(typography.caption).foregroundStyle(.tertiary)
-            }
-            if #available(iOS 17.0, *), family == .systemSmall, entry.state.isQuickAddEnabled {
-                Button(intent: AddDrinkIntent(milliliters: Volume.quickAdd.milliliters)) {
-                    Text(entry.state.quickAddTitle)
-                }
-                .font(typography.action)
-                .buttonStyle(.bordered)
+
+            switch entry.state.situation {
+            case .content(let day): today(day)
+            case .failed(let failure): problem(failure)
             }
         }
-        .accessibilityLabel(entry.state.accessibilityLabel)
         .widgetURL(DeepLinkMapper.url(for: .history))
+    }
+
+    @ViewBuilder
+    private func problem(_ failure: WidgetTodayViewState.Failure) -> some View {
+        HydrationStatusLabel(text: failure.message, accent: failure.accent, typography: .widget)
+            .accessibilityLabel(failure.accessibilityLabel)
+    }
+
+    @ViewBuilder
+    private func today(_ day: WidgetTodayViewState.Content) -> some View {
+        HydrationTotalLabel(
+            total: day.totalText,
+            goal: day.goalText,
+            typography: .widget,
+            layout: .stacked
+        )
+        HydrationProgressView(fraction: day.fraction, accent: day.accent, style: .bar)
+        HydrationStatusLabel(text: day.statusText, accent: day.accent, typography: .widget)
+
+        if !day.footnote.isEmpty {
+            Text(day.footnote).font(typography.caption).foregroundStyle(.tertiary)
+        }
+
+        if #available(iOS 17.0, *), family == .systemSmall, day.isQuickAddEnabled {
+            Button(intent: AddDrinkIntent(milliliters: Volume.quickAdd.milliliters)) {
+                Text(day.quickAddTitle)
+            }
+            .font(typography.action)
+            .buttonStyle(.bordered)
+        }
     }
 }
 
